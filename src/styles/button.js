@@ -5,7 +5,7 @@ import styled from "styled-components"
 const StyledButton = styled.button`
   width: 15.625rem;
   height: 3rem;
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.quaternary};
   color: ${({ theme }) => theme.colors.background};
   padding: 1rem;
   margin: 0 ${({ center }) => (center ? "auto" : "0")};

@@ -6,7 +6,7 @@ import GlobalStateProvider from "../context/provider"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Hero from "../components/sections/hero"
-// import Articles from "../components/sections/articles"
+
 import About from "../components/sections/about"
 import Interests from "../components/sections/interests"
 import Projects from "../components/sections/projects"
@@ -66,7 +66,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    hero: allMdx(filter: { fileAbsolutePath: { regex: "/index/hero/" } }) {
+    hero: allMdx(filter: { fileAbsolutePath: { regex: "/index/hero/kor/" } }) {
       edges {
         node {
           body
@@ -86,7 +86,9 @@ export const pageQuery = graphql`
         }
       }
     }
-    about: allMdx(filter: { fileAbsolutePath: { regex: "/index/about/" } }) {
+    about: allMdx(
+      filter: { fileAbsolutePath: { regex: "/index/about/kor/" } }
+    ) {
       edges {
         node {
           body
@@ -104,7 +106,7 @@ export const pageQuery = graphql`
       }
     }
     interests: allMdx(
-      filter: { fileAbsolutePath: { regex: "/index/interests/" } }
+      filter: { fileAbsolutePath: { regex: "/index/interests/kor/" } }
     ) {
       edges {
         node {
@@ -132,7 +134,7 @@ export const pageQuery = graphql`
     }
     projects: allMdx(
       filter: {
-        fileAbsolutePath: { regex: "/index/projects/" }
+        fileAbsolutePath: { regex: "/index/projects-kor/" }
         frontmatter: { visible: { eq: true } }
       }
       sort: { fields: [frontmatter___position], order: ASC }
@@ -164,7 +166,7 @@ export const pageQuery = graphql`
       }
     }
     contact: allMdx(
-      filter: { fileAbsolutePath: { regex: "/index/contact/" } }
+      filter: { fileAbsolutePath: { regex: "/index/contact/kor/" } }
     ) {
       edges {
         node {

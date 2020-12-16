@@ -60,7 +60,7 @@ const GlobalStyle = createGlobalStyle`
         line-height: 2.375rem;
         color: ${({ theme }) => theme.colors.primary};
         @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-            font-size: 2.625rem;
+            font-size: 2.225rem;
             line-height: 4rem;
         }
     }

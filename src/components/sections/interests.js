@@ -13,7 +13,7 @@ const StyledSection = styled.section`
   width: 100%;
   height: auto;
   background: ${({ theme }) => theme.colors.background};
-  margin-top: 6rem;
+  margin-top: 4rem;
 `
 
 const StyledContentWrapper = styled(ContentWrapper)`
@@ -45,7 +45,7 @@ const StyledInterests = styled.div`
   /* Calculate how many columns are needed, depending on interests count */
   grid-template-columns: repeat(
     ${({ itemCount }) => Math.ceil(itemCount / 2)},
-    15.625rem
+    17.625rem
   );
   grid-template-rows: repeat(2, auto);
   grid-auto-flow: column;
@@ -66,7 +66,7 @@ const StyledInterests = styled.div`
   }
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     grid-auto-flow: row;
-    grid-template-columns: repeat(3, 15.625rem);
+    grid-template-columns: repeat(3, auto);
     overflow: visible;
     padding: 0;
   }
@@ -95,17 +95,28 @@ const StyledInterests = styled.div`
   }
 
   .interest {
-    width: 15.625rem;
-    height: 3rem;
+    width: 17.625rem;
+    height: 20rem;
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
     padding: 1rem;
-    border: 0.125rem solid ${({ theme }) => theme.colors.primary};
+    border: 0.1rem solid ${({ theme }) => theme.colors.primary};
     border-radius: ${({ theme }) => theme.borderRadius};
     background: ${({ theme }) => theme.colors.card};
+    box-shadow: 0.1rem 0.1rem 0.5rem rgba(0, 0, 0, 0.2);
     .icon {
       margin-right: 0.5rem;
+    }
+    .title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1rem 0;
+    }
+    .description {
+      font-size: 0.9rem;
+      margin: 0;
     }
   }
 `
@@ -154,17 +165,26 @@ const Interests = ({ content }) => {
       <StyledContentWrapper>
         <h3 className="section-title">{frontmatter.title}</h3>
         <StyledInterests itemCount={interests.length} ref={ref}>
-          {interests.slice(0, shownInterests).map(({ name, icon }, key) => (
-            <motion.div
-              className="interest"
-              key={key}
-              custom={key}
-              initial={{ opacity: 0, scaleY: 0 }}
-              animate={iControls}
-            >
-              <Img className="icon" fixed={icon.childImageSharp.fixed} /> {name}
-            </motion.div>
-          ))}
+          {interests
+            .slice(0, shownInterests)
+            .map(({ icons, title, description }, key) => (
+              <motion.div
+                className="interest"
+                key={key}
+                custom={key}
+                initial={{ opacity: 0, scaleY: 0 }}
+                animate={iControls}
+              >
+                <div className="icons">
+                  {icons.map(icon => (
+                    <Img className="icon" fixed={icon.childImageSharp.fixed} />
+                  ))}
+                </div>
+                <h4 className="title">{title}</h4>
+                <p className="description">{description}</p>
+              </motion.div>
+            ))}
+
           {shownInterests < interests.length && (
             <motion.div initial={{ opacity: 0, scaleY: 0 }} animate={bControls}>
               <Button

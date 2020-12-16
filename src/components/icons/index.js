@@ -1,6 +1,6 @@
 import React from "react"
 
-import IconXing from "./xing"
+import IconNotion from "./notion"
 import IconLinkedIn from "./linkedin"
 import IconMedium from "./medium"
 import IconGitHub from "./github"
@@ -10,8 +10,8 @@ import IconExternal from "./external"
 // Utility function to grab Icons by name
 const Icon = ({ name, color }) => {
   switch (name.toLowerCase()) {
-    case "xing":
-      return <IconXing color={color} />
+    case "notion":
+      return <IconNotion color={color} />
     case "linkedin":
       return <IconLinkedIn color={color} />
     case "medium":
@@ -27,4 +27,4 @@ const Icon = ({ name, color }) => {
   }
 }
 
-export default Icon;
+export default Icon

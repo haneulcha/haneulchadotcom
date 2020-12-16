@@ -74,21 +74,22 @@ const StyledSocialProfile = styled.a`
   background: ${({ theme }) => theme.colors.background};
   background: linear-gradient(
     to right,
-    ${({ theme }) => theme.colors.primary} 50%,
-    ${({ theme }) => theme.colors.background} 50%
+    ${({ theme }) => theme.colors.tertiary} 50%,
+    ${({ theme }) => theme.colors.quaternary} 50%
   );
   background-size: 205% 100%;
   background-position: right bottom;
   border-radius: ${({ theme }) => theme.borderRadius};
-  border: 0.125rem solid ${({ theme }) => theme.colors.primary};
+  // border: 0.125rem solid ${({ theme }) => theme.colors.quaternary};
   padding: ${({ padding }) => (padding ? padding : ".3rem 1.25rem")};
   transition: all 0.1s ease-out;
   font-size: ${({ fontSize }) => (fontSize ? fontSize : "1rem")};
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.background};
   &:hover {
     background-position: left bottom;
     color: ${({ theme }) => theme.colors.background};
+    // border: 0.125rem solid ${({ theme }) => theme.colors.tertiary};
   }
   &:hover svg {
     filter: invert(1);
@@ -98,12 +99,13 @@ const StyledSocialProfile = styled.a`
     width: 1rem;
     margin-right: 0.5rem;
     margin-bottom: -0.05rem;
+    fill: ${({ theme }) => theme.colors.background};
   }
 `
 
 const Social = ({ width, padding, fontSize, fontWeight, withIcon }) => {
   const { darkMode } = useContext(Context).state
-  
+
   return (
     <StyledSocialWrapper itemCount={socialMedia.length}>
       {socialMedia.map(({ name, url }, key) => {

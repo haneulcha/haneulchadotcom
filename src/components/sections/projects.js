@@ -5,7 +5,6 @@ import { MDXRenderer } from "gatsby-plugin-mdx"
 import Img from "gatsby-image"
 import VisibilitySensor from "react-visibility-sensor"
 import { motion } from "framer-motion"
-
 import { useOnScreen } from "../../hooks"
 import Context from "../../context"
 import ContentWrapper from "../../styles/contentWrapper"
@@ -152,6 +151,9 @@ const StyledProject = styled(motion.div)`
       line-height: 1.625rem;
       font-weight: 700;
     }
+    p {
+      margin-bottom: 0;
+    }
     .tags {
       display: flex;
       flex-wrap: wrap;
@@ -176,6 +178,7 @@ const StyledProject = styled(motion.div)`
         width: 1.3rem;
         height: 1.3rem;
         transition: all 0.3s ease-out;
+        fill: ${({ theme }) => theme.colors.tertiary};
       }
       svg:hover {
         fill: ${({ theme }) => theme.colors.primary};
@@ -192,6 +195,7 @@ const StyledProject = styled(motion.div)`
     &:hover {
       transform: translate3d(0px, -0.125rem, 0px);
       box-shadow: 0 0 2.5rem rgba(0, 0, 0, 0.32);
+      cursor: pointer;
     }
     @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
       height: 18.75rem;
@@ -291,6 +295,7 @@ const Projects = ({ content }) => {
                     <div className="title">{frontmatter.title}</div>
                     <MDXRenderer>{body}</MDXRenderer>
                     <div className="tags">
+                      {console.log(frontmatter)}
                       {frontmatter.tags.map(tag => (
                         <Underlining key={tag} highlight>
                           {tag}
@@ -298,6 +303,23 @@ const Projects = ({ content }) => {
                       ))}
                     </div>
                     <div className="links">
+                      {frontmatter.notion && (
+                        <a
+                          href={frontmatter.notion}
+                          target="_blank"
+                          rel="nofollow noopener noreferrer"
+                          aria-label="External Link"
+                        >
+                          <Icon
+                            name="notion"
+                            color={
+                              darkMode
+                                ? darkTheme.colors.subtext
+                                : lightTheme.colors.subtext
+                            }
+                          />
+                        </a>
+                      )}
                       {frontmatter.github && (
                         <a
                           href={frontmatter.github}
@@ -338,10 +360,17 @@ const Projects = ({ content }) => {
                   <VisibilitySensor
                     onChange={() => setVisibleProject(frontmatter.position)}
                   >
-                    <Img
-                      className="screenshot"
-                      fluid={frontmatter.screenshot.childImageSharp.fluid}
-                    />
+                    <a
+                      href={frontmatter.external}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      aria-label="External Link"
+                    >
+                      <Img
+                        className="screenshot"
+                        fluid={frontmatter.screenshot.childImageSharp.fluid}
+                      />
+                    </a>
                   </VisibilitySensor>
                 </StyledProject>
               </VisibilitySensor>

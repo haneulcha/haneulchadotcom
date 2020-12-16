@@ -42,7 +42,7 @@ const StyledLink = styled(Link)`
   font-weight: 700;
   text-transform: uppercase;
   color: ${({ theme, $darkMode }) =>
-    $darkMode ? theme.colors.primary : theme.colors.background};
+    $darkMode ? theme.colors.primary : theme.colors.secondary};
   letter-spacing: 1px;
 `
 
@@ -54,7 +54,9 @@ const Footer = () => {
         <Link to="/" aria-label="home">
           <Logo
             size="1.5rem"
-            color={darkMode ? darkTheme.colors.primary : lightTheme.colors.background}
+            color={
+              darkMode ? darkTheme.colors.primary : lightTheme.colors.secondary
+            }
           />
         </Link>
         <div className="footer-links">

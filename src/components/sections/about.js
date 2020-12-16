@@ -37,7 +37,7 @@ const StyledContentWrapper = styled(ContentWrapper)`
     }
     .text-content {
       width: 100%;
-      max-width: 31.25rem;
+      max-width: 32.25rem;
     }
     .image-content {
       width: 100%;

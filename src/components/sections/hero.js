@@ -34,13 +34,14 @@ const StyledContentWrapper = styled(ContentWrapper)`
       display: flex;
       justify-content: flex-start;
       align-items: center;
+      margin-top: 3rem;
     }
     .emoji {
-      margin-left: 0.75rem;
+      margin-left: 0.5rem;
       width: 2.2rem;
       height: 2.2rem;
       @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-        margin-left: 1rem;
+        margin-left: 0.7rem;
         width: 3rem;
         height: 3rem;
       }
@@ -48,11 +49,12 @@ const StyledContentWrapper = styled(ContentWrapper)`
     .title {
       margin-bottom: 1.5rem;
       @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-        margin-bottom: 0;
+        margin: 0.5rem 0;
       }
     }
     .subtitle {
       margin-top: -0.75rem;
+      margin-bottom: 2rem;
     }
     .description {
       font-size: 1.125rem;
@@ -110,24 +112,31 @@ const Hero = ({ content }) => {
           <h1 className="title">
             <div className="greetings">
               {frontmatter.greetings}
-              <motion.div animate={eControls} style={{ originX: 0.7, originY: 0.7 }}>
-                <Img className="emoji" fluid={frontmatter.icon.childImageSharp.fluid} />
+              <motion.div
+                animate={eControls}
+                style={{ originX: 0.7, originY: 0.7 }}
+              >
+                <Img
+                  className="emoji"
+                  fluid={frontmatter.icon.childImageSharp.fluid}
+                />
               </motion.div>
             </div>
-            {frontmatter.title}
           </h1>
-          <h2 className="subtitle">
-            {frontmatter.subtitlePrefix}{" "}
+          <h1 className="title">
             <AnimatedUnderlining animate={uControls} big>
-              {frontmatter.subtitle}
+              {frontmatter.title}
             </AnimatedUnderlining>
-          </h2>
+          </h1>
+          <h3 className="subtitle">
+            {frontmatter.subtitlePrefix} {frontmatter.subtitle}
+          </h3>
           <div className="description">
             <MDXRenderer>{body}</MDXRenderer>
           </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={sControls}>
-          <Social fontSize=".95rem" padding=".3rem 1.25rem" width="auto" />
+          <Social fontSize="1rem" padding=".5rem 1.25rem" width="auto" />
         </motion.div>
       </StyledContentWrapper>
     </StyledSection>

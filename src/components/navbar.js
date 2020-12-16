@@ -10,7 +10,7 @@ const StyledNav = styled.nav`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 31.25rem;
+    width: 23.25rem;
     background: ${({ theme }) => theme.colors.background};
     a {
       color: ${({ theme }) => theme.colors.primary};
@@ -48,7 +48,7 @@ const StyledNav = styled.nav`
     padding: 0.5rem 1.5rem;
     margin: 0;
     &:hover {
-      background: ${({ theme }) => theme.colors.primary};
+      background: ${({ theme }) => theme.colors.tertiary};
       color: ${({ theme }) => theme.colors.background};
     }
   }
