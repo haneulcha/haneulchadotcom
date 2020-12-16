@@ -62,7 +62,7 @@ module.exports = {
     },
     {
       name: "Blog",
-      url: "https://charfus.github.io/",
+      url: "https://haneulcha.github.io/",
     },
   ],
 

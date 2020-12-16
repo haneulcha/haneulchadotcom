@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import { Link } from "gatsby"
 
-import { navLinks } from "../../config"
+// import { navLinks } from "../../config"
 
 const StyledNav = styled.nav`
   display: none;
@@ -36,6 +36,9 @@ const StyledNav = styled.nav`
       width: 100%;
     }
   }
+  .lang {
+    margin: 0;
+  }
   .cta-btn {
     width: auto;
     height: auto;
@@ -54,8 +57,8 @@ const StyledNav = styled.nav`
   }
 `
 
-const Navbar = () => {
-  const { menu, button } = navLinks
+const Navbar = ({ navLinks }) => {
+  const { menu, button, lang } = navLinks
   return (
     <StyledNav>
       {menu.map(({ name, url }, key) => {
@@ -67,6 +70,9 @@ const Navbar = () => {
       })}
       <Link className="cta-btn" to={button.url}>
         {button.name}
+      </Link>
+      <Link className="nav-link lang" to={lang.url}>
+        {lang.name}
       </Link>
     </StyledNav>
   )

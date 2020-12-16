@@ -48,6 +48,7 @@ const StyledContentWrapper = styled(ContentWrapper)`
     }
     .title {
       margin-bottom: 1.5rem;
+      font-color: ${({ theme }) => theme.colors.primary};
       @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
         margin: 0.5rem 0;
       }

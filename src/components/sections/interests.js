@@ -176,8 +176,12 @@ const Interests = ({ content }) => {
                 animate={iControls}
               >
                 <div className="icons">
-                  {icons.map(icon => (
-                    <Img className="icon" fixed={icon.childImageSharp.fixed} />
+                  {icons.map((icon, key) => (
+                    <Img
+                      className="icon"
+                      fixed={icon.childImageSharp.fixed}
+                      key={key}
+                    />
                   ))}
                 </div>
                 <h4 className="title">{title}</h4>

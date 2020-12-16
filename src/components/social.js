@@ -92,7 +92,8 @@ const StyledSocialProfile = styled.a`
     // border: 0.125rem solid ${({ theme }) => theme.colors.tertiary};
   }
   &:hover svg {
-    filter: invert(1);
+    filter: invert(1);   
+    fill: ${({ theme }) => theme.colors.background};
   }
   svg {
     height: 1rem;

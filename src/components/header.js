@@ -72,7 +72,10 @@ const StyledBurger = styled.button`
   }
 `
 
-const Header = () => {
+const Header = ({ content }) => {
+  console.log("content", content)
+  const { navLinks } = content[0].node.exports
+
   const { isIntroDone } = useContext(Context).state
   const [open, setOpen] = useState(false)
   const [windowWidth, setWindowWidth] = useState(0)
@@ -110,11 +113,16 @@ const Header = () => {
           <div />
           <div />
         </StyledBurger>
-        <Sidebar id="sidebar" open={open} setOpen={setOpen} />
+        <Sidebar
+          id="sidebar"
+          open={open}
+          setOpen={setOpen}
+          navLinks={navLinks}
+        />
       </>
     )
   } else {
-    navigation = <Navbar />
+    navigation = <Navbar navLinks={navLinks} />
   }
 
   return (

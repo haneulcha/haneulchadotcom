@@ -207,7 +207,8 @@ const Projects = ({ content }) => {
   const { darkMode } = useContext(Context).state
   const sectionDetails = content[0].node
   const projects = content.slice(1, content.length)
-
+  console.log("sectionDetails", sectionDetails)
+  console.log("projects", projects)
   // visibleProject is needed to show which project is currently
   // being viewed in the horizontal slider on mobile and tablet
   const [visibleProject, setVisibleProject] = useState(1)
@@ -295,7 +296,6 @@ const Projects = ({ content }) => {
                     <div className="title">{frontmatter.title}</div>
                     <MDXRenderer>{body}</MDXRenderer>
                     <div className="tags">
-                      {console.log(frontmatter)}
                       {frontmatter.tags.map(tag => (
                         <Underlining key={tag} highlight>
                           {tag}
@@ -365,6 +365,7 @@ const Projects = ({ content }) => {
                       target="_blank"
                       rel="nofollow noopener noreferrer"
                       aria-label="External Link"
+                      className="screenshot"
                     >
                       <Img
                         className="screenshot"

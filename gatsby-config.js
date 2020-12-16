@@ -62,7 +62,7 @@ module.exports = {
     {
       resolve: "gatsby-plugin-i18n",
       options: {
-        langKeyDefault: "en",
+        langKeyDefault: "kor",
         useLangKeyLayout: false,
       },
     },

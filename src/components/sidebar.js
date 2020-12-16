@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import styled from "styled-components"
 import { Link } from "gatsby"
 
-import { navLinks } from "../../config"
+// import { navLinks } from "../../config"
 
 const StyledBackdrop = styled.div`
   position: fixed;
@@ -70,21 +70,36 @@ const StyledNav = styled.nav`
     border: 0.125rem solid ${({ theme }) => theme.colors.primary};
     background: ${({ theme }) => theme.colors.background};
   }
+  .lang {
+    margin: 0;
+  }
 `
 
-const Sidebar = ({ open, setOpen }) => {
-  const { menu, button } = navLinks
+const Sidebar = ({ open, setOpen, navLinks }) => {
+  const { menu, button, lang } = navLinks
   return (
     <>
       <StyledContainer open={open} aria-hidden={!open} tabIndex={open ? 1 : -1}>
         <StyledNav>
           {menu.map(({ name, url }, key) => (
-            <Link className="nav-link" key={key} to={url} onClick={() => setOpen(!open)}>
+            <Link
+              className="nav-link"
+              key={key}
+              to={url}
+              onClick={() => setOpen(!open)}
+            >
               {name}
             </Link>
           ))}
-          <Link className="cta-btn" to={button.url} onClick={() => setOpen(!open)}>
+          <Link
+            className="cta-btn"
+            to={button.url}
+            onClick={() => setOpen(!open)}
+          >
             {button.name}
+          </Link>
+          <Link className="nav-link lang" to={lang.url}>
+            {lang.name}
           </Link>
         </StyledNav>
       </StyledContainer>

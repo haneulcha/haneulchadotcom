@@ -27,7 +27,7 @@ const IndexPage = ({ data }) => {
 
   return (
     <GlobalStateProvider initialState={globalState}>
-      <Layout>
+      <Layout content={data.navlinks.edges}>
         <SEO
           title={
             useSeoTitleSuffix
@@ -55,7 +55,33 @@ export default IndexPage
 
 export const pageQuery = graphql`
   {
-    index: allMdx(filter: { fileAbsolutePath: { regex: "/index/index/" } }) {
+    navlinks: allMdx(
+      filter: { fileAbsolutePath: { regex: "/index/navlinks/kor/" } }
+    ) {
+      edges {
+        node {
+          exports {
+            navLinks {
+              menu {
+                name
+                url
+              }
+              button {
+                name
+                url
+              }
+              lang {
+                name
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+    index: allMdx(
+      filter: { fileAbsolutePath: { regex: "/index/index-kor/" } }
+    ) {
       edges {
         node {
           frontmatter {
@@ -134,7 +160,7 @@ export const pageQuery = graphql`
     }
     projects: allMdx(
       filter: {
-        fileAbsolutePath: { regex: "/index/projects-kor/" }
+        fileAbsolutePath: { regex: "/index/projects/kor/" }
         frontmatter: { visible: { eq: true } }
       }
       sort: { fields: [frontmatter___position], order: ASC }

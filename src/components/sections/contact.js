@@ -44,7 +44,7 @@ const StyledContentWrapper = styled(ContentWrapper)`
       .avatar {
         width: 100%;
         max-width: 8.75rem;
-        border-radius: 50%;
+        // border-radius: 50%;
         margin-right: 4rem;
         margin-bottom: 2rem;
         @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
@@ -67,23 +67,29 @@ const Contact = ({ content }) => {
   const onScreen = useOnScreen(ref)
   const variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 } 
+    visible: { opacity: 1, y: 0 },
   }
 
   return (
-    <StyledSection id="contact" ref={ref} variants={variants} animate={onScreen ? "visible" : "hidden"}>
+    <StyledSection
+      id="contact"
+      ref={ref}
+      variants={variants}
+      animate={onScreen ? "visible" : "hidden"}
+    >
       <StyledContentWrapper>
         <h3>{frontmatter.title}</h3>
         <MDXRenderer>{body}</MDXRenderer>
         <div className="profile">
-          <Img className="avatar" fluid={frontmatter.profileImage.childImageSharp.fluid} />
+          <Img
+            className="avatar"
+            fluid={frontmatter.profileImage.childImageSharp.fluid}
+          />
           <div className="details">
             <strong>{frontmatter.name}</strong>
             <br />
             <a href={`mailto:${frontmatter.email}`}>
-              <Underlining highlight>
-                {frontmatter.email}
-              </Underlining>
+              <Underlining highlight>{frontmatter.email}</Underlining>
             </a>
           </div>
         </div>
