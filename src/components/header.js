@@ -73,7 +73,6 @@ const StyledBurger = styled.button`
 `
 
 const Header = ({ content }) => {
-  console.log("content", content)
   const { navLinks } = content[0].node.exports
 
   const { isIntroDone } = useContext(Context).state

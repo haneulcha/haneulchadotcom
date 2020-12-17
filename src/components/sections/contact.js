@@ -8,7 +8,9 @@ import { motion } from "framer-motion"
 import { useOnScreen } from "../../hooks"
 import ContentWrapper from "../../styles/contentWrapper"
 import Underlining from "../../styles/underlining"
+
 import Social from "../social"
+import Resume from "../resume"
 
 const StyledSection = styled(motion.section)`
   width: 100%;
@@ -54,6 +56,20 @@ const StyledContentWrapper = styled(ContentWrapper)`
       .details {
         font-size: 1.125rem;
         line-height: 2rem;
+        .resume {
+          width: auto;
+          padding: 0.4rem 1.5rem;
+          margin: 0.8rem 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: ${({ theme }) => theme.colors.tertiary};
+          border: 2px solid ${({ theme }) => theme.colors.tertiary};
+          border-radius: ${({ theme }) => theme.borderRadius};
+          &:hover {
+            background: ${({ theme }) => theme.colors.tertiary};
+            color: ${({ theme }) => theme.colors.background};
+          }
+        }
       }
     }
   }
@@ -91,6 +107,10 @@ const Contact = ({ content }) => {
             <a href={`mailto:${frontmatter.email}`}>
               <Underlining highlight>{frontmatter.email}</Underlining>
             </a>
+            <br />
+            <div className="resume">
+              <Resume />
+            </div>
           </div>
         </div>
         <Social width="9rem" padding="0.5rem 1.25rem" withIcon />

@@ -18,7 +18,7 @@ module.exports = {
       quaternary: "#0269B3", // HONOLULU BLUE
       text: "#040F0F", // Rich Black FOGRA 39
       subtext: "#555555",
-      background: "#F5F5F5", // CULTURED
+      background: "#e9ecef", // CULTURED
       card: "#FFFFFF",
       scrollBar: "rgba(0, 0, 0, 0.5)",
       boxShadow: "rgba(0, 0, 0, 0.16)",

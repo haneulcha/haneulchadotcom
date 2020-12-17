@@ -207,8 +207,7 @@ const Projects = ({ content }) => {
   const { darkMode } = useContext(Context).state
   const sectionDetails = content[0].node
   const projects = content.slice(1, content.length)
-  console.log("sectionDetails", sectionDetails)
-  console.log("projects", projects)
+
   // visibleProject is needed to show which project is currently
   // being viewed in the horizontal slider on mobile and tablet
   const [visibleProject, setVisibleProject] = useState(1)
