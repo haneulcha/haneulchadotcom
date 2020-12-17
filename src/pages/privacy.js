@@ -50,7 +50,7 @@ const Privacy = ({ data }) => {
 
   return (
     <GlobalStateProvider initialState={globalState}>
-      <Layout>
+      <Layout content={data.navlinks.edges}>
         <SEO
           title={
             useSeoTitleSuffix
@@ -98,6 +98,30 @@ export const pageQuery = graphql`
             seoTitle
             useSeoTitleSuffix
             useSplashScreen
+          }
+        }
+      }
+    }
+    navlinks: allMdx(
+      filter: { fileAbsolutePath: { regex: "/index/navlinks/kor/" } }
+    ) {
+      edges {
+        node {
+          exports {
+            navLinks {
+              menu {
+                name
+                url
+              }
+              button {
+                name
+                url
+              }
+              lang {
+                name
+                url
+              }
+            }
           }
         }
       }

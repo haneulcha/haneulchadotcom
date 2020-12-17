@@ -2,7 +2,7 @@
   "name": "gatsby-starter-portfolio-minimal",
   "description": "A clean, one-page portfolio using MDX",
   "version": "1.0.0",
-  "author": "Konstantin Münster <mail@konstantin.digital>",
+  "author": "Haneul Cha",
   "dependencies": {
     "@mdx-js/mdx": "^1.5.1",
     "@mdx-js/react": "^1.5.1",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "eslint-plugin-mdx": "^1.6.3",
+    "gh-pages": "^3.1.0",
     "prettier": "^1.19.1"
   },
   "keywords": [
@@ -59,7 +60,8 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
+    "deploy": "gatsby build && gh-pages -d public -b main"
   },
   "repository": {
     "type": "git",

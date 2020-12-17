@@ -37,7 +37,7 @@ const NotFoundPage = () => {
   const navlinksQuery = useStaticQuery(graphql`
     {
       navlinks: allMdx(
-        filter: { fileAbsolutePath: { regex: "/index/navlinks/en/" } }
+        filter: { fileAbsolutePath: { regex: "/index/navlinks/kor/" } }
       ) {
         edges {
           node {
@@ -72,7 +72,7 @@ const NotFoundPage = () => {
         />
         <StyledSection>
           <StyledContentWrapper>
-            <h1>NOT FOUND</h1>
+            <h1>존재하지 않는 페이지 입니다</h1>
           </StyledContentWrapper>
         </StyledSection>
       </Layout>
