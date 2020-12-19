@@ -79,9 +79,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    index: allMdx(
-      filter: { fileAbsolutePath: { regex: "/index/index-kor/" } }
-    ) {
+    index: allMdx(filter: { fileAbsolutePath: { regex: "/index/index/" } }) {
       edges {
         node {
           frontmatter {
