@@ -15,7 +15,7 @@ const Resume = () => {
 
   return (
     <a href={pdfFile.pdf.publicURL} target="_blank" rel="noreferrer" download>
-      이력서 / Resume (Kor)
+      이력서 / CV (Kor)
     </a>
   )
 }

@@ -90,7 +90,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    hero: allMdx(filter: { fileAbsolutePath: { regex: "/index/hero/" } }) {
+    hero: allMdx(filter: { fileAbsolutePath: { regex: "/index/hero/en/" } }) {
       edges {
         node {
           body
