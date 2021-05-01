@@ -108,21 +108,14 @@ export const pageQuery = graphql`
             subtitle
             bg {
               childImageSharp {
-                fluid(quality: 90) {
+                fluid(maxWidth: 320, quality: 90) {
                   ...GatsbyImageSharpFluid
                 }
               }
             }
             me {
               childImageSharp {
-                fluid(quality: 90) {
-                  ...GatsbyImageSharpFluid
-                }
-              }
-            }
-            mehappy {
-              childImageSharp {
-                fluid(quality: 90) {
+                fluid(maxWidth: 160, quality: 90) {
                   ...GatsbyImageSharpFluid
                 }
               }

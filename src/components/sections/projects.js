@@ -187,16 +187,36 @@ const StyledProject = styled(motion.div)`
     }
   }
   .screenshot {
+    position: relative;
     width: 100%;
     max-width: 25rem;
     height: 15rem;
     border-radius: ${({ theme }) => theme.borderRadius};
     box-shadow: 0 0 2.5rem rgba(0, 0, 0, 0.16);
     transition: all 0.3s ease-out;
+    overflow: hidden;
+    .detail {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      visibility: hidden;
+      background: rgb(0 0 0 / 30%);
+      z-index: 1;
+      p {
+        width: 100%;
+        margin: 8.6rem auto;
+        text-align: center;
+        font-size: 2rem;
+      }
+    }
     &:hover {
       transform: translate3d(0px, -0.125rem, 0px);
       box-shadow: 0 0 2.5rem rgba(0, 0, 0, 0.32);
       cursor: pointer;
+      .detail {
+        visibility: visible;
+        color: white;
+      }
     }
     @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
       height: 18.75rem;
@@ -369,8 +389,14 @@ const Projects = ({ content, detail }) => {
                     <div
                       aria-label="External Link"
                       className="screenshot"
+                      role="button"
+                      tabIndex="0"
                       onClick={() => setDetailModal(frontmatter.position)}
                     >
+                      <div className="detail">
+                        <p>자세히</p>
+                      </div>
+
                       <Img
                         className="screenshot"
                         fluid={frontmatter.screenshot.childImageSharp.fluid}

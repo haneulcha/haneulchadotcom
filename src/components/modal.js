@@ -1,6 +1,9 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { MDXRenderer } from "gatsby-plugin-mdx"
+import Context from "../context"
+import Icon from "./icons"
+import { lightTheme, darkTheme } from "../styles/theme"
 
 const StyledModalOverlay = styled.div`
   position: fixed;
@@ -22,8 +25,7 @@ const StyledModalOverlay = styled.div`
       font-size: 1.5rem;
       line-height: 2.5rem;
       font-weight: 600;
-      color: ${({ theme }) => theme.colors.tertiary};
-      
+      color: ${({ theme }) => theme.colors.tertiary};      
   }
   h3 {
       font-size: 1rem;
@@ -39,8 +41,6 @@ const StyledModalOverlay = styled.div`
   strong {
     color: ${({ theme }) => theme.colors.tertiary};
   }
-
-
 //   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
 //     display: flex;
 //     justify-content: space-between;
@@ -51,50 +51,19 @@ const StyledModalOverlay = styled.div`
 //       color: ${({ theme }) => theme.colors.primary};
 //     }
 //   }
-  .nav-link {
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
-    position: relative;
-    margin: 0 0 0 1.25rem;
-    padding: 0;
-    &::before {
-      transition: 200ms ease-out;
-      height: 0.1563rem;
-      content: "";
-      position: absolute;
-      background-color: ${({ theme }) => theme.colors.primary};
-      width: 0%;
-      bottom: -0.125rem;
-    }
-    &:hover::before {
-      width: 100%;
-    }
-  }
-  .lang {
-    margin: 0;
-  }
-  .cta-btn {
-    width: auto;
-    height: auto;
-    font-weight: 700;
-    border-radius: ${({ theme }) => theme.borderRadius};
-    border: 0.125rem solid ${({ theme }) => theme.colors.primary};
-    background: ${({ theme }) => theme.colors.background};
-    transition: 20ms ease-out;
-    font-size: 1rem;
-    padding: 0.5rem 1.5rem;
-    margin: 0;
-    &:hover {
-      background: ${({ theme }) => theme.colors.tertiary};
-      color: ${({ theme }) => theme.colors.background};
-    }
   }
 `
-const StyledModalSide = styled.section`
-  width: 25%;
+const StyledModalWrapper = styled.div`
+  display: flex;
+  position: relative;
+  width: 70%;
   height: 90%;
-  padding: 1.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+`
+const StyledModalSide = styled.section`
+  width: 35%;
+  padding: 2.5rem;
   background: ${({ theme }) => theme.colors.background};
   overflow-y: scroll;
   overflow-scrolling: touch;
@@ -104,7 +73,7 @@ const StyledModalSide = styled.section`
   }
   z-index: 15;
   h1 {
-    margin: 4rem 0;
+    margin: 4rem 0 2.5rem;
     text-align: center;
     font-size: 4.5rem;
     letter-spacing: 0.5rem;
@@ -120,7 +89,7 @@ const StyledModalSide = styled.section`
     display: flex;
     font-family: Josefin Sans;
     font-weight: 600;
-    letter-spacing: 0.15rem;
+    letter-spacing: 0.1rem;
     & h3 {
       font-size: 1rem;
       margin-right: 1rem;
@@ -130,12 +99,29 @@ const StyledModalSide = styled.section`
       flex-wrap: wrap;
     }
     & li {
-      margin: 0 0.5rem 0.5rem 0;
-      padding: 0.3rem 0.5rem;
+      margin: 0 0.4rem 0.3rem 0;
+      padding: 0.25rem 0.45rem;
       border-radius: 0.5rem;
       background: ${({ theme }) => theme.colors.secondarydarker};
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: ${({ theme }) => theme.colors.background};
+    }
+  }
+  .nav {
+    text-align: center;
+    margin-bottom: 1rem;
+    a {
+      display: inline-block;
+      margin-right: 1rem;
+    }
+    svg {
+      width: 1.3rem;
+      height: 1.3rem;
+      transition: all 0.3s ease-out;
+      fill: ${({ theme }) => theme.colors.tertiary};
+    }
+    svg:hover {
+      fill: ${({ theme }) => theme.colors.primary};
     }
   }
   .date {
@@ -154,12 +140,10 @@ const StyledModalSide = styled.section`
 `
 
 const StyledModalContent = styled.section`
-  width: 45%;
-  min-width: 30rem;
-  height: 90%;
+  width: 65%;
   overflow-y: scroll;
   background: ${({ theme }) => theme.colors.background};
-  padding: 1.5rem;
+  padding: 2.5rem;
   z-index: 15;
   & ul {
     margin: 0.5rem auto;
@@ -178,9 +162,29 @@ const StyledModalContent = styled.section`
     z-index: 20;
     cursor: pointer;
   }
+  @media (hover: hover) {
+    scrollbar-color: ${({ theme }) => theme.colors.scrollBar} transparent; // Firefox only
+    &::-webkit-scrollbar {
+      display: block;
+      -webkit-appearance: none;
+    }
+    &::-webkit-scrollbar:horizontal {
+      height: 0.8rem;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      border: 0.2rem solid ${({ theme }) => theme.colors.background};
+      background-color: ${({ theme }) => theme.colors.scrollBar};
+    }
+    &::-webkit-scrollbar-track {
+      background-color: ${({ theme }) => theme.colors.background};
+      border-radius: 8px;
+    }
+  }
 `
 
 const Modal = ({ children, closeFn }) => {
+  const { darkMode } = useContext(Context).state
   const { body, frontmatter } = children
   const {
     date,
@@ -196,45 +200,84 @@ const Modal = ({ children, closeFn }) => {
 
   return (
     <StyledModalOverlay>
-      <StyledModalSide>
-        <p className="date">
-          {date} / {type}{" "}
-        </p>
-        <h1>{title}</h1>
-        <div className="stack">
-          <h3>front</h3>
-          <ul>
-            {front.map(stack => (
-              <li>{stack}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="stack">
-          <h3>back</h3>
-          <ul>
-            {back.map(stack => (
-              <li>{stack}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="stack">
-          <h3>deploy</h3>
-          <ul>
-            {deploy.map(stack => (
-              <li>{stack}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="screenshot">
-          <img src={gif} alt="screenshot gif" border="0" />
-        </div>
-      </StyledModalSide>
-      <StyledModalContent>
-        <span className="close-btn" onClick={() => closeFn(0)}>
-          x
-        </span>
-        <MDXRenderer>{body}</MDXRenderer>
-      </StyledModalContent>
+      <StyledModalWrapper>
+        <StyledModalSide>
+          <p className="date">
+            {date} / {type}{" "}
+          </p>
+          <h1>{title}</h1>
+          <div className="nav">
+            {external && (
+              <a
+                href={external}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                aria-label="External Link"
+              >
+                <Icon
+                  name="external"
+                  color={
+                    darkMode
+                      ? darkTheme.colors.subtext
+                      : lightTheme.colors.subtext
+                  }
+                />
+              </a>
+            )}
+            {github && (
+              <a
+                href={github}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                aria-label="Github Link"
+              >
+                <Icon
+                  name="github"
+                  color={
+                    darkMode
+                      ? darkTheme.colors.subtext
+                      : lightTheme.colors.subtext
+                  }
+                />
+              </a>
+            )}
+          </div>
+          <div className="stack">
+            <h3>front</h3>
+            <ul>
+              {front.map(stack => (
+                <li>{stack}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="stack">
+            <h3>back</h3>
+            <ul>
+              {back.map(stack => (
+                <li>{stack}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="stack">
+            <h3>deploy</h3>
+            <ul>
+              {deploy.map(stack => (
+                <li>{stack}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="screenshot">
+            <img src={gif} alt="screenshot gif" border="0" />
+          </div>
+        </StyledModalSide>
+        <StyledModalContent>
+          <span className="close-btn" onClick={() => closeFn(0)}>
+            x
+          </span>
+
+          <MDXRenderer>{body}</MDXRenderer>
+        </StyledModalContent>
+      </StyledModalWrapper>
     </StyledModalOverlay>
   )
 }
