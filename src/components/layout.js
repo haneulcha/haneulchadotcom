@@ -28,7 +28,7 @@ const Layout = ({ content, children, lang }) => {
   // Enables dark mode if the user's OS has an active dark theme
   const darkModeEnabled = useDarkMode()
   const theme = darkModeEnabled ? darkTheme : lightTheme
-  console.log("lang", lang)
+
   return (
     <StyledLayoutWrapper>
       <ThemeProvider theme={theme}>

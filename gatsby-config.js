@@ -38,7 +38,7 @@ module.exports = {
       options: {
         name: siteTitle,
         short_name: siteShortTitle,
-        start_url: `/`,
+        start_url: `/kor`,
         background_color: colors.lightTheme.background,
         theme_color: colors.lightTheme.primary,
         display: `minimal-ui`,

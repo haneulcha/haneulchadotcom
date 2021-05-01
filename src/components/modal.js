@@ -245,24 +245,24 @@ const Modal = ({ children, closeFn }) => {
           <div className="stack">
             <h3>front</h3>
             <ul>
-              {front.map(stack => (
-                <li>{stack}</li>
+              {front.map((stack, i) => (
+                <li key={`${i}-f`}>{stack}</li>
               ))}
             </ul>
           </div>
           <div className="stack">
             <h3>back</h3>
             <ul>
-              {back.map(stack => (
-                <li>{stack}</li>
+              {back.map((stack, i) => (
+                <li key={`${i}-b`}>{stack}</li>
               ))}
             </ul>
           </div>
           <div className="stack">
             <h3>deploy</h3>
             <ul>
-              {deploy.map(stack => (
-                <li>{stack}</li>
+              {deploy.map((stack, i) => (
+                <li key={`${i}-d`}>{stack}</li>
               ))}
             </ul>
           </div>
