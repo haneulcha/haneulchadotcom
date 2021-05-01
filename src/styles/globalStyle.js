@@ -5,7 +5,18 @@ const GlobalStyle = createGlobalStyle`
     
     // Import normalize.css
     ${modernNormalize}
-
+    @font-face {
+        font-family: 'GongGothicBold';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicBold.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'GongGothicLight';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicLight.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
     * {
         box-sizing: border-box;
     }
@@ -23,7 +34,8 @@ const GlobalStyle = createGlobalStyle`
         background-color: ${({ theme }) => theme.colors.background};
         color: ${({ theme }) => theme.colors.text};
         font-size: 1rem;
-        font-family: ${({ theme }) => theme.fonts.primary};
+        font-family: ${({ lang, theme }) =>
+          lang === "kor" ? theme.fonts.primary : theme.fonts.secondary};
         line-height: 1.5rem;
         font-weight: 400;
         text-rendering: optimizeLegibility;

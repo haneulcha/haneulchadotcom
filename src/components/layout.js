@@ -24,15 +24,15 @@ const StyledLayoutWrapper = styled.div`
   grid-template-columns: 100%;
 `
 
-const Layout = ({ content, children }) => {
+const Layout = ({ content, children, lang }) => {
   // Enables dark mode if the user's OS has an active dark theme
   const darkModeEnabled = useDarkMode()
   const theme = darkModeEnabled ? darkTheme : lightTheme
-
+  console.log("lang", lang)
   return (
     <StyledLayoutWrapper>
       <ThemeProvider theme={theme}>
-        <GlobalStyle />
+        <GlobalStyle lang={lang} />
         <Header content={content} />
         <main id="main-content">{children}</main>
         <Footer />

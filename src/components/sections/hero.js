@@ -15,11 +15,12 @@ import { lightTheme, darkTheme } from "../../styles/theme"
 const StyledSection = styled.section`
   width: 100%;
   height: auto;
-  background: ${({ theme }) => theme.colors.background};
+  background: transparent;
 `
 
 const StyledContentWrapper = styled(ContentWrapper)`
   && {
+    position: relative;
     width: 100%;
     height: 100%;
     min-height: 60vh;
@@ -46,6 +47,8 @@ const StyledContentWrapper = styled(ContentWrapper)`
         height: 3rem;
       }
     }
+    .emoji:hover {
+    }
     .title {
       margin-bottom: 1.5rem;
       font-color: ${({ theme }) => theme.colors.primary};
@@ -60,6 +63,46 @@ const StyledContentWrapper = styled(ContentWrapper)`
     .description {
       font-size: 1.125rem;
       margin-bottom: 2rem;
+    }
+    .hero-img {
+      position: absolute;
+      top: 15vh;
+      right: 2.5rem;
+      width: 20rem;
+      height: 20rem;
+      z-index: -1;
+      & .bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        & .code {
+          height: 100%;
+        }
+      }
+      & .me {
+        display: block;
+        width: 10rem;
+        margin: auto;
+        padding-top: 7rem;
+        filter: drop-shadow(0px 3px 5px ${({ theme }) => theme.colors.text});
+        z-index: 0;
+        & .me-happy {
+          display: none;
+          width: 185%;
+          bottom: 4rem;
+        }
+      }
+      // &:hover {
+      //   z-index: 100;
+      //   & .me .me-sad {
+      //     display: none;
+      //   }
+      //   & .me .me-happy {
+      //     display: block;
+      //   }
+      // }
     }
   }
 `
@@ -108,6 +151,7 @@ const Hero = ({ content }) => {
   return (
     <StyledSection id="hero">
       {!isIntroDone && <SplashScreen />}
+
       <StyledContentWrapper>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={gControls}>
           <h1 className="title">
@@ -134,6 +178,25 @@ const Hero = ({ content }) => {
           </h3>
           <div className="description">
             <MDXRenderer>{body}</MDXRenderer>
+          </div>
+          <div className="hero-img">
+            <div className="bg">
+              <Img
+                className="code"
+                fluid={frontmatter.bg.childImageSharp.fluid}
+              />
+            </div>
+
+            <div className="me">
+              <Img
+                className="me-sad"
+                fluid={frontmatter.me.childImageSharp.fluid}
+              />
+              <Img
+                className="me-happy"
+                fluid={frontmatter.mehappy.childImageSharp.fluid}
+              />
+            </div>
           </div>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 20 }} animate={sControls}>

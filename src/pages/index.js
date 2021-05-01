@@ -13,6 +13,8 @@ import Projects from "../components/sections/projects"
 import Contact from "../components/sections/contact"
 import { seoTitleSuffix } from "../../config"
 
+import { ParallaxProvider } from "react-scroll-parallax"
+
 const IndexPage = ({ data }) => {
   const { frontmatter } = data.index.edges[0].node
   const { seoTitle, useSeoTitleSuffix, useSplashScreen } = frontmatter
@@ -27,22 +29,27 @@ const IndexPage = ({ data }) => {
 
   return (
     <GlobalStateProvider initialState={globalState}>
-      <Layout content={data.navlinks.edges}>
-        <SEO
-          title={
-            useSeoTitleSuffix
-              ? `${seoTitle} - ${seoTitleSuffix}`
-              : `${seoTitle}`
-          }
-        />
-        <Hero content={data.hero.edges} />
-        {/* Articles is populated via Medium RSS Feed fetch */}
-        {/* <Articles /> */}
-        <About content={data.about.edges} />
-        <Interests content={data.interests.edges} />
-        <Projects content={data.projects.edges} />
-        <Contact content={data.contact.edges} />
-      </Layout>
+      <ParallaxProvider>
+        <Layout content={data.navlinks.edges} lang="en">
+          <SEO
+            title={
+              useSeoTitleSuffix
+                ? `${seoTitle} - ${seoTitleSuffix}`
+                : `${seoTitle}`
+            }
+          />
+          <Hero content={data.hero.edges} />
+          {/* Articles is populated via Medium RSS Feed fetch */}
+          {/* <Articles /> */}
+          <About content={data.about.edges} />
+          <Interests content={data.interests.edges} />
+          <Projects
+            content={data.projects.edges}
+            detail={data.projectsdetail.edges}
+          />
+          <Contact content={data.contact.edges} />
+        </Layout>
+      </ParallaxProvider>
     </GlobalStateProvider>
   )
 }
@@ -99,6 +106,27 @@ export const pageQuery = graphql`
             title
             subtitlePrefix
             subtitle
+            bg {
+              childImageSharp {
+                fluid(quality: 90) {
+                  ...GatsbyImageSharpFluid
+                }
+              }
+            }
+            me {
+              childImageSharp {
+                fluid(quality: 90) {
+                  ...GatsbyImageSharpFluid
+                }
+              }
+            }
+            mehappy {
+              childImageSharp {
+                fluid(quality: 90) {
+                  ...GatsbyImageSharpFluid
+                }
+              }
+            }
             icon {
               childImageSharp {
                 fluid(maxWidth: 60, quality: 90) {
@@ -183,6 +211,28 @@ export const pageQuery = graphql`
             buttonVisible
             buttonUrl
             buttonText
+          }
+        }
+      }
+    }
+    projectsdetail: allMdx(
+      filter: { fileAbsolutePath: { regex: "/index/modal/projects/en/" } }
+      sort: { fields: [frontmatter___position], order: ASC }
+    ) {
+      edges {
+        node {
+          body
+          frontmatter {
+            date
+            title
+            type
+            external
+            github
+            gif
+            front
+            back
+            deploy
+            position
           }
         }
       }

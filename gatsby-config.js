@@ -9,6 +9,7 @@ const {
 } = require("./config")
 
 module.exports = {
+  flags: { PRESERVE_WEBPACK_CACHE: true },
   siteMetadata: {
     author: author,
     title: siteTitle,

@@ -37,7 +37,7 @@ const StyledContentWrapper = styled(ContentWrapper)`
     }
     .text-content {
       width: 100%;
-      max-width: 32.25rem;
+      // max-width: 32.25rem;
       font-size: 0.95rem;
     }
     .image-content {
@@ -99,17 +99,18 @@ const About = ({ content }) => {
             <MDXRenderer>{body}</MDXRenderer>
           </div>
         </motion.div>
-        <motion.div
+        {/* <motion.div
           className="image-content"
           ref={iRef}
           initial={{ opacity: 0, x: 20 }}
           animate={iControls}
         >
-          <Img
+
+           <Img
             className="about-author"
             fluid={frontmatter.image.childImageSharp.fluid}
-          />
-        </motion.div>
+          /> 
+        </motion.div> */}
       </StyledContentWrapper>
     </StyledSection>
   )

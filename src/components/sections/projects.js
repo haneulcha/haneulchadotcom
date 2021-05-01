@@ -12,6 +12,7 @@ import Underlining from "../../styles/underlining"
 import Button from "../../styles/button"
 import Icon from "../../components/icons"
 import { lightTheme, darkTheme } from "../../styles/theme"
+import StyledModal from "../modal"
 
 const StyledSection = styled.section`
   width: 100%;
@@ -203,10 +204,16 @@ const StyledProject = styled(motion.div)`
   }
 `
 
-const Projects = ({ content }) => {
+const Projects = ({ content, detail }) => {
   const { darkMode } = useContext(Context).state
   const sectionDetails = content[0].node
   const projects = content.slice(1, content.length)
+
+  const [detailModal, setDetailModal] = useState(0)
+
+  const projectsDetail = detail.find(
+    item => item.node.frontmatter.position === detailModal
+  )
 
   // visibleProject is needed to show which project is currently
   // being viewed in the horizontal slider on mobile and tablet
@@ -359,7 +366,17 @@ const Projects = ({ content }) => {
                   <VisibilitySensor
                     onChange={() => setVisibleProject(frontmatter.position)}
                   >
-                    <a
+                    <div
+                      aria-label="External Link"
+                      className="screenshot"
+                      onClick={() => setDetailModal(frontmatter.position)}
+                    >
+                      <Img
+                        className="screenshot"
+                        fluid={frontmatter.screenshot.childImageSharp.fluid}
+                      />
+                    </div>
+                    {/* <a
                       href={frontmatter.external}
                       target="_blank"
                       rel="nofollow noopener noreferrer"
@@ -369,8 +386,9 @@ const Projects = ({ content }) => {
                       <Img
                         className="screenshot"
                         fluid={frontmatter.screenshot.childImageSharp.fluid}
+                        onClick={() => setDetailModal(frontmatter.position)}
                       />
-                    </a>
+                    </a> */}
                   </VisibilitySensor>
                 </StyledProject>
               </VisibilitySensor>
@@ -394,12 +412,25 @@ const Projects = ({ content }) => {
           </Button>
         </motion.a>
       )}
+      {detailModal && (
+        <StyledModal closeFn={setDetailModal}>
+          {projectsDetail.node}
+        </StyledModal>
+      )}
     </StyledSection>
   )
 }
 
 Projects.propTypes = {
   content: PropTypes.arrayOf(
+    PropTypes.shape({
+      node: PropTypes.shape({
+        body: PropTypes.string.isRequired,
+        frontmatter: PropTypes.object.isRequired,
+      }).isRequired,
+    }).isRequired
+  ).isRequired,
+  detail: PropTypes.arrayOf(
     PropTypes.shape({
       node: PropTypes.shape({
         body: PropTypes.string.isRequired,

@@ -1,21 +1,23 @@
 module.exports = {
   //-- SITE SETTINGS -----
   author: "@haneulcha",
-  siteTitle: "Haneul Cha's Portfolio",
+  siteTitle: "Haneul Cha - Portfolio",
   siteShortTitle: "ㅎ", // Used as logo text in header, footer, and splash screen
-  siteDescription: "Haneul Cha, a junior frontend developer, shows her works",
+  siteDescription: "Haneul Cha, a junior frontend developer, and her works",
   siteUrl: "https://haneulcha.com",
   siteLanguage: "en_US",
   siteIcon: "content/portfolio-favicon.png", // Relative to gatsby-config file
-  seoTitleSuffix: "Haneul Cha's Portfolio", // SEO title syntax will be e.g. "Imprint - {seoTitleSuffix}"
+  seoTitleSuffix: "Haneul Cha - Portfolio", // SEO title syntax will be e.g. "Imprint - {seoTitleSuffix}"
 
   // -- THEME SETTINGS -----
   colors: {
     lightTheme: {
       primary: "#0A0A0A",
       secondary: "#6CB865", //Bud Green
+      secondarydarker: "#3fa335",
       tertiary: "#C43140", // CARDINAL
       quaternary: "#0269B3", // HONOLULU BLUE
+      quaternaryshadow: "#72C3FE",
       text: "#040F0F", // Rich Black FOGRA 39
       subtext: "#555555",
       background: "#e9ecef", // CULTURED
@@ -38,7 +40,8 @@ module.exports = {
     },
   },
   fonts: {
-    primary: "Roboto, Arial, sans-serif",
+    primary: "GongGothicLight, Roboto, Josefin Sans, Arial, sans-serif",
+    secondary: "Roboto, Josefin Sans, Arial, sans-serif",
   },
 
   //-- ARTICLES SECTION SETTINGS -----

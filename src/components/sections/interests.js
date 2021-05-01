@@ -110,9 +110,8 @@ const StyledInterests = styled.div`
       margin-right: 0.5rem;
     }
     .title {
-      font-size: 1.2rem;
       font-weight: 600;
-      margin: 1rem 0;
+      margin: 0.75rem 0;
     }
     .description {
       font-size: 0.9rem;
