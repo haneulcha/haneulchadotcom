@@ -38,6 +38,12 @@ const StyledContentWrapper = styled(ContentWrapper)`
       width: 20rem;
       height: 20rem;
       z-index: -1;
+      @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+        top: 20rem;
+        right: 3rem;
+        width: 7rem;
+        height: 7rem;
+      }
       & .bg {
         position: absolute;
         width: 100%;
@@ -47,6 +53,9 @@ const StyledContentWrapper = styled(ContentWrapper)`
         & .code {
           height: 100%;
         }
+        @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+          visibility: hidden;
+        }
       }
       & .me {
         display: block;
@@ -55,6 +64,10 @@ const StyledContentWrapper = styled(ContentWrapper)`
         padding-top: 7rem;
         filter: drop-shadow(0px 3px 5px ${({ theme }) => theme.colors.text});
         z-index: 0;
+        @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+          width: 5rem;
+          padding-top: 0.5rem;
+        }
       }
     }
     .greetings {

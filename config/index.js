@@ -65,7 +65,7 @@ module.exports = {
     },
     {
       name: "Blog",
-      url: "https://haneulcha.github.io/",
+      url: "https://kicksky.tistory.com/",
     },
   ],
 

@@ -60,6 +60,10 @@ const StyledModalWrapper = styled.div`
   height: 90%;
   border-radius: 0.5rem;
   overflow: hidden;
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+    width: 80%;
+    flex-direction: column;
+  }
 `
 const StyledModalSide = styled.section`
   width: 35%;
@@ -137,6 +141,14 @@ const StyledModalSide = styled.section`
       box-shadow: 5px 5px 5px rgb(0 0 0 / 34%);
     }
   }
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+    width: 100%;
+    padding: 1rem;
+    h1 {
+      margin: 2rem 0 1rem;
+      font-size: 2.5rem;
+    }
+  }
 `
 
 const StyledModalContent = styled.section`
@@ -180,6 +192,10 @@ const StyledModalContent = styled.section`
       background-color: ${({ theme }) => theme.colors.background};
       border-radius: 8px;
     }
+  }
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+    width: 100%;
+    padding: 1rem;
   }
 `
 
