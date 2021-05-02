@@ -10,25 +10,27 @@ const StyledModalOverlay = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;  
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1;
-  font-size: .85rem;
-  h1, h2, h3 {
-      margin: 0;
+  font-size: 0.85rem;
+  h1,
+  h2,
+  h3 {
+    margin: 0;
   }
   h2 {
-      margin-top: 1.5rem;
-      font-size: 1.5rem;
-      line-height: 2.5rem;
-      font-weight: 600;
-      color: ${({ theme }) => theme.colors.tertiary};      
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+    color: ${({ theme }) => theme.colors.tertiary};
   }
   h3 {
-      font-size: 1rem;
+    font-size: 1rem;
   }
   ul,
   li {
@@ -36,21 +38,10 @@ const StyledModalOverlay = styled.div`
     padding: 0;
   }
   hr {
-      margin: 0.5rem auto
+    margin: 0.5rem auto;
   }
   strong {
     color: ${({ theme }) => theme.colors.tertiary};
-  }
-//   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
-//     display: flex;
-//     justify-content: space-between;
-//     align-items: center;
-//     width: 23.25rem;
-//     background: ${({ theme }) => theme.colors.background};
-//     a {
-//       color: ${({ theme }) => theme.colors.primary};
-//     }
-//   }
   }
 `
 const StyledModalWrapper = styled.div`
@@ -143,10 +134,14 @@ const StyledModalSide = styled.section`
   }
   @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
     width: 100%;
+    height: 86rem;
     padding: 1rem;
     h1 {
-      margin: 2rem 0 1rem;
+      margin: 1rem 0 1rem;
       font-size: 2.5rem;
+    }
+    .nav {
+      margin-bottom: 0;
     }
   }
 `

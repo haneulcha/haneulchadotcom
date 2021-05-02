@@ -438,10 +438,12 @@ const Projects = ({ content, detail }) => {
           </Button>
         </motion.a>
       )}
-      {detailModal && (
+      {detailModal ? (
         <StyledModal closeFn={setDetailModal}>
           {projectsDetail.node}
         </StyledModal>
+      ) : (
+        undefined
       )}
     </StyledSection>
   )
