@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 
 import styles from '@/styles/Home.module.css';
 
@@ -16,7 +17,9 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          <div className={styles.typo1}>ㅊ</div>
+          <Link href="/about" as="/about">
+            <div className={styles.typo1}>ㅊ</div>
+          </Link>
           <a
             href="https://kicksky.tistory.com"
             target="_blank"

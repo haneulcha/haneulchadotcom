@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+.main {
+  overflow: auto;
+}
+
+.contentWrapper {
+  max-width: 1024px;
+  background: #fff;
+  margin: 8vh auto;
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  box-shadow: 0px 0px 20px #acacac;
+  font-family: HelveticaNeue, 'Helvetica Neue', 'Lucida Grande', Arial,
+    sans-serif;
+}
+
+.titlebar {
+  position: relative;
+  padding: 5px 0;
+  background: linear-gradient(to right, #ebebeb, #d5d5d5);
+  border-top: 1px solid #f3f1f3;
+  border-bottom: 1px solid #b1aeb1;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+  color: #4d494d;
+  font-size: 11pt;
+  user-select: none;
+  cursor: default;
+}
+
+.buttonWrapper {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  column-gap: 7px;
+  padding-left: 12px;
+}
+
+.buttonWrapper button {
+  width: 10px;
+  line-height: 10px;
+  border-radius: 50%;
+}
+
+.inlineContent {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 14px;
+  font-size: 10px;
+  min-width: 8px;
+}
+
+.buttons:hover a {
+  visibility: visible;
+}
+
+.close {
+  background: #ff6057;
+  border: 1px solid #e14640;
+}
+
+.buttons .close:active {
+  background: #c14645;
+  border: 1px solid #b03537;
+}
+
+.buttons .close:active .closebutton {
+  color: #4e0002;
+}
+
+.buttons .closebutton {
+  color: #820005;
+  visibility: hidden;
+  cursor: default;
+}
+
+.minimize {
+  background: #ffbd2e;
+  border: 1px solid #dfa123;
+}
+
+.buttons .minimize:active {
+  background: #c08e38;
+  border: 1px solid #af7c33;
+}
+
+.minimize:active .minimizebutton {
+  color: #5a2607;
+}
+
+.minimizebutton {
+  color: #9a5518;
+  visibility: hidden;
+  cursor: default;
+}
+
+.zoom {
+  background: #27c93f;
+  border: 1px solid #1dad2b;
+}
+
+.buttons .zoom:active {
+  background: #029740;
+  border: 1px solid #128435;
+}
+
+.buttons .zoom:active .zoombutton {
+  color: #003107;
+}
+
+.buttons .zoombutton {
+  color: #006519;
+  visibility: hidden;
+  cursor: default;
+}
+
+.info {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+}
+
+.content {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 5rem 10rem;
+}
+
+.content h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  letter-spacing: 4px;
+}
+
+.content h2 {
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  font-size: 1.65rem;
+}
+
+.content h3 {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.content h4 {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+}
+
+.content h4 + p,
+.content h4 + p + p {
+  font-size: 0.85rem;
+}
+
+.content p {
+  margin: 0.2rem 0;
+}
+
+.content ul {
+  padding-left: 1rem;
+  list-style: none;
+}
+
+.content details {
+  overflow: auto;
+  margin-bottom: 0.5rem;
+}
+
+.content details > summary {
+  margin: 0.35rem 0 0.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.content details > summary::before {
+  content: '▸ ';
+}
+
+.content details ul {
+  padding-left: 1.75rem;
+  list-style: none;
+}
+.content details li {
+  margin-bottom: 0.1rem;
+  font-size: 0.82rem;
+}
+
+.content ul li ul li::marker {
+  content: '・ ';
+  color: gray;
+}
