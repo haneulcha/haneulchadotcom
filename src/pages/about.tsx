@@ -22,7 +22,7 @@ function About() {
         <article className={styles.content}>
           <h1>차하늘</h1>
 
-          <h2>_소개</h2>
+          <h2>소개</h2>
           <p>
             나의 일을 스스로 정의하고자 하는 프론트엔드 개발자 차하늘 입니다.
             개발자와 코딩이라는, 주어진 직책과 업무에 얽매이지 않을 때 더 좋은
@@ -69,7 +69,7 @@ function About() {
             </div>
           </section>
 
-          <h2>_경력</h2>
+          <h2>경력</h2>
           <h3>데브언리밋</h3>
           <p>
             프론트엔드 담당
@@ -79,90 +79,114 @@ function About() {
             Next.js, Typescript, emotion, zustand
           </p>
 
+          <section className={styles.experienceSection}>
+            <span>2021. 7 ~ </span>
+            <h4>
+              <a
+                href="https://www.sparky.tv"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Sparky.tv
+              </a>
+              &nbsp;기능 개발 및 UI/UX 개선
+            </h4>
+
+            <table>
+              <tbody>
+                <tr>
+                  <th>2021. 7 ~</th>
+                  <th>
+                    모션 트래킹 기반의 인터랙티브 영상을 통해 유저가 운동과
+                    댄스를 경험하는 글로벌 홈 트레이닝 플랫폼
+                  </th>
+                </tr>
+                <tr>
+                  <th>기술</th>
+                  <th>
+                    Next.js(SSR), Serverless Framework (AWS Lambda@edge), styled
+                    component, mobX, zustand, tfjs, hls.js
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              모션 트래킹 기반의 인터랙티브 영상을 통해 유저가 운동과 댄스를
+              경험하는 글로벌 홈 트레이닝 플랫폼
+            </p>
+
+            <p>
+              기술 스택: Next.js(SSR), Serverless Framework (AWS Lambda@edge),
+              styled component, mobX, zustand, tfjs, hls.js
+            </p>
+
+            <ul>
+              <li>
+                <details open>
+                  <summary>유저 사용성과 재방문을 위한 기능 개발</summary>
+                  <ul>
+                    <li>
+                      UX를 고려한 카테고리 및 태그 필터, Next.js의 Dynamic
+                      Route를 활용한 유저 및 크리에이터 개인 페이지, 게임성을
+                      살리는 다크 테마 등 UI 디자인 전환
+                    </li>
+                    <li>
+                      이벤트 조건 및 진행 사이클을 고려한 이벤트 및 랭킹 기능 및
+                      관련 UI 개발
+                    </li>
+                    <li>
+                      유저 경험과 직접 맞닿는 작업들에 대해 디자인 팀과&nbsp;
+                      <a
+                        href="https://kicksky.tistory.com/103"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        긴밀한 협업
+                      </a>
+                      &nbsp;및 피드백 진행
+                    </li>
+                  </ul>
+                </details>
+              </li>
+
+              <li>
+                <details open>
+                  <summary>지속적인 UI/UX 개선</summary>
+                  <ul>
+                    <li>
+                      웹 표준과 접근성을 준수하고 i18n를 고려한 UI/UX 개선
+                    </li>
+                    <li>시맨틱 마크업 작성과 최신 CSS 스펙을 최대한 반영 </li>
+                  </ul>
+                </details>
+              </li>
+
+              <li>
+                <details open>
+                  <summary>데이터 및 로그 수집</summary>
+                  <ul>
+                    <li>
+                      에러 로그 수집을 위한
+                      <a
+                        href="https://kicksky.tistory.com/111"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        &nbsp;Sentry 도입
+                      </a>
+                      &nbsp;및 로그 관리
+                    </li>
+                    <li>
+                      서비스 내 유저 상호작용 이벤트 추적 및 데이터 수집을 위한
+                      구글 태그 매니저 관리
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </section>
           <h4>
-            <a
-              href="https://www.sparky.tv"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Sparky.tv
-            </a>
-            &nbsp;기능 개발 및 UI/UX 개선 (2021. 7 ~ )
-          </h4>
-
-          <p>
-            모션 트래킹 기반의 인터랙티브 영상을 통해 유저가 운동과 댄스를
-            경험하는 글로벌 홈 트레이닝 플랫폼
-          </p>
-
-          <p>
-            기술 스택: Next.js(SSR), AWS Lambda@edge, styled component, mobX,
-            zustand, tfjs, hls.js
-          </p>
-
-          <ul>
-            <li>
-              <details open>
-                <summary>유저 사용성과 재방문율을 위한 기능 개발</summary>
-                <ul>
-                  <li>
-                    UX를 고려한 카테고리 및 태그 필터, Next.js의 Dynamic Route를
-                    활용한 유저 및 크리에이터 개인 페이지, 게임성을 살리는 다크
-                    테마 등 UI 디자인 전환
-                  </li>
-                  <li>
-                    이벤트 조건 및 진행 사이클을 고려한 이벤트 및 랭킹 기능 및
-                    관련 UI 개발
-                  </li>
-                  <li>
-                    유저 경험과 직접 맞닿는 작업들에 대해 디자인 팀과&nbsp;
-                    <a
-                      href="https://kicksky.tistory.com/103"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      긴밀한 협업
-                    </a>
-                    &nbsp;및 피드백 진행
-                  </li>
-                </ul>
-              </details>
-            </li>
-
-            <li>
-              <details open>
-                <summary>지속적인 UI/UX 개선</summary>
-                <ul>
-                  <li>웹 표준과 접근성을 준수하고 i18n를 고려한 UI/UX 개선</li>
-                  <li>시맨틱 마크업 작성과 최신 CSS 스펙을 최대한 반영 </li>
-                </ul>
-              </details>
-            </li>
-
-            <li>
-              <details open>
-                <summary>데이터 및 로그 수집</summary>
-                <ul>
-                  <li>
-                    에러 로그 수집을 위한
-                    <a
-                      href="https://kicksky.tistory.com/111"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      &nbsp;Sentry 도입
-                    </a>
-                    &nbsp;및 로그 관리
-                  </li>
-                  <li>
-                    서비스 내 유저 상호작용 이벤트 추적 및 데이터 수집을 위한
-                    구글 태그 매니저 관리
-                  </li>
-                </ul>
-              </details>
-            </li>
-          </ul>
-          <h4>
+            <span>2022. 7 ~ </span>
             <a
               href="https://studio.sparky.tv/"
               target="_blank"
@@ -170,7 +194,7 @@ function About() {
             >
               Sparky.tv Studio
             </a>
-            &nbsp;코드 개선 (2022. 7 ~ )
+            &nbsp;코드 개선
           </h4>
 
           <p>
@@ -258,7 +282,7 @@ function About() {
             </li>
           </ul>
 
-          <h2>_개인 프로젝트</h2>
+          <h2>개인 프로젝트</h2>
           <h3>Galpi | 갈피 (2020. 7 ~ 12)</h3>
           <p>
             좋아하는 책의 글귀를 발췌하고 편집하여 이미지 카드로 업로드 할 수
@@ -273,7 +297,7 @@ function About() {
           </p>
           <p>기술 스택: React, Apollo Server/Client, Open API, KakaoMap API</p>
 
-          <h2>_언어</h2>
+          <h2>언어</h2>
           <ul>
             <li>
               영어: TOEIC 980. 공식 문서와 스택오버플로우 등 원문으로 필요한

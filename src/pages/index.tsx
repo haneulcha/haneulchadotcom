@@ -18,7 +18,7 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>
           <Link href="/about" as="/about">
-            <div className={styles.typo1}>ㅊ</div>
+            <a className={styles.typo1}>ㅊ</a>
           </Link>
           <a
             href="https://kicksky.tistory.com"

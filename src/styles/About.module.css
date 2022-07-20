@@ -140,6 +140,13 @@
   margin-bottom: 1rem;
   font-size: 1.65rem;
 }
+.content h2::after {
+  content: '.';
+  margin-left: 2px;
+  font-size: 2.5rem;
+  line-height: 1rem;
+  color: #ad1d1d;
+}
 
 .content h3 {
   margin-top: 0.5rem;
@@ -147,13 +154,38 @@
 }
 
 .content h4 {
-  margin-top: 0.75rem;
+  /* margin-top: 0.75rem; */
   font-size: 1rem;
+}
+
+.content h4 span {
+  max-width: 3rem;
+  font-size: 0.9rem;
+}
+.content h4 span::after {
+  content: '|';
+  margin: 0 5px;
 }
 
 .content h4 + p,
 .content h4 + p + p {
   font-size: 0.85rem;
+}
+
+.content table {
+  /* border: 1px solid #acacac; */
+  font-size: 0.75rem;
+}
+
+.contet table tr:first-of-type {
+  border-bottom: 1px solid #acacac;
+}
+.content table tr:first-of-type th {
+  min-width: 2rem;
+}
+.content table th {
+  text-align: left;
+  font-weight: 300;
 }
 
 .content p {
@@ -193,4 +225,13 @@
 .content ul li ul li::marker {
   content: '・ ';
   color: gray;
+}
+
+.experienceSection {
+  margin-top: 1rem;
+}
+
+.experienceSection > span {
+  max-width: 3rem;
+  font-size: 0.8rem;
 }
