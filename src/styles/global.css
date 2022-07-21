@@ -23,7 +23,9 @@ p {
 button {
   all: unset;
   line-height: 1;
+  cursor: pointer;
 }
+
 a {
   color: #ad1d1d;
   text-decoration: none;

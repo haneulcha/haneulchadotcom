@@ -2,17 +2,31 @@
 
 .main {
   overflow: auto;
+  color: #171a21;
+}
+
+.main a {
+  color: #2c6e49;
+}
+.main a:hover {
+  color: #4c956c;
 }
 
 .contentWrapper {
   max-width: 1024px;
-  background: #fff;
-  margin: 8vh auto;
+  background: #fbfcff;
+  margin: 6vh auto;
   border: 1px solid #acacac;
   border-radius: 6px;
   box-shadow: 0px 0px 20px #acacac;
   font-family: HelveticaNeue, 'Helvetica Neue', 'Lucida Grande', Arial,
     sans-serif;
+}
+
+@media (max-width: 1024px) {
+  .contentWrapper {
+    margin: 0 auto;
+  }
 }
 
 .titlebar {
@@ -116,17 +130,18 @@
   cursor: default;
 }
 
-.info {
-  margin: 1rem 0 0;
-  font-size: 0.8rem;
-}
-
 .content {
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 15px;
   font-weight: 400;
   line-height: 1.5;
-  padding: 5rem 10rem;
+  padding: 6rem 9rem 8rem;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    padding: 9vw 10vw 10vw;
+  }
 }
 
 .content h1 {
@@ -135,17 +150,20 @@
   letter-spacing: 4px;
 }
 
+.content > table:first-of-type {
+  margin-top: 2rem;
+}
+
 .content h2 {
-  margin-top: 2.25rem;
-  margin-bottom: 1rem;
+  margin: 2.5rem 0 1rem -1.3rem;
   font-size: 1.65rem;
 }
-.content h2::after {
-  content: '.';
-  margin-left: 2px;
+
+.content h2::before {
+  content: '˙';
   font-size: 2.5rem;
   line-height: 1rem;
-  color: #ad1d1d;
+  color: #2c6e49;
 }
 
 .content h3 {
@@ -153,73 +171,8 @@
   font-size: 1.25rem;
 }
 
-.content h4 {
-  /* margin-top: 0.75rem; */
-  font-size: 1rem;
-}
-
-.content h4 span {
-  max-width: 3rem;
-  font-size: 0.9rem;
-}
-.content h4 span::after {
-  content: '|';
-  margin: 0 5px;
-}
-
-.content h4 + p,
-.content h4 + p + p {
-  font-size: 0.85rem;
-}
-
-.content table {
-  /* border: 1px solid #acacac; */
-  font-size: 0.75rem;
-}
-
-.contet table tr:first-of-type {
-  border-bottom: 1px solid #acacac;
-}
-.content table tr:first-of-type th {
-  min-width: 2rem;
-}
-.content table th {
-  text-align: left;
-  font-weight: 300;
-}
-
 .content p {
   margin: 0.2rem 0;
-}
-
-.content ul {
-  padding-left: 1rem;
-  list-style: none;
-}
-
-.content details {
-  overflow: auto;
-  margin-bottom: 0.5rem;
-}
-
-.content details > summary {
-  margin: 0.35rem 0 0.25rem;
-  font-weight: 500;
-  cursor: pointer;
-  list-style: none;
-}
-
-.content details > summary::before {
-  content: '▸ ';
-}
-
-.content details ul {
-  padding-left: 1.75rem;
-  list-style: none;
-}
-.content details li {
-  margin-bottom: 0.1rem;
-  font-size: 0.82rem;
 }
 
 .content ul li ul li::marker {
@@ -227,11 +180,133 @@
   color: gray;
 }
 
+/* ---------------------------- */
+
+.info {
+  min-width: 10rem;
+  border-collapse: collapse;
+  margin-top: 1.25rem;
+  font-size: 14px;
+}
+
+.info caption {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.info tr td[scope='row'] {
+  padding-left: 0.45rem;
+  min-width: 7.75rem;
+  font-weight: bold;
+  line-height: 2.5;
+}
+
+.info tr td:nth-of-type(2) {
+  padding-right: 1.5rem;
+}
+
+.info tr {
+  border-top: 1px solid #e6e8e6;
+}
+
+.info tr:last-of-type {
+  border-bottom: 1px solid #e6e8e6;
+}
+
+/* ---------------------------- */
+
 .experienceSection {
   margin-top: 1rem;
 }
 
-.experienceSection > span {
-  max-width: 3rem;
-  font-size: 0.8rem;
+.experienceSection h4 {
+  margin-bottom: 0.5rem;
+  font-size: 16px;
+}
+
+.experienceSection h4 span {
+  margin-left: 0.25rem;
+  font-size: 14px;
+}
+
+.experienceSection > p {
+  font-size: 14px;
+}
+
+.experienceSection > p:nth-of-type(2) > span {
+  font-weight: 700;
+}
+
+.experienceSection > p:nth-of-type(2) > span::after {
+  content: '|';
+  margin: 0 0.65rem;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.experienceSection > ul {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  list-style: none;
+}
+
+.experienceSection details {
+  overflow: auto;
+}
+
+.experienceSection details summary::before {
+  content: '▸';
+  margin-right: 0.7rem;
+  font-size: 16px;
+  line-height: 1;
+  color: #2c6e49;
+}
+
+.experienceSection details summary:hover::before {
+  color: #4c956c;
+}
+
+.experienceSection details summary {
+  margin: 0.35rem 0 0.25rem;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  list-style: none;
+}
+
+.experienceSection details ul {
+  padding-left: 2.25rem;
+}
+.experienceSection details li {
+  margin-bottom: 0.1rem;
+  font-size: 14px;
+}
+
+.language ul {
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.language ul span {
+  display: inline-block;
+  position: relative;
+  min-width: 5rem;
+  font-weight: 700;
+}
+
+.language ul span::after {
+  position: absolute;
+  right: 0;
+  content: '|';
+  margin: 0 0.65rem;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.language ul li {
+  margin-bottom: 0.5rem;
+  font-size: 14px;
 }
