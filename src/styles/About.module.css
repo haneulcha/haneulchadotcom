@@ -215,6 +215,26 @@
   border-bottom: 1px solid #e6e8e6;
 }
 
+@media (max-width: 375px) {
+  .info tr td[scope='row'] {
+    min-width: 4rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .info tr,
+  .info td {
+    display: block;
+  }
+  .info tr td[scope='row'] {
+    line-height: 2.3;
+  }
+  .info tr td:nth-of-type(2) {
+    padding: 0 0 0 0.45rem;
+    line-height: 2.3;
+  }
+}
+
 /* ---------------------------- */
 
 .experienceSection {

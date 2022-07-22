@@ -166,6 +166,20 @@ function About() {
 
               <li>
                 <details>
+                  <summary>
+                    Sparky.tv Studio 유저(크리에이터) 사용성 개선
+                  </summary>
+                  <ul>
+                    <li>
+                      유저 경험에 악영향을 주었던 문제를 UX 개선을 통해 해결
+                    </li>
+                    <li>2년 전 초기 레거시 코드 리팩토링, 코드 품질 개선</li>
+                  </ul>
+                </details>
+              </li>
+
+              <li>
+                <details>
                   <summary>데이터 및 로그 수집</summary>
                   <ul>
                     <li>
@@ -188,15 +202,10 @@ function About() {
               </li>
             </ul>
           </section>
-          <section className={styles.experienceSection}>
+          {/* <section className={styles.experienceSection}>
             <h4>
-              {/* <a
-                href="https://studio.sparky.tv/"
-                target="_blank"
-                rel="noopener noreferrer"
-              > */}
               Sparky.tv Studio
-              {/* </a> */}
+
               &nbsp;코드 개선<span>(2022. 7)</span>
             </h4>
 
@@ -223,7 +232,7 @@ function About() {
                 </details>
               </li>
             </ul>
-          </section>
+          </section> */}
           <section className={styles.experienceSection}>
             <h4>
               <a
@@ -283,7 +292,7 @@ function About() {
             <ul>
               <li>
                 <details>
-                  <summary>프로덕트 및 마케팅 팀 지원을 위한 기능</summary>
+                  <summary>프로덕트 및 마케팅 팀 지원</summary>
                   <ul>
                     <li>
                       마케팅 팀이 수집한 자료를 DB로 마이그레이션 (Youtube API,
