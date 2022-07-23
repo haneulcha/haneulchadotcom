@@ -1,6 +1,6 @@
 {
   "title": "차하늘",
-  "introduction": "나의 일을 스스로 정의하고자 하는 프론트엔드 개발자 차하늘 입니다. 개발자와 코딩이라는, 주어진 직책과 업무에 얽매이지 않을 때 더 좋은 동료가 될 수 있다고 생각합니다. 코드만큼이나 유저와 프로덕트를   가까이하고 깊이 고민해야만 개발자로서 스스로 작성하는 코드에  정당성과 근거를 마련할 수 있고, 결국 더 좋은 프로덕트를 유저에게  제공할 수 있는 선순환을 이룰 수 있기 때문입니다. 단순히 할 수 있는  것을 하는 맥락 없는 올라운더가 아니라, 필요한 것을 함으로써 스스로 영역을 넓히고 깊이를 더할 수 있는 개발자가 되고자 합니다.",
+  "introduction": "나의 일을 스스로 정의하고자 하는 프론트엔드 개발자 차하늘 입니다. 개발자와 코딩이라는, 주어진 직책과 업무에 얽매이지 않을 때 더 좋은 동료가 될 수 있다고 생각합니다. 코드만큼이나 유저와 프로덕트를 가까이하고 깊이 고민해야만 스스로 작성하는 코드에 정당성과 근거를 마련할 수 있고, 결국 더 좋은 프로덕트를 유저에게 제공할 수 있는 선순환을 이룰 수 있기 때문입니다. 단순히 할 수 있는 것을 하는 맥락 없는 올라운더가 아니라, 필요한 것을 함으로써 스스로 영역을 넓히고 깊이를 더할 수 있는 개발자가 되고자 합니다.",
   "infoLink": [
     {
       "id": "Contact",
@@ -36,7 +36,8 @@
           "desc": " 모션 트래킹 기반의 인터랙티브 영상을 통해 유저가 운동과 댄스를 경험하는 글로벌 홈 트레이닝 플랫폼",
           "tech": [
             "Next.js (SSR)",
-            "Serverless Framework (AWS Lambda@edge)",
+            "Serverless Framework",
+            "AWS",
             "emotion",
             "mobX",
             "zustand",
@@ -54,27 +55,19 @@
             },
             {
               "id": 2,
-              "summary": "지속적인 UI/UX 개선",
+              "summary": "지속적인 UI/UX와 코드 개선",
               "detail": [
-                "웹 표준과 웹 접근성 준수",
-                "HTML5, 시맨틱 마크업, 최신 CSS 스펙을 반영",
-                "i18n를 고려한 반응형 디자인 개발"
-              ]
-            },
-            {
-              "id": 3,
-              "summary": "Sparky.tv Studio 유저(크리에이터) 사용성 개선",
-              "detail": [
-                "만족스럽지 못한 유저 경험과 서비스 상의 오류를 UX 개선을 통해 해결",
+                "HTML5, CSS3 등 웹 표준과 웹 접근성 준수",
+                "i18n를 고려한 반응형 디자인 개발",
                 "2년 전 초기 레거시 코드 리팩토링, 코드 품질 개선"
               ]
             },
             {
-              "id": 4,
+              "id": 3,
               "summary": "데이터 및 로그 수집",
               "detail": [
                 "에러 로그 수집을 위한 <a href=\"https://kicksky.tistory.com/111\" target=\"_blank\" rel=\"noopener noreferrer\" >&nbsp;Sentry 도입</a>&nbsp;및 로그 관리",
-                "서비스 내 유저 상호작용 이벤트 추적 및 데이터 수집을 위한 구글 태그 매니저 관리"
+                "유저 상호작용 이벤트 추적 및 데이터 수집을 위한 Google Tag Manager 관리"
               ]
             }
           ]
@@ -83,18 +76,12 @@
           "title": "<a href='https://develup.devunlimit.com/' target='_blank' rel='noopener noreferrer'>DevelUp</a>&nbsp;정적 웹 사이트 제작 및 배포",
           "period": "2021. 6, 11",
           "desc": "사내 SI 프로젝트의 포트폴리오 및 홍보를 위한 정적 웹 사이트",
-          "tech": [
-            "Next.js (SSG)",
-            "AWS S3",
-            "CloudFront",
-            "DynamoDB",
-            "react-hook-form"
-          ],
+          "tech": ["Next.js (SSG)", "react-hook-form", "AWS S3", "CloudFront"],
           "jobs": [
             {
               "summary": "설계 ~ 배포",
               "detail": [
-                "프로덕트 성격을 고려한 렌더링 및 빌드 방식 설계 (Next.js Static Site Generation)",
+                "프로덕트 성격을 고려한 렌더링 및 빌드 유형 설계 (Next.js Static Site Generation)",
                 "Github Actions를 사용하여 CI/CD 구성",
                 "AWS S3, CloudFront, Route53을 통한 정적 웹 페이지 호스팅"
               ]

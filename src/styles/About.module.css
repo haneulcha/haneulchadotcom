@@ -1,18 +1,24 @@
 .main {
   overflow: auto;
-  color: #24292f;
+  color: var(--color);
+}
+
+.main p::selection,
+.main p::-moz-selection {
+  background: var(--point-color);
+  color: var(--bg);
 }
 
 .main a {
-  color: #0550ae;
+  color: var(--point-color);
 }
 .main a:hover {
-  color: #2081f8;
+  color: var(--point-color-hover);
 }
 
 .contentWrapper {
   max-width: 1024px;
-  background: #fbfcff;
+  background: var(--bg);
   margin: 6vh auto;
   border: 1px solid #acacac;
   border-radius: 6px;
@@ -73,16 +79,16 @@
   border: 1px solid #e14640;
 }
 
-.buttons .close:active {
+.close:hover {
   background: #c14645;
   border: 1px solid #b03537;
 }
 
-.buttons .close:active .closebutton {
+.close:hover .closebutton {
   color: #4e0002;
 }
 
-.buttons .closebutton {
+.closebutton {
   color: #820005;
   visibility: hidden;
   cursor: default;
@@ -93,12 +99,12 @@
   border: 1px solid #dfa123;
 }
 
-.buttons .minimize:active {
+.minimize:hover {
   background: #c08e38;
   border: 1px solid #af7c33;
 }
 
-.minimize:active .minimizebutton {
+.minimize:hover .minimizebutton {
   color: #5a2607;
 }
 
@@ -113,24 +119,25 @@
   border: 1px solid #1dad2b;
 }
 
-.buttons .zoom:active {
+.zoom:hover {
   background: #029740;
   border: 1px solid #128435;
 }
 
-.buttons .zoom:active .zoombutton {
+.zoom:hover .zoombutton {
   color: #003107;
 }
 
-.buttons .zoombutton {
+.zoombutton {
   color: #006519;
   visibility: hidden;
   cursor: default;
 }
 
+/* <------------------------------------> */
 .content {
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
   padding: 6rem 9rem 8rem;
@@ -143,92 +150,88 @@
 }
 
 .content h1 {
-  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-size: 42px;
   font-weight: bold;
-  letter-spacing: 4px;
-}
-
-.content > table:first-of-type {
-  margin-top: 2rem;
+  letter-spacing: 6px;
 }
 
 .content h2 {
-  margin: 2.5rem 0 1rem -1.3rem;
-  font-size: 1.65rem;
+  margin: 2.5rem 0 1rem -1.8rem;
+  font-size: 30px;
 }
 
 .content h2::before {
   content: '˙';
-  font-size: 2.5rem;
-  line-height: 1rem;
+  font-size: 56px;
+  line-height: 28px;
   color: #0550ae;
 }
 
 .content h3 {
   margin-top: 0.5rem;
-  font-size: 1.25rem;
+  font-size: 24px;
 }
 
 .content p {
-  margin: 0.2rem 0;
+  margin: 0.4rem 0;
+  line-height: 1.6;
 }
 
-.content ul li ul li::marker {
-  content: '・ ';
-  color: gray;
+.content p.lastUpdatedAt {
+  float: right;
+  margin: 0;
+  font-size: 12px;
 }
 
 /* ---------------------------- */
 
-.info {
+.infoTable {
   min-width: 10rem;
   border-collapse: collapse;
   margin-top: 1.25rem;
   font-size: 14px;
 }
 
-.info caption {
+.infoTable caption {
   visibility: hidden;
   position: absolute;
   pointer-events: none;
   z-index: -1;
 }
 
-.info tr td[scope='row'] {
-  padding-left: 0.45rem;
+.infoTable tr td[scope='row'] {
+  padding-left: 0.5rem;
   min-width: 7.75rem;
   font-weight: bold;
   line-height: 2.5;
 }
 
-.info tr td:nth-of-type(2) {
+.infoTable tr td:nth-of-type(2) {
   padding-right: 1.5rem;
 }
 
-.info tr {
-  border-top: 1px solid #e6e8e6;
-}
-
-.info tr:last-of-type {
-  border-bottom: 1px solid #e6e8e6;
+.infoTable tr {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 @media (max-width: 375px) {
-  .info tr td[scope='row'] {
+  .infoTable tr td[scope='row'] {
     min-width: 4rem;
   }
 }
 
 @media (max-width: 320px) {
-  .info tr,
-  .info td {
+  .infoTable tr,
+  .infoTable td {
     display: block;
   }
-  .info tr td[scope='row'] {
+  .infoTable tr td[scope='row'] {
     line-height: 2.3;
   }
-  .info tr td:nth-of-type(2) {
-    padding: 0 0 0 0.45rem;
+  .infoTable tr td:nth-of-type(2) {
+    padding: 0 0 0 0.5rem;
     line-height: 2.3;
   }
 }
@@ -240,8 +243,8 @@
 }
 
 .experienceSection h4 {
-  margin-bottom: 0.5rem;
-  font-size: 16px;
+  margin: 1.75rem 0 1rem;
+  font-size: 20px;
 }
 
 .experienceSection h4 div {
@@ -250,11 +253,11 @@
 
 .experienceSection h4 span {
   margin-left: 0.25rem;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .experienceSection > p {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .experienceSection > p:nth-of-type(2) > span {
@@ -263,47 +266,51 @@
 
 .experienceSection > p:nth-of-type(2) > span::after {
   content: '|';
-  margin: 0 0.65rem;
-  font-size: 12px;
+  margin: 0 0.7rem;
+  font-size: 14px;
   vertical-align: top;
 }
 
 .experienceSection > ul {
-  margin: 0.5rem 0;
-  padding-left: 1rem;
+  margin: 1rem 0;
+  padding-left: 0.85rem;
   list-style: none;
 }
 
 .experienceSection details {
-  overflow: auto;
-}
-
-.experienceSection details summary::before {
-  content: '▸';
-  margin-right: 0.7rem;
-  font-size: 16px;
-  line-height: 1;
-  color: #0550ae;
-}
-
-.experienceSection details summary:hover::before {
-  color: #2081f8;
+  overflow: visible;
 }
 
 .experienceSection details summary {
-  margin: 0.35rem 0 0.25rem;
+  margin: 0.35rem 0;
+  line-height: 1.65;
   font-weight: 500;
-  line-height: 1.4;
+  font-size: 18px;
+  color: var(--point-color);
   cursor: pointer;
-  list-style: none;
+}
+
+.experienceSection details summary:hover {
+  color: var(--point-color-hover);
+}
+
+.experienceSection details summary span {
+  margin-left: 0.35rem;
+  color: var(--color);
 }
 
 .experienceSection details ul {
-  padding-left: 2.25rem;
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.75rem;
+  list-style-type: '•';
 }
+
 .experienceSection details li {
-  margin-bottom: 0.1rem;
-  font-size: 14px;
+  margin-bottom: 0.4rem;
+  font-size: 16px;
+}
+.experienceSection details li div {
+  margin-left: 0.5rem;
 }
 
 .language ul {
@@ -324,11 +331,11 @@
   right: 0;
   content: '|';
   margin: 0 0.65rem;
-  font-size: 12px;
+  font-size: 14px;
   vertical-align: top;
 }
 
 .language ul li {
   margin-bottom: 0.5rem;
-  font-size: 14px;
+  font-size: 16px;
 }

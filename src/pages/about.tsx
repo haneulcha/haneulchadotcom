@@ -4,30 +4,42 @@ import content from '../contents/resume.json';
 
 function About() {
   const router = useRouter();
-  console.log(content);
+
+  const closeToggleHandler = () => {
+    const detailsTags = document.querySelectorAll('details');
+    const isAllOpen = [...detailsTags].every((el) => el.open);
+    detailsTags.forEach((el) => {
+      el.open = !isAllOpen;
+    });
+  };
+
   return (
-    <main className={styles.main}>
+    <main className={`aboutPage ${styles.main}`}>
       <div className={styles.contentWrapper}>
         <div className={styles.titlebar}>
-          <div className={styles.buttonWrapper}>
-            <button className={styles.close} onClick={() => router.back()}>
+          <nav className={styles.buttonWrapper}>
+            <button className={styles.close} onClick={() => router.push('/')}>
               <strong className={styles.inlineContent}></strong>
             </button>
 
-            <button className={styles.minimize}>
+            <button
+              className={styles.minimize}
+              onClick={() => closeToggleHandler()}
+            >
               <strong className={styles.inlineContent}></strong>
             </button>
 
             <button className={styles.zoom}>
               <strong className={styles.inlineContent}></strong>
             </button>
-          </div>
+          </nav>
           이력서
         </div>
         <article className={styles.content}>
+          <p className={styles.lastUpdatedAt}>최종 수정: 2022. 7. 23</p>
           <h1>{content.title}</h1>
 
-          <table className={styles.info}>
+          <table className={styles.infoTable}>
             <caption>개인 정보와 관련 링크</caption>
             {content.infoLink.map((item, idx) => (
               <tr key={item.id + idx}>
@@ -48,7 +60,7 @@ function About() {
           {content.experience.map((item, idx) => (
             <div key={item.company + idx}>
               <h3>{item.company}</h3>
-              <table className={styles.info}>
+              <table className={styles.infoTable}>
                 <tr key="info-table-1">
                   <td scope="row">기간</td>
                   <td>{item.period}</td>
@@ -92,8 +104,10 @@ function About() {
                   <ul aria-label="상세 업무">
                     {item.jobs.map((job, idx) => (
                       <li key={idx}>
-                        <details>
-                          <summary>{job.summary}</summary>
+                        <details open>
+                          <summary>
+                            <span>{job.summary}</span>
+                          </summary>
                           <ul>
                             {job.detail.map((item, idx) => (
                               <li key={item[0] + idx}>

@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
+:root {
+  --color: #24292f;
+  --bg: #fbfcff;
+  --point-color: #0550ae;
+  --point-color-hover: #1678ef;
+  --point-color-selection: #3067ab;
+  --border-color: #e6e8e6;
+}
+
 html,
 body {
   padding: 0;
@@ -35,4 +44,9 @@ button {
 a {
   text-decoration: none;
   cursor: pointer;
+}
+
+.aboutPage *::selection {
+  background: var(--point-color-selection);
+  color: var(--bg);
 }
