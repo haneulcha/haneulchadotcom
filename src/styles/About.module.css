@@ -1,15 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
 .main {
   overflow: auto;
-  color: #171a21;
+  color: #24292f;
 }
 
 .main a {
-  color: #2c6e49;
+  color: #0550ae;
 }
 .main a:hover {
-  color: #4c956c;
+  color: #2081f8;
 }
 
 .contentWrapper {
@@ -163,7 +161,7 @@
   content: '˙';
   font-size: 2.5rem;
   line-height: 1rem;
-  color: #2c6e49;
+  color: #0550ae;
 }
 
 .content h3 {
@@ -246,6 +244,10 @@
   font-size: 16px;
 }
 
+.experienceSection h4 div {
+  display: inline-block;
+}
+
 .experienceSection h4 span {
   margin-left: 0.25rem;
   font-size: 14px;
@@ -281,11 +283,11 @@
   margin-right: 0.7rem;
   font-size: 16px;
   line-height: 1;
-  color: #2c6e49;
+  color: #0550ae;
 }
 
 .experienceSection details summary:hover::before {
-  color: #4c956c;
+  color: #2081f8;
 }
 
 .experienceSection details summary {

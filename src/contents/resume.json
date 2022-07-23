@@ -1,0 +1,155 @@
+{
+  "title": "차하늘",
+  "introduction": "나의 일을 스스로 정의하고자 하는 프론트엔드 개발자 차하늘 입니다. 개발자와 코딩이라는, 주어진 직책과 업무에 얽매이지 않을 때 더 좋은 동료가 될 수 있다고 생각합니다. 코드만큼이나 유저와 프로덕트를   가까이하고 깊이 고민해야만 개발자로서 스스로 작성하는 코드에  정당성과 근거를 마련할 수 있고, 결국 더 좋은 프로덕트를 유저에게  제공할 수 있는 선순환을 이룰 수 있기 때문입니다. 단순히 할 수 있는  것을 하는 맥락 없는 올라운더가 아니라, 필요한 것을 함으로써 스스로 영역을 넓히고 깊이를 더할 수 있는 개발자가 되고자 합니다.",
+  "infoLink": [
+    {
+      "id": "Contact",
+      "href": "mailto:tjaneul@gmail.com",
+      "desc": "tjaneul@gmail.com"
+    },
+    {
+      "id": "Blog",
+      "href": "https://kicksky.tistory.com/",
+      "desc": "https://kicksky.tistory.com/"
+    },
+    {
+      "id": "Homepage",
+      "href": "https://haneulcha.com/",
+      "desc": "https://haneulcha.com/"
+    },
+    {
+      "id": "Github",
+      "href": "https://github.com/haneulcha",
+      "desc": "https://github.com/haneulcha"
+    }
+  ],
+  "experience": [
+    {
+      "company": "데브언리밋",
+      "period": "2021. 5 ~ 현재 (1년 3개월)",
+      "position": "프론트엔드, 유저 사일로",
+      "tech": ["Next.js", "Typescript", "emotion", "zustand", "AWS"],
+      "section": [
+        {
+          "title": "<a href='https://www.sparky.tv/' target='_blank' rel='noopener noreferrer'>Sparky.tv</a> 기능 개발 및 UI/UX 개선",
+          "period": "2021. 7 ~",
+          "desc": " 모션 트래킹 기반의 인터랙티브 영상을 통해 유저가 운동과 댄스를 경험하는 글로벌 홈 트레이닝 플랫폼",
+          "tech": [
+            "Next.js (SSR)",
+            "Serverless Framework (AWS Lambda@edge)",
+            "emotion",
+            "mobX",
+            "zustand",
+            "tfjs"
+          ],
+          "jobs": [
+            {
+              "id": 1,
+              "summary": "유저 사용성과 재방문을 위한 기능 개발",
+              "detail": [
+                "유저 및 크리에이터 개인 페이지 (Next.js Dynamic Route), 카테고리 및 태그 필터, 이벤트 및 랭킹 기능 및 UI 등",
+                "서비스 환경인 웹과 프로덕트의 네이티브적 특성을 조율하는 UI 디자인 시스템 구축",
+                "유저 경험과 직접 맞닿는 작업들에 대해 디자인 팀과&nbsp;<a href=\"https://kicksky.tistory.com/103\" target=\"_blank\" rel=\"noopener noreferrer\">긴밀한 협업</a>&nbsp;및 피드백 진행"
+              ]
+            },
+            {
+              "id": 2,
+              "summary": "지속적인 UI/UX 개선",
+              "detail": [
+                "웹 표준과 웹 접근성 준수",
+                "HTML5, 시맨틱 마크업, 최신 CSS 스펙을 반영",
+                "i18n를 고려한 반응형 디자인 개발"
+              ]
+            },
+            {
+              "id": 3,
+              "summary": "Sparky.tv Studio 유저(크리에이터) 사용성 개선",
+              "detail": [
+                "만족스럽지 못한 유저 경험과 서비스 상의 오류를 UX 개선을 통해 해결",
+                "2년 전 초기 레거시 코드 리팩토링, 코드 품질 개선"
+              ]
+            },
+            {
+              "id": 4,
+              "summary": "데이터 및 로그 수집",
+              "detail": [
+                "에러 로그 수집을 위한 <a href=\"https://kicksky.tistory.com/111\" target=\"_blank\" rel=\"noopener noreferrer\" >&nbsp;Sentry 도입</a>&nbsp;및 로그 관리",
+                "서비스 내 유저 상호작용 이벤트 추적 및 데이터 수집을 위한 구글 태그 매니저 관리"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "<a href='https://develup.devunlimit.com/' target='_blank' rel='noopener noreferrer'>DevelUp</a>&nbsp;정적 웹 사이트 제작 및 배포",
+          "period": "2021. 6, 11",
+          "desc": "사내 SI 프로젝트의 포트폴리오 및 홍보를 위한 정적 웹 사이트",
+          "tech": [
+            "Next.js (SSG)",
+            "AWS S3",
+            "CloudFront",
+            "DynamoDB",
+            "react-hook-form"
+          ],
+          "jobs": [
+            {
+              "summary": "설계 ~ 배포",
+              "detail": [
+                "프로덕트 성격을 고려한 렌더링 및 빌드 방식 설계 (Next.js Static Site Generation)",
+                "Github Actions를 사용하여 CI/CD 구성",
+                "AWS S3, CloudFront, Route53을 통한 정적 웹 페이지 호스팅"
+              ]
+            },
+            {
+              "summary": "자동화 기능 개발",
+              "detail": [
+                "배포 이후 사내 백 오피스 개발에 참여하여 포트폴리오 업데이트 및 배포 등 자동화 진행",
+                "포트폴리오 CRUD, Webhook 통한 제3자 배포"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "사내 백 오피스 개발",
+          "desc": "사내에서 필요한 업무와 관리를 위한 툴을 기능 단위로 개발",
+          "period": "",
+          "tech": ["React", "react-hook-form"],
+          "jobs": [
+            {
+              "summary": "프로덕트 및 마케팅 팀 지원",
+              "detail": [
+                "마케팅 팀이 수집한 자료를 DB로 마이그레이션 (Youtube API, DynamoDB)",
+                "SI 포트폴리오 관리 및 웹 페이지 배포"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "portfolio": [
+    {
+      "title": "갈피",
+      "period": "2020. 7 ~ 12",
+      "url": "https://github.com/haneulcha/galpi",
+      "desc": "좋아하는 책의 글귀를 발췌하고 편집하여 이미지 카드로 업로드 할 수 있는 소셜 웹 어플리케이션",
+      "tech": ["React", "redux", "react-router", "Node.js/Express", "MongoDB"]
+    },
+    {
+      "title": "킨더구리",
+      "period": "2020. 4 ~ 5",
+      "url": "https://github.com/haneulcha/kinderguri",
+      "desc": "구리시에 위치한 유치원과 어린이집에 대한 정보와 위치를 검색할 수 있는 웹 어플리케이션",
+      "tech": ["React", "Apollo Server/Client", "Open API", "KakaoMap API"]
+    }
+  ],
+  "language": [
+    {
+      "type": "영어",
+      "level": "TOEIC 980. 공식 기술 문서와 스택오버플로우 등 정보를 원문 검색할 수 있고 협업을 위한 회화가 가능한 수준"
+    },
+    {
+      "type": "독일어",
+      "level": "B2. 원문 독해와 일상 대화 가능한 수준"
+    }
+  ]
+}

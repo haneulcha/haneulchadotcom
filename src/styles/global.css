@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
 html,
 body {
   padding: 0;
@@ -7,6 +9,10 @@ body {
   background-color: rgba(170, 183, 191, 0.2);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 h1,
@@ -27,11 +33,6 @@ button {
 }
 
 a {
-  color: #ad1d1d;
   text-decoration: none;
   cursor: pointer;
-}
-
-* {
-  box-sizing: border-box;
 }
