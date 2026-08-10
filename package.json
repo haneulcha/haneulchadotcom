@@ -1,17 +1,23 @@
 {
-  "name": "typescript-nextjs-starter",
-  "description": "A TypeScript starter for Next.js that includes all you need to build amazing projects",
+  "name": "haneulchadotcom",
+  "description": "차하늘의 개인 웹사이트 (haneulcha.com)",
   "version": "1.0.0",
   "private": true,
-  "author": "João Pedro Schmitz <hey@joaopedro.dev> (@jpedroschmitz)",
+  "author": "Haneul Cha <tjaneul@gmail.com> (https://haneulcha.com)",
   "license": "MIT",
+  "homepage": "https://haneulcha.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haneulcha/haneulchadotcom"
+  },
   "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=22"
   },
   "keywords": [
+    "portfolio",
+    "resume",
     "nextjs",
-    "starter",
     "typescript"
   ],
   "scripts": {
