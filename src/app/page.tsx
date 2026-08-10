@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 import styles from '@/styles/Home.module.css';
@@ -6,19 +5,10 @@ import styles from '@/styles/Home.module.css';
 export default function Home() {
   return (
     <div className={styles.container}>
-      <Head>
-        <title>HaneulChaDotCom</title>
-        <meta
-          name="description"
-          content="HaneulChaDotCom is a personal website of Haneul Cha dot com. Haneul Cha dot com is a software engineer and a web developer."
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <main className={styles.main}>
         <h1 className={styles.title}>
-          <Link href="/about" as="/about">
-            <a className={styles.typo1}>ㅊ</a>
+          <Link href="/about" className={styles.typo1}>
+            ㅊ
           </Link>
           <a
             href="https://kicksky.tistory.com"
@@ -33,7 +23,7 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <div> &copy; 2022 Haneul Cha</div>
+        <div> &copy; {new Date().getFullYear()} Haneul Cha</div>
       </footer>
     </div>
   );

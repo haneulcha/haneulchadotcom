@@ -1,6 +1,9 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+import content from '@/contents/resume.json';
 import styles from '@/styles/About.module.css';
-import { useRouter } from 'next/router';
-import content from '../contents/resume.json';
 
 function About() {
   const router = useRouter();
@@ -41,16 +44,22 @@ function About() {
 
           <table className={styles.infoTable}>
             <caption>개인 정보와 관련 링크</caption>
-            {content.infoLink.map((item, idx) => (
-              <tr key={item.id + idx}>
-                <td scope="row">{item.id}</td>
-                <td>
-                  <a href={item.href} target="_blank" rel="noopener noreferrer">
-                    {item.desc}
-                  </a>
-                </td>
-              </tr>
-            ))}
+            <tbody>
+              {content.infoLink.map((item, idx) => (
+                <tr key={item.id + idx}>
+                  <td scope="row">{item.id}</td>
+                  <td>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.desc}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
 
           <h2>소개</h2>
@@ -61,25 +70,27 @@ function About() {
             <div key={item.company + idx}>
               <h3>{item.company}</h3>
               <table className={styles.infoTable}>
-                <tr key="info-table-1">
-                  <td scope="row">기간</td>
-                  <td>{item.period}</td>
-                </tr>
-                <tr key="info-table-2">
-                  <td scope="row">업무</td>
-                  <td>{item.position}</td>
-                </tr>
-                <tr key="info-table-3">
-                  <td scope="row">
-                    <strong>기술</strong>
-                  </td>
-                  <td>
-                    {item.tech.map(
-                      (tech, idx) =>
-                        `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
-                    )}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr key="info-table-1">
+                    <td scope="row">기간</td>
+                    <td>{item.period}</td>
+                  </tr>
+                  <tr key="info-table-2">
+                    <td scope="row">업무</td>
+                    <td>{item.position}</td>
+                  </tr>
+                  <tr key="info-table-3">
+                    <td scope="row">
+                      <strong>기술</strong>
+                    </td>
+                    <td>
+                      {item.tech.map(
+                        (tech, idx) =>
+                          `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
 
               {item.section.map((item, idx) => (
@@ -128,10 +139,7 @@ function About() {
 
           <h2>개인 프로젝트</h2>
           {content.portfolio.map((item, idx) => (
-            <section
-              className={styles.experienceSection}
-              key={item.title + idx}
-            >
+            <section className={styles.experienceSection} key={item.title + idx}>
               <h4>
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   {item.title}
