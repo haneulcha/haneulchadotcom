@@ -3,6 +3,7 @@
 - 작성일: 2026-08-10
 - 대상: `haneulchadotcom` (개인 포트폴리오)
 - 브랜치: `chore/modernize-stack`
+- 상태: **실행 완료**. 계획과 달라진 결과는 「리스크」의 인용 블록과 「확정된 버전」 절에 있다.
 
 ## 배경
 
@@ -19,18 +20,20 @@ ESLint는 설정 형식 자체가 바뀌었다. `.nvmrc`가 가리키는 Node 12
 
 ### 포함
 
-| 영역          | 현재                  | 목표              |
-| ------------- | --------------------- | ----------------- |
-| Next.js       | 12.1.6 (Pages Router) | 16.x (App Router) |
-| React         | 18.1.0                | 19.x              |
-| TypeScript    | 4.6.4                 | 7.0.x             |
-| 패키지 매니저 | Yarn 1                | pnpm              |
-| Node          | 12.22                 | 22 LTS            |
-| ESLint        | 8 (`.eslintrc`)       | 10 (flat config)  |
-| Prettier      | 2                     | 3                 |
-| husky         | 8                     | 9                 |
-| lint-staged   | 12                    | 17                |
-| commitlint    | 17                    | 21                |
+| 영역          | 현재                  | 목표                |
+| ------------- | --------------------- | ------------------- |
+| Next.js       | 12.1.6 (Pages Router) | 16.x (App Router)   |
+| React         | 18.1.0                | 19.x                |
+| TypeScript    | 4.6.4                 | 7.0.x \*            |
+| 패키지 매니저 | Yarn 1                | pnpm                |
+| Node          | 12.22                 | 22 LTS              |
+| ESLint        | 8 (`.eslintrc`)       | 10 (flat config) \* |
+| Prettier      | 2                     | 3                   |
+| husky         | 8                     | 9                   |
+| lint-staged   | 12                    | 17                  |
+| commitlint    | 17                    | 21                  |
+
+\* 실행 결과 TypeScript는 6.0.3, ESLint는 9.39.5로 확정됐다. 「확정된 버전」 참고.
 
 여기에 더해 레포 정체성 복구(메타데이터·README·LICENSE·스타터 잔재 제거)와 `CLAUDE.md` 작성.
 
@@ -67,6 +70,8 @@ export로 옮기는 작업은 전환의 필수 부산물로 포함한다. 그 �
 - **ESLint**: `.eslintrc` → `eslint.config.mjs`. ESLint 9부터 flat config가 필수다.
   현재 `eslint-plugin-prettier`로 포매팅을 lint 규칙으로 돌리는데, 이는 더 이상 권장되지 않는다.
   Prettier는 `pnpm format`으로 분리 실행하고 ESLint는 `eslint-config-prettier`로 충돌 규칙만 끈다.
+  `eslint-config-next`가 `typescript-eslint`를 이미 의존성으로 포함하므로 최상위에
+  중복 선언하지 않는다.
 - **husky 9**: `.husky/_/husky.sh` 소싱 라인 제거. `.husky/common.sh`는 Windows + Yarn
   워크어라운드이므로 pnpm 전환과 함께 삭제. `postinstall: husky install` → `prepare: husky`.
 - **tsconfig**: `target` es2015 → ES2022, `moduleResolution` node → bundler, Next TS 플러그인 등록.
@@ -147,14 +152,16 @@ Next 16의 lint 체인이 아직 따라오지 못한 결과다.
 
 두 항목 모두 상류 지원이 붙는 대로 renovate가 PR을 올릴 것이다. 그때 올리면 된다.
 
-또한 `eslint-config-next`가 `typescript-eslint`를 이미 의존성으로 포함하므로 최상위에
-중복 선언하지 않는다.
-
 ## 기술 부채 (이번 범위 밖, 후속 작업 후보)
+
+> 이 목록은 **작성 시점의 스냅숏**이다. 살아있는 정본은 `CLAUDE.md`의 「기술 부채」다.
 
 - `about.tsx` 200줄 단일 컴포넌트 → 섹션별 분리, 타이틀바만 클라이언트 컴포넌트로
 - `resume.json`에 타입 정의 없음 (현재 구조적 타입 추론에만 의존)
-- `<table>`에 `tbody` 누락, `<td scope="row">`는 `<th scope="row">`여야 함
+- ~~`<table>`에 `tbody` 누락~~ → 3단계에서 해결. React가 `<table>` 직속 `<tr>`에 경고를
+  내므로 전환의 필수 작업이었다.
+- `<td scope="row">`는 `<th scope="row">`여야 함 (CSS 동반 수정 필요)
+- "최종 수정" 날짜가 컴포넌트에 하드코딩되어 있음 → `resume.json`으로 이동
 - `dangerouslySetInnerHTML` 사용처 2곳 (`resume.json`의 HTML 문자열)
 - 테스트 없음
 - OG 이미지, sitemap, robots.txt 없음

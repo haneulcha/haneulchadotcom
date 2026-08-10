@@ -36,9 +36,13 @@ src/
 
 ## 알아둘 것
 
-**이력서 내용은 `src/contents/resume.json`만 고친다.** `/about`은 이 JSON을 그대로
-렌더한다. 항목을 추가·수정할 때 컴포넌트를 손댈 일은 없다. 수정 후 `about/page.tsx`
-상단의 "최종 수정" 날짜도 함께 갱신한다.
+**이력서 내용은 `src/contents/resume.json`에서 고친다.** `/about`은 이 JSON을 그대로
+렌더하므로 항목을 추가·수정할 때 컴포넌트 구조를 손댈 일은 없다. **예외가 하나 있다** —
+"최종 수정" 날짜만은 `src/app/about/page.tsx:42`에 하드코딩되어 있어 거기서 갱신해야 한다
+(이 날짜를 JSON으로 옮기는 건 아래 기술 부채에 있다).
+
+**`resume.json` 안의 HTML 문자열은 속성에 작은따옴표를 쓴다** (`<a href='...'>`).
+JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. 기존 관례를 따라라.
 
 **`/about`은 파일 전체가 클라이언트 컴포넌트다.** `useRouter`와 `document` 접근 때문인데,
 원래는 타이틀바 버튼만 분리하는 게 맞다. 아래 기술 부채 참고.
@@ -46,8 +50,15 @@ src/
 **`About.module.css`가 `td[scope='row']`와 `td:nth-of-type(2)`를 선택자로 쓴다.**
 테이블 마크업을 `th`로 고치려면 CSS를 같이 고쳐야 한다. 한쪽만 바꾸면 레이아웃이 깨진다.
 
-**색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
-`--point-color-hover`, `--point-color-selection`, `--border-color`). 값을 직접 박지 않는다.
+**`about/page.tsx`의 `className={`aboutPage ${styles.main}`}`에서 `aboutPage`는 전역
+클래스다.** CSS Modules 클래스가 아니라 `global.css`의 `.aboutPage *::selection`이 걸려
+있다. 지우면 텍스트 선택 하이라이트 색이 조용히 사라진다.
+
+**새로 추가하는 색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
+`--point-color-hover`, `--point-color-selection`, `--border-color`). 다만 기존 코드에는
+하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `About.module.css`의 macOS
+타이틀바·신호등 버튼 색과 `Home.module.css`의 랜딩 타이포 색은 토큰화 대상이 아니다.
+시키지 않은 색 리팩터링을 시작하지 마라.
 
 **`dangerouslySetInnerHTML`이 `/about`에 두 군데 있다.** `resume.json`의 문자열에
 HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직접 작성한 콘텐츠일 때만 성립하는
@@ -55,8 +66,9 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 
 ## 컨벤션
 
-- 커밋은 [Conventional Commits](https://www.conventionalcommits.org). commitlint가 강제한다.
-  `pnpm commit`으로 안내를 받을 수 있다.
+- 커밋은 [Conventional Commits](https://www.conventionalcommits.org). commit-msg 훅과 CI
+  양쪽에서 commitlint가 강제하며, CI는 PR의 모든 커밋을 검사한다. 메시지는 직접 형식에 맞춰
+  써라 — `pnpm commit`(Commitizen)은 대화형 프롬프트라 사람용이다.
 - 포매팅은 Prettier가 전담한다. ESLint는 포매팅 규칙을 갖지 않는다
   (`eslint-config-prettier`로 충돌 규칙을 꺼 둔다).
 - pre-commit에서 lint-staged가, commit-msg에서 commitlint가 husky를 통해 돈다.
@@ -73,12 +85,17 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 
 ## 기술 부채
 
-기능 개선 전 기반 정비(2026-08) 때 범위 밖으로 남긴 것들이다.
+기능 개선 전 기반 정비(2026-08) 때 범위 밖으로 남긴 것들이다. **이 목록이 정본이다** —
+설계 문서에도 같은 목록이 있지만 그건 작성 시점의 스냅숏이다.
 
 - `about/page.tsx`가 200줄 단일 컴포넌트다. 섹션별로 쪼개고 타이틀바만 클라이언트
   컴포넌트로 분리하면 본문은 서버 컴포넌트가 될 수 있다.
 - `resume.json`에 타입 정의가 없다. 구조적 추론에만 기대고 있다.
+- "최종 수정" 날짜가 `about/page.tsx`에 하드코딩되어 있다. `resume.json`으로 옮기면
+  이력서 수정이 JSON 한 파일로 닫힌다.
 - 테이블 접근성: `<td scope="row">`는 `<th scope="row">`여야 한다 (CSS 동반 수정 필요).
+- `About.module.css:168`의 `#0550ae`는 `--point-color`와 같은 값이다. 그 파일을 만질 일이
+  있으면 `var(--point-color)`로 바꿔라. (다른 하드코딩 색은 의도된 것이다 — 위 참고)
 - 테스트가 없다.
 - OG 이미지, sitemap, robots.txt가 없다.
 - `layout.tsx`의 description이 같은 말을 반복하는 키워드 나열이다. 다시 쓸 가치가 있다.

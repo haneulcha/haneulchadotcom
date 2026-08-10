@@ -1,23 +1,25 @@
 # haneulcha.com
 
-차하늘의 개인 웹사이트. 랜딩 페이지와 이력서 두 개의 화면으로 이루어져 있다.
+차하늘의 개인 웹사이트. 랜딩과 이력서, 두 화면으로 이루어져 있다.
 
 - 배포: [haneulcha.com](https://haneulcha.com) (Vercel)
 
 ## 화면
 
-| 경로     | 설명                                                                                       |
-| -------- | ------------------------------------------------------------------------------------------ |
-| `/`      | 랜딩. 「ㅊ · ㅎ · ㄴ」 세 글자 타이포그래피. ㅊ은 이력서로, ㅎ은 블로그로 이동한다.        |
-| `/about` | 이력서. macOS 창을 흉내낸 타이틀바를 두고, 내용은 `src/contents/resume.json`에서 렌더한다. |
+| 경로     | 설명                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| `/`      | 랜딩. 이름의 초성 ㅊ·ㅎ·ㄴ을 세운 타이포그래피. ㅊ은 이력서로, ㅎ은 블로그로 이동하고 ㄴ은 장식이다. |
+| `/about` | 이력서. macOS 창을 흉내낸 타이틀바를 두고, 내용은 `src/contents/resume.json`에서 렌더한다.           |
 
 ## 기술 스택
 
-- [Next.js](https://nextjs.org) 16 (App Router)
-- React 19
+- [Next.js](https://nextjs.org) (App Router) / React
 - TypeScript
-- CSS Modules + CSS 사용자 정의 속성(변수) 기반 토큰
-- pnpm / Node 22
+- CSS Modules + CSS 변수 토큰
+- pnpm / Node
+
+정확한 버전은 `package.json`과 `.nvmrc`를 본다. TypeScript와 ESLint는 의도적으로 최신보다
+한 단계 낮게 고정해 두었고, 그 이유는 [CLAUDE.md](CLAUDE.md)에 적어 두었다.
 
 ## 시작하기
 
@@ -30,15 +32,16 @@ pnpm dev
 
 ## 명령어
 
-| 명령              | 설명                 |
-| ----------------- | -------------------- |
-| `pnpm dev`        | 개발 서버 실행       |
-| `pnpm build`      | 프로덕션 빌드        |
-| `pnpm start`      | 빌드 결과물 실행     |
-| `pnpm type-check` | TypeScript 타입 검사 |
-| `pnpm lint`       | ESLint 검사          |
-| `pnpm format`     | Prettier 포매팅      |
-| `pnpm commit`     | Commitizen으로 커밋  |
+| 명령                | 설명                         |
+| ------------------- | ---------------------------- |
+| `pnpm dev`          | 개발 서버 실행               |
+| `pnpm build`        | 프로덕션 빌드                |
+| `pnpm start`        | 빌드 결과물 실행             |
+| `pnpm type-check`   | TypeScript 타입 검사         |
+| `pnpm lint`         | ESLint 검사                  |
+| `pnpm format`       | Prettier 포매팅              |
+| `pnpm format:check` | 포매팅 검사 (CI가 쓰는 모드) |
+| `pnpm commit`       | Commitizen으로 커밋          |
 
 ## 디렉터리 구조
 
@@ -55,12 +58,13 @@ docs/             설계 문서
 
 ## 이력서 내용 수정
 
-`src/contents/resume.json` 한 곳만 고치면 된다. 컴포넌트를 건드릴 일은 없다.
-`experience[].section[].title`과 `jobs[].detail[]`은 HTML 문자열로 렌더되므로
-(`dangerouslySetInnerHTML`) 태그를 넣을 수 있다. 외부 입력이 아닌 직접 작성한
-콘텐츠에만 해당한다.
+내용은 `src/contents/resume.json`에서 고친다. 항목을 추가하거나 바꿔도 컴포넌트 구조를
+건드릴 일은 없다. `experience[].section[].title`과 `jobs[].detail[]`은 HTML 문자열로
+렌더되므로(`dangerouslySetInnerHTML`) 태그를 넣을 수 있다. JSON 문자열 안이라 속성에는
+작은따옴표를 쓴다. 외부 입력이 아닌 직접 작성한 콘텐츠에만 해당한다.
 
-수정 후에는 `/about` 상단의 "최종 수정" 날짜도 함께 갱신한다.
+단, "최종 수정" 날짜는 예외다. `src/app/about/page.tsx`에 하드코딩되어 있어 거기서
+함께 갱신해야 한다.
 
 ## 커밋 규칙
 
