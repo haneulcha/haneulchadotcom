@@ -19,18 +19,18 @@ ESLint는 설정 형식 자체가 바뀌었다. `.nvmrc`가 가리키는 Node 12
 
 ### 포함
 
-| 영역 | 현재 | 목표 |
-| --- | --- | --- |
-| Next.js | 12.1.6 (Pages Router) | 16.x (App Router) |
-| React | 18.1.0 | 19.x |
-| TypeScript | 4.6.4 | 7.0.x |
-| 패키지 매니저 | Yarn 1 | pnpm |
-| Node | 12.22 | 22 LTS |
-| ESLint | 8 (`.eslintrc`) | 10 (flat config) |
-| Prettier | 2 | 3 |
-| husky | 8 | 9 |
-| lint-staged | 12 | 17 |
-| commitlint | 17 | 21 |
+| 영역          | 현재                  | 목표              |
+| ------------- | --------------------- | ----------------- |
+| Next.js       | 12.1.6 (Pages Router) | 16.x (App Router) |
+| React         | 18.1.0                | 19.x              |
+| TypeScript    | 4.6.4                 | 7.0.x             |
+| 패키지 매니저 | Yarn 1                | pnpm              |
+| Node          | 12.22                 | 22 LTS            |
+| ESLint        | 8 (`.eslintrc`)       | 10 (flat config)  |
+| Prettier      | 2                     | 3                 |
+| husky         | 8                     | 9                 |
+| lint-staged   | 12                    | 17                |
+| commitlint    | 17                    | 21                |
 
 여기에 더해 레포 정체성 복구(메타데이터·README·LICENSE·스타터 잔재 제거)와 `CLAUDE.md` 작성.
 
@@ -48,12 +48,12 @@ export로 옮기는 작업은 전환의 필수 부산물로 포함한다. 그 �
 
 ### App Router 전환
 
-| 현재 | 이후 | 비고 |
-| --- | --- | --- |
-| `src/pages/_app.tsx` | `src/app/layout.tsx` | `<html lang="ko">`, `global.css` import, 공통 metadata |
-| `src/pages/index.tsx` | `src/app/page.tsx` | 서버 컴포넌트. `<Head>` → `metadata`, `<Link><a>` 패턴 제거 |
-| `src/pages/about.tsx` | `src/app/about/page.tsx` | `'use client'`. `next/router` → `next/navigation` |
-| `src/pages/api/hello.ts` | 삭제 | 스타터 잔재 |
+| 현재                     | 이후                     | 비고                                                        |
+| ------------------------ | ------------------------ | ----------------------------------------------------------- |
+| `src/pages/_app.tsx`     | `src/app/layout.tsx`     | `<html lang="ko">`, `global.css` import, 공통 metadata      |
+| `src/pages/index.tsx`    | `src/app/page.tsx`       | 서버 컴포넌트. `<Head>` → `metadata`, `<Link><a>` 패턴 제거 |
+| `src/pages/about.tsx`    | `src/app/about/page.tsx` | `'use client'`. `next/router` → `next/navigation`           |
+| `src/pages/api/hello.ts` | 삭제                     | 스타터 잔재                                                 |
 
 `<Link>` 안에 `<a>`를 중첩하는 패턴은 Next 13에서 제거되었으므로 반드시 고쳐야 한다.
 
@@ -126,9 +126,29 @@ Next 버전과 함께 올라가야 해서 쪼개면 중간 상태에서 lint가 
 조합에서 문제가 발생할 수 있다. 3단계에서 툴체인이 깨지면 막히지 않고 5.9로 내린 뒤 그 사실을
 보고한다. 이번 작업의 목적은 기반 정비이지 TS 7 디버깅이 아니다.
 
+> **실제 결과 (4단계)**: 이 리스크는 현실화되었다. `typescript-eslint`가 TS 7.0에서 명시적으로
+> 실행을 거부한다(`typescript-eslint does not support TS 7.0`). 다만 5.9까지 내릴 필요는 없었고,
+> tooling이 지원하는 최신 버전인 **TypeScript 6.0.3**에서 해결되었다.
+> 자세한 내용은 아래 "확정된 버전" 참고.
+
 **Next 12 → 16은 메이저 4개 점프**다. 중간 버전을 거치지 않으므로 예상 못한 breaking change가
 나올 수 있다. 페이지가 2개뿐이고 서드파티 의존성이 없어 표면적은 작지만, 단계별 빌드 검증으로
 어디서 깨졌는지 특정할 수 있게 한다.
+
+## 확정된 버전
+
+목표치와 실제 확정치가 갈린 두 항목의 이유를 남긴다. 둘 다 "최신"을 고를 수 없었던 게 아니라,
+Next 16의 lint 체인이 아직 따라오지 못한 결과다.
+
+| 항목       | 목표   | 확정       | 이유                                                                                                                                                                                                                                                                                       |
+| ---------- | ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TypeScript | 7.0.2  | **6.0.3**  | `typescript-eslint` 8.66이 TS 7.0에서 실행을 거부한다. TS 6 API 기반으로 side-by-side 구성하는 우회책이 문서화되어 있으나, TypeScript를 두 벌 설치하고 pnpm override로 해결 경로를 갈라야 해서 기반 정비라는 목적에 역행한다. TS 6.0.3은 정식 릴리스이며 tooling이 지원하는 최신 버전이다. |
+| ESLint     | 10.8.1 | **9.39.5** | `eslint-config-next` 16.3.0이 `eslint-plugin-react`에 의존하는데, 이 플러그인의 최신판 7.37.5가 `eslint ^9.7`까지만 지원한다. ESLint 10에서는 `context.getFilename` 제거로 규칙 로딩이 실패한다.                                                                                           |
+
+두 항목 모두 상류 지원이 붙는 대로 renovate가 PR을 올릴 것이다. 그때 올리면 된다.
+
+또한 `eslint-config-next`가 `typescript-eslint`를 이미 의존성으로 포함하므로 최상위에
+중복 선언하지 않는다.
 
 ## 기술 부채 (이번 범위 밖, 후속 작업 후보)
 

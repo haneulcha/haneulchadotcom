@@ -139,7 +139,10 @@ function About() {
 
           <h2>개인 프로젝트</h2>
           {content.portfolio.map((item, idx) => (
-            <section className={styles.experienceSection} key={item.title + idx}>
+            <section
+              className={styles.experienceSection}
+              key={item.title + idx}
+            >
               <h4>
                 <a href={item.url} target="_blank" rel="noopener noreferrer">
                   {item.title}
