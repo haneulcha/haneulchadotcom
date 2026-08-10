@@ -5,6 +5,10 @@
   "private": true,
   "author": "João Pedro Schmitz <hey@joaopedro.dev> (@jpedroschmitz)",
   "license": "MIT",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22"
+  },
   "keywords": [
     "nextjs",
     "starter",
