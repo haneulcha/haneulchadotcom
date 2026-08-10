@@ -39,7 +39,7 @@ function About() {
           이력서
         </div>
         <article className={styles.content}>
-          <p className={styles.lastUpdatedAt}>최종 수정: 2022. 7. 23</p>
+          <p className={styles.lastUpdatedAt}>최종 수정: 2026. 8. 10</p>
           <h1>{content.title}</h1>
 
           <table className={styles.infoTable}>
