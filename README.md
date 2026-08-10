@@ -1,126 +1,79 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/26466516/141659551-d7ba5630-7200-46fe-863b-87818dae970a.png" alt="Next.js TypeScript Starter">
-</p>
+# haneulcha.com
 
-<br />
+차하늘의 개인 웹사이트. 랜딩과 이력서, 두 화면으로 이루어져 있다.
 
-<div align="center"><strong>Non-opinionated TypeScript starter for Next.js</strong></div>
-<div align="center">Highly scalable foundation with the best DX. All the tools you need to build your next project.</div>
+- 배포: [haneulcha.com](https://haneulcha.com) (Vercel)
 
-<br />
+## 화면
 
-<div align="center">
-  <img src="https://img.shields.io/static/v1?label=PRs&message=welcome&style=flat-square&color=5e17eb&labelColor=000000" alt="PRs welcome!" />
+| 경로     | 설명                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| `/`      | 랜딩. 이름의 초성 ㅊ·ㅎ·ㄴ을 세운 타이포그래피. ㅊ은 이력서로, ㅎ은 블로그로 이동하고 ㄴ은 장식이다. |
+| `/about` | 이력서. macOS 창을 흉내낸 타이틀바를 두고, 내용은 `src/contents/resume.json`에서 렌더한다.           |
 
-  <img alt="License" src="https://img.shields.io/github/license/jpedroschmitz/typescript-nextjs-starter?style=flat-square&color=5e17eb&labelColor=000000">
+## 기술 스택
 
-  <a href="https://twitter.com/intent/follow?screen_name=jpedroschmitz">
-    <img src="https://img.shields.io/twitter/follow/jpedroschmitz?style=flat-square&color=5e17eb&labelColor=000000" alt="Follow @jpedroschmitz" />
-  </a>
-</div>
+- [Next.js](https://nextjs.org) (App Router) / React
+- TypeScript
+- CSS Modules + CSS 변수 토큰
+- pnpm / Node
 
-<div align="center">
-  <sub>Created by <a href="https://twitter.com/jpedroschmitz">João Pedro</a> with the help of many <a href="https://github.com/jpedroschmitz/typescript-nextjs-starter/graphs/contributors">wonderful contributors</a>.</sub>
-</div>
+정확한 버전은 `package.json`과 `.nvmrc`를 본다. TypeScript와 ESLint는 의도적으로 최신보다
+한 단계 낮게 고정해 두었고, 그 이유는 [CLAUDE.md](CLAUDE.md)에 적어 두었다.
 
-<br />
-
-## Features
-
-- ⚡️ Next.js 12
-- ⚛️ React 18
-- ⛑ TypeScript
-- 📏 ESLint — To find and fix problems in your code
-- 💖 Prettier — Code Formatter for consistent style
-- 🐶 Husky — For running scripts before committing
-- 📄 Commitizen — To define a standard way of committing rules
-- 🚓 Commitlint — To make sure your commit messages follow the convention
-- 🖌 Renovate — To keep your dependencies up to date
-- 🚫 lint-staged — Run ESLint and Prettier against staged Git files
-- 👷 PR Workflow — Run Type Check & Linters on Pull Requests
-- ⚙️ EditorConfig - Consistent coding styles across editors and IDEs
-- 🗂 Path Mapping — Import components or images using the `@` prefix
-
-## Quick Start
-
-The best way to start with this template is using [Create Next App](https://nextjs.org/docs/api-reference/create-next-app).
-
-```
-yarn create next-app -e https://github.com/jpedroschmitz/typescript-nextjs-starter
-# or
-npx create-next-app -e https://github.com/jpedroschmitz/typescript-nextjs-starter
-```
-
-### Development
-
-To start the project locally, run:
+## 시작하기
 
 ```bash
-yarn dev
+pnpm install
+pnpm dev
 ```
 
-Open `http://localhost:3000` with your browser to see the result.
+`http://localhost:3000`에서 확인할 수 있다.
 
-## Testimonials
+## 명령어
 
-> [**“This starter is by far the best TypeScript starter for Next.js. Feature packed but un-opinionated at the same time!”**](https://github.com/jpedroschmitz/typescript-nextjs-starter/issues/87#issue-789642190)<br>
-> — Arafat Zahan
+| 명령                | 설명                         |
+| ------------------- | ---------------------------- |
+| `pnpm dev`          | 개발 서버 실행               |
+| `pnpm build`        | 프로덕션 빌드                |
+| `pnpm start`        | 빌드 결과물 실행             |
+| `pnpm type-check`   | TypeScript 타입 검사         |
+| `pnpm lint`         | ESLint 검사                  |
+| `pnpm format`       | Prettier 포매팅              |
+| `pnpm format:check` | 포매팅 검사 (CI가 쓰는 모드) |
+| `pnpm commit`       | Commitizen으로 커밋          |
 
-> [**“I can really recommend the Next.js Typescript Starter repo as a solid foundation for your future Next.js projects.”**](https://corfitz.medium.com/create-a-custom-create-next-project-command-2a6b35a1c8e6)<br>
-> — Corfitz
+## 디렉터리 구조
 
-> [**“Brilliant work!”**](https://github.com/jpedroschmitz/typescript-nextjs-starter/issues/87#issuecomment-769314539)<br>
-> — Soham Dasgupta
-
-## Showcase
-
-List of websites that started off with Next.js TypeScript Starter:
-
-- [dowhile.io](https://dowhile.io)
-- [graphcms.com](https://graphcms.com)
-- [mobg.com.br](https://mobg.com.br)
-- [nextlevelweek.com](https://nextlevelweek.com)
-- [rocketseat.com.br](https://www.rocketseat.com.br)
-
-## Documentation
-
-### Requirements
-
-- Node.js >= 12.22.0
-- Yarn 1 (Classic)
-
-### Directory Structure
-
-- [`.github`](.github) — GitHub configuration including the CI workflow.<br>
-- [`.husky`](.husky) — Husky configuration and hooks.<br>
-- [`public`](./public) — Static assets such as robots.txt, images, and favicon.<br>
-- [`src`](./src) — Application source code, including pages, components, styles.
-
-### Scripts
-
-- `yarn dev` — Starts the application in development mode at `http://localhost:3000`.
-- `yarn build` — Creates an optimized production build of your application.
-- `yarn start` — Starts the application in production mode.
-- `yarn type-check` — Validate code using TypeScript compiler.
-- `yarn lint` — Runs ESLint for all files in the `src` directory.
-- `yarn format` — Runs Prettier for all files in the `src` directory.
-- `yarn commit` — Run commitizen. Alternative to `git commit`.
-
-### Path Mapping
-
-TypeScript are pre-configured with custom path mappings. To import components or files, use the `@` prefix.
-
-```tsx
-import { Button } from '@/components/Button';
-
-// To import images or other files from the public folder
-import avatar from '@/public/avatar.png';
+```
+src/
+├── app/          라우트. layout.tsx가 루트 셸, page.tsx가 각 화면
+├── contents/     콘텐츠 데이터. resume.json이 이력서의 단일 소스
+└── styles/       global.css(토큰·리셋) + 화면별 *.module.css
+public/           정적 자산
+docs/             설계 문서
 ```
 
-### Switch to npm
+`@/` 별칭으로 `src/` 아래를, `@/public/` 별칭으로 `public/` 아래를 가리킨다.
 
-This starter uses Yarn 1 (Classic) by default, but this choice is yours. If you'd like to switch to npm, delete the `yarn.lock` file, install the dependencies with `npm i`, change the CI workflow, and Husky Git hooks to use npm commands.
+## 이력서 내용 수정
 
-## License
+내용은 `src/contents/resume.json`에서 고친다. 항목을 추가하거나 바꿔도 컴포넌트 구조를
+건드릴 일은 없다. `experience[].section[].title`과 `jobs[].detail[]`은 HTML 문자열로
+렌더되므로(`dangerouslySetInnerHTML`) 태그를 넣을 수 있다. JSON 문자열 안이라 속성에는
+작은따옴표를 쓴다. 외부 입력이 아닌 직접 작성한 콘텐츠에만 해당한다.
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for more information.
+단, "최종 수정" 날짜는 예외다. `src/app/about/page.tsx`에 하드코딩되어 있어 거기서
+함께 갱신해야 한다.
+
+## 커밋 규칙
+
+[Conventional Commits](https://www.conventionalcommits.org)를 따르며 commitlint가 강제한다.
+`pnpm commit`을 쓰면 형식에 맞게 안내해 준다.
+
+## 라이선스
+
+MIT. [LICENSE.md](LICENSE.md) 참고.
+
+이 프로젝트는 [jpedroschmitz/typescript-nextjs-starter](https://github.com/jpedroschmitz/typescript-nextjs-starter)
+템플릿에서 시작했다. 원저작자의 저작권 고지를 LICENSE에 함께 남겨 두었다.
