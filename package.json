@@ -3,6 +3,7 @@
   "description": "차하늘의 개인 웹사이트 (haneulcha.com)",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "author": "Haneul Cha <tjaneul@gmail.com> (https://haneulcha.com)",
   "license": "MIT",
   "homepage": "https://haneulcha.com",
@@ -21,9 +22,9 @@
     "typescript"
   ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "node .output/server/index.mjs",
     "type-check": "tsc",
     "lint": "eslint",
     "format": "prettier --write .",
@@ -42,7 +43,8 @@
     ]
   },
   "dependencies": {
-    "next": "16.3.0",
+    "@tanstack/react-router": "1.170.29",
+    "@tanstack/react-start": "1.168.46",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -53,6 +55,7 @@
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
     "commitizen": "4.3.2",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.39.5",
@@ -60,9 +63,11 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
+    "nitro": "3.0.260610-beta",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.67.0"
+    "typescript-eslint": "8.67.0",
+    "vite": "8.2.1"
   },
   "config": {
     "commitizen": {

@@ -1,12 +1,14 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import content from '@/contents/resume.json';
 import styles from '@/styles/About.module.css';
 
+export const Route = createFileRoute('/about')({
+  component: About,
+});
+
 function About() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const closeToggleHandler = () => {
     const detailsTags = document.querySelectorAll('details');
@@ -21,7 +23,10 @@ function About() {
       <div className={styles.contentWrapper}>
         <div className={styles.titlebar}>
           <nav className={styles.buttonWrapper}>
-            <button className={styles.close} onClick={() => router.push('/')}>
+            <button
+              className={styles.close}
+              onClick={() => navigate({ to: '/' })}
+            >
               <strong className={styles.inlineContent}></strong>
             </button>
 
@@ -176,5 +181,3 @@ function About() {
     </main>
   );
 }
-
-export default About;
