@@ -52,7 +52,7 @@ function About() {
             <tbody>
               {content.infoLink.map((item, idx) => (
                 <tr key={item.id + idx}>
-                  <td scope="row">{item.id}</td>
+                  <th scope="row">{item.id}</th>
                   <td>
                     <a
                       href={item.href}
@@ -77,17 +77,17 @@ function About() {
               <table className={styles.infoTable}>
                 <tbody>
                   <tr key="info-table-1">
-                    <td scope="row">기간</td>
+                    <th scope="row">기간</th>
                     <td>{item.period}</td>
                   </tr>
                   <tr key="info-table-2">
-                    <td scope="row">업무</td>
+                    <th scope="row">업무</th>
                     <td>{item.position}</td>
                   </tr>
                   <tr key="info-table-3">
-                    <td scope="row">
+                    <th scope="row">
                       <strong>기술</strong>
-                    </td>
+                    </th>
                     <td>
                       {item.tech.map(
                         (tech, idx) =>
