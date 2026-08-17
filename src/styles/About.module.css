@@ -165,7 +165,7 @@
   content: '˙';
   font-size: 56px;
   line-height: 28px;
-  color: #0550ae;
+  color: var(--point-color);
 }
 
 .content h3 {
