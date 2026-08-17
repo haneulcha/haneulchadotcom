@@ -19,11 +19,24 @@ TanStack Start 마이그레이션([2026-08-17 설계](../superpowers/specs/2026-
 
 ## 쓰는 법
 
-TSS 프리렌더 결과와 DOM 구조를 비교한다. 비교 시 정규화할 것:
+`normalize.mjs`가 비교 가능한 형태로 다듬는다 — `<body>` 안만 남기고, `<script>`·`<template>`·주석을
+걷어내고, 해시된 CSS Modules 클래스명(Next `About_main__ab3De` / Vite `_main_1q2w3_1`)을 로컬
+이름으로 되돌린다.
 
-- 해시된 CSS Modules 클래스명 (`Home_title__aB3xY` 같은 것) — 양쪽 해시 규칙이 다르다
-- 프레임워크 런타임 `<script>` 태그 — Next와 TSS가 각자 다른 것을 주입한다
-- 자산 경로 해시
+```bash
+node docs/baseline/normalize.mjs docs/baseline/next/about.html /tmp/next-about.norm.html
+node docs/baseline/normalize.mjs /tmp/tss-about.html          /tmp/tss-about.norm.html
+diff -u /tmp/next-about.norm.html /tmp/tss-about.norm.html
+```
+
+스크립트가 제대로 도는지 확인하는 값 (`about.html` 기준):
+
+| 확인                            | 기대값 |
+| ------------------------------- | ------ |
+| `class="aboutPage main"`        | 1      |
+| `About_` (잔존 해시)            | 0      |
+| `<td`                           | 14     |
+| `<button class="close">`        | 1      |
 
 ## 예상되는 **의도된** 차이
 
