@@ -50,7 +50,7 @@ export function computePositions(
 }
 
 /**
- * y(0..1) → 뷰포트 세로 위치(%). 물 영역 안에서 상 9% / 하 13% 여백.
+ * y(0..1) → 뷰포트 세로 위치(%). 물 영역 안에서 상 9% / 하 17% 여백.
  *
  * 아래 여백이 위보다 넓은 이유: 프록시는 심볼 아래로 라벨이 붙는데 그 높이는
  * 픽셀 고정인 반면 이 여백은 퍼센트다. 상하 대칭 8%로 두면 뷰포트가 낮을수록
@@ -58,6 +58,6 @@ export function computePositions(
  * `.pool`이 overflow: hidden이라 클리핑). 계획의 0.08/0.84에서 조정한 값이다.
  */
 export function toViewportTopPercent(y: number): number {
-  const inWater = 0.09 + y * 0.78;
+  const inWater = 0.09 + y * 0.74;
   return (DECK_FRACTION + inWater * (1 - DECK_FRACTION)) * 100;
 }

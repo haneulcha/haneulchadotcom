@@ -8,7 +8,7 @@
 
 .deck {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   height: 14vh; /* positions.ts의 DECK_FRACTION 0.14와 짝 */
   display: flex;
   align-items: center;
@@ -47,11 +47,11 @@
   opacity: 0.5;
 }
 
-.water {
+/* 캔버스 부재 시(그리고 캔버스 로드 전) 물색 밴드 폴백. 물 영역만 덮는다. */
+.waterBands {
   position: absolute;
   inset: 14vh 0 0 0;
-  z-index: 2;
-  /* 캔버스 부재 시(그리고 캔버스 로드 전) 물색 밴드 폴백 */
+  z-index: 0;
   background: linear-gradient(
     to bottom,
     var(--pool-water-shallow) 0 33%,
@@ -60,13 +60,29 @@
   );
 }
 
+/*
+ * 프록시의 위치 기준은 **풀 전체**여야 한다 — 캔버스가 뷰포트 전체를 덮고,
+ * syncProxies가 주는 좌표도 뷰포트 기준이기 때문이다. 이 컨테이너를 물 영역으로
+ * 좁히면 같은 숫자가 다른 기준으로 해석되어 심볼이 몸체에서 미끄러진다.
+ */
+.water {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none; /* 빈 영역이 클릭을 가로채지 않도록 */
+}
+
+/*
+ * 기준점은 컬럼의 중심이 아니라 **심볼의 중심**이다. 심볼이 곧 부표 몸체 위에
+ * 얹히는 표식이고, 캔버스는 몸체를 투영한 좌표를 여기에 그대로 넣는다.
+ * 라벨까지 포함해 중앙 정렬하면 심볼이 몸체 아래로 밀려난다.
+ */
 .proxy {
   position: absolute;
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
   transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
   color: #ffffff;
   text-align: center;
 }
@@ -85,8 +101,14 @@
 }
 
 .proxyLabel {
+  position: absolute;
+  top: calc(100% + 0.2rem);
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
+  width: max-content;
+  max-width: 40vw;
   font-size: 0.85rem;
   font-weight: 500;
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
@@ -109,7 +131,7 @@
 .floatWindow,
 .listWindow {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   top: 18vh;
   left: 50%;
   transform: translateX(-50%);
@@ -177,4 +199,17 @@
 .listBody span {
   font-size: 0.85rem;
   opacity: 0.7;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* 캔버스가 뜨면 밴드 폴백 배경을 끈다 (캔버스가 같은 밴드를 그린다). */
+.pool[data-pool-ready='canvas'] .waterBands {
+  background: none;
 }
