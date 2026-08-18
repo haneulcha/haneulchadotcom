@@ -92,6 +92,7 @@
 }
 
 .proxySymbol {
+  view-transition-name: var(--vt-name);
   display: grid;
   place-items: center;
   width: 44px;
@@ -212,4 +213,12 @@
 /* 캔버스가 뜨면 밴드 폴백 배경을 끈다 (캔버스가 같은 밴드를 그린다). */
 .pool[data-pool-ready='canvas'] .waterBands {
   background: none;
+}
+
+/*
+ * 창이 열리면 프록시의 전환 이름을 끈다. 같은 view-transition-name이 두 엘리먼트에
+ * 동시에 존재하면 브라우저가 전환 전체를 건너뛴다.
+ */
+.pool:has([role='dialog']) .proxySymbol {
+  view-transition-name: none;
 }

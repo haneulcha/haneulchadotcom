@@ -55,7 +55,8 @@ export default function PoolCanvasImpl({ onReady, proxyEls }: PoolCanvasProps) {
         }
       },
       onReady,
-      onDwell: (id) => navigate({ to: '/p/$id', params: { id } }),
+      onDwell: (id) =>
+        navigate({ to: '/p/$id', params: { id }, viewTransition: true }),
     });
 
     const onMediaChange = () => scene.setReducedMotion(media.matches);

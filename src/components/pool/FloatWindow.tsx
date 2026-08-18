@@ -14,7 +14,7 @@ export function FloatWindow({ float }: { float: PoolFloat }) {
   // Esc = 닫기 (스펙 「인터랙션」 표)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') navigate({ to: '/' });
+      if (e.key === 'Escape') navigate({ to: '/', viewTransition: true });
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -39,7 +39,7 @@ export function FloatWindow({ float }: { float: PoolFloat }) {
         <nav className={aboutStyles.buttonWrapper}>
           <button
             className={aboutStyles.close}
-            onClick={() => navigate({ to: '/' })}
+            onClick={() => navigate({ to: '/', viewTransition: true })}
           >
             <strong className={aboutStyles.inlineContent}></strong>
           </button>
@@ -53,7 +53,11 @@ export function FloatWindow({ float }: { float: PoolFloat }) {
             <strong className={aboutStyles.inlineContent}></strong>
           </button>
         </nav>
-        <span data-symbol-id={float.id} className={styles.windowSymbol}>
+        <span
+          data-symbol-id={float.id}
+          className={styles.windowSymbol}
+          style={{ viewTransitionName: `float-${float.id}` }}
+        >
           <FloatSymbol name={float.symbol} />
         </span>
         {float.title}

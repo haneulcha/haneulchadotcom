@@ -20,12 +20,15 @@ function About() {
 
   return (
     <main className={`aboutPage ${styles.main}`}>
-      <div className={styles.contentWrapper}>
+      <div
+        className={styles.contentWrapper}
+        style={{ viewTransitionName: 'window-about' }}
+      >
         <div className={styles.titlebar}>
           <nav className={styles.buttonWrapper}>
             <button
               className={styles.close}
-              onClick={() => navigate({ to: '/' })}
+              onClick={() => navigate({ to: '/', viewTransition: true })}
             >
               <strong className={styles.inlineContent}></strong>
             </button>

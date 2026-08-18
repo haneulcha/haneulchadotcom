@@ -23,7 +23,7 @@ export function ListWindow({ onClose }: { onClose: () => void }) {
       <ul className={styles.listBody}>
         {sortNewestFirst(floats).map((f) => (
           <li key={f.id}>
-            <Link to="/p/$id" params={{ id: f.id }}>
+            <Link to="/p/$id" params={{ id: f.id }} viewTransition>
               {f.title}
             </Link>
             <span>
@@ -32,7 +32,9 @@ export function ListWindow({ onClose }: { onClose: () => void }) {
           </li>
         ))}
         <li>
-          <Link to="/about">이력서</Link>
+          <Link to="/about" viewTransition>
+            이력서
+          </Link>
         </li>
       </ul>
     </div>

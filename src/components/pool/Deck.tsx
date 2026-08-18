@@ -7,8 +7,11 @@ export function Deck({ onToggleList }: { onToggleList: () => void }) {
   return (
     <header className={styles.deck}>
       <nav aria-label="데크" className={styles.deckNav}>
-        <Link to="/about" className={styles.deckItem}>
-          <span data-symbol-id="about">
+        <Link to="/about" className={styles.deckItem} viewTransition>
+          <span
+            data-symbol-id="about"
+            style={{ viewTransitionName: 'window-about' }}
+          >
             <FloatSymbol name="clipboard" />
           </span>
           이력서
