@@ -1,12 +1,14 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import content from '@/contents/resume.json';
 import styles from '@/styles/About.module.css';
 
+export const Route = createFileRoute('/about')({
+  component: About,
+});
+
 function About() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const closeToggleHandler = () => {
     const detailsTags = document.querySelectorAll('details');
@@ -21,7 +23,10 @@ function About() {
       <div className={styles.contentWrapper}>
         <div className={styles.titlebar}>
           <nav className={styles.buttonWrapper}>
-            <button className={styles.close} onClick={() => router.push('/')}>
+            <button
+              className={styles.close}
+              onClick={() => navigate({ to: '/' })}
+            >
               <strong className={styles.inlineContent}></strong>
             </button>
 
@@ -47,7 +52,7 @@ function About() {
             <tbody>
               {content.infoLink.map((item, idx) => (
                 <tr key={item.id + idx}>
-                  <td scope="row">{item.id}</td>
+                  <th scope="row">{item.id}</th>
                   <td>
                     <a
                       href={item.href}
@@ -72,17 +77,17 @@ function About() {
               <table className={styles.infoTable}>
                 <tbody>
                   <tr key="info-table-1">
-                    <td scope="row">기간</td>
+                    <th scope="row">기간</th>
                     <td>{item.period}</td>
                   </tr>
                   <tr key="info-table-2">
-                    <td scope="row">업무</td>
+                    <th scope="row">업무</th>
                     <td>{item.position}</td>
                   </tr>
                   <tr key="info-table-3">
-                    <td scope="row">
+                    <th scope="row">
                       <strong>기술</strong>
-                    </td>
+                    </th>
                     <td>
                       {item.tech.map(
                         (tech, idx) =>
@@ -176,5 +181,3 @@ function About() {
     </main>
   );
 }
-
-export default About;

@@ -13,7 +13,8 @@
 
 ## 기술 스택
 
-- [Next.js](https://nextjs.org) (App Router) / React
+- [TanStack Start](https://tanstack.com/start) / TanStack Router / React
+- Vite + Nitro (두 라우트를 정적 프리렌더)
 - TypeScript
 - CSS Modules + CSS 변수 토큰
 - pnpm / Node
@@ -41,18 +42,25 @@ pnpm dev
 | `pnpm lint`         | ESLint 검사                  |
 | `pnpm format`       | Prettier 포매팅              |
 | `pnpm format:check` | 포매팅 검사 (CI가 쓰는 모드) |
+| `pnpm test`         | Playwright 테스트            |
 | `pnpm commit`       | Commitizen으로 커밋          |
+
+`pnpm test`는 빌드 결과물을 서빙해서 검사하므로 먼저 `pnpm build`가 되어 있어야 한다.
 
 ## 디렉터리 구조
 
 ```
 src/
-├── app/          라우트. layout.tsx가 루트 셸, page.tsx가 각 화면
+├── routes/       파일 기반 라우트. __root.tsx가 루트 문서
+├── router.tsx    라우터 생성
 ├── contents/     콘텐츠 데이터. resume.json이 이력서의 단일 소스
 └── styles/       global.css(토큰·리셋) + 화면별 *.module.css
-public/           정적 자산
-docs/             설계 문서
+public/           정적 자산 (favicon, robots.txt, sitemap.xml)
+tests/            Playwright 테스트와 스크린샷 기준선
+docs/             설계 문서와 구현 계획
 ```
+
+`src/routeTree.gen.ts`는 빌드가 생성한다. 커밋하되 직접 수정하지 않는다.
 
 `@/` 별칭으로 `src/` 아래를, `@/public/` 별칭으로 `public/` 아래를 가리킨다.
 
@@ -63,8 +71,10 @@ docs/             설계 문서
 렌더되므로(`dangerouslySetInnerHTML`) 태그를 넣을 수 있다. JSON 문자열 안이라 속성에는
 작은따옴표를 쓴다. 외부 입력이 아닌 직접 작성한 콘텐츠에만 해당한다.
 
-단, "최종 수정" 날짜는 예외다. `src/app/about/page.tsx`에 하드코딩되어 있어 거기서
+단, "최종 수정" 날짜는 예외다. `src/routes/about.tsx`에 하드코딩되어 있어 거기서
 함께 갱신해야 한다.
+
+라우트를 추가하면 `public/sitemap.xml`도 함께 갱신한다.
 
 ## 커밋 규칙
 

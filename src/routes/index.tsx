@@ -1,13 +1,17 @@
-import Link from 'next/link';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import styles from '@/styles/Home.module.css';
 
-export default function Home() {
+export const Route = createFileRoute('/')({
+  component: Home,
+});
+
+function Home() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
         <h1 className={styles.title}>
-          <Link href="/about" className={styles.typo1}>
+          <Link to="/about" className={styles.typo1}>
             ㅊ
           </Link>
           <a
