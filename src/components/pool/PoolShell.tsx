@@ -5,13 +5,13 @@ import { computePositions, sortNewestFirst } from '@/lib/pool/positions';
 import styles from '@/styles/Pool.module.css';
 import { Deck } from './Deck';
 import { FloatProxy } from './FloatProxy';
+import { ListWindow } from './ListWindow';
 
 const ordered = sortNewestFirst(floats); // DOM 순서 = Tab 순서 = 최신→과거
 const positions = new Map(computePositions(floats).map((p) => [p.id, p]));
 
 export function PoolShell({ children }: { children: ReactNode }) {
-  // ListWindow는 Task 3에서 붙는다. 그때 listOpen을 다시 구조분해한다.
-  const [, setListOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
   const proxyEls = useRef(new Map<string, HTMLAnchorElement>());
 
   return (
@@ -31,6 +31,7 @@ export function PoolShell({ children }: { children: ReactNode }) {
           />
         ))}
       </nav>
+      {listOpen && <ListWindow onClose={() => setListOpen(false)} />}
       {children}
     </div>
   );

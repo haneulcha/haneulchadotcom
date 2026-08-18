@@ -105,3 +105,76 @@
     0 0 0 3px rgb(255 255 255 / 0.9),
     0 0 0 7px rgb(255 255 255 / 0.35);
 }
+
+.floatWindow,
+.listWindow {
+  position: absolute;
+  z-index: 3;
+  top: 18vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 92vw);
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.25);
+  background: rgb(251 252 255 / 0.88); /* 살짝 반투명 — 물이 비친다 */
+  color: var(--color);
+}
+
+.floatWindow.zoomed {
+  width: min(1024px, 96vw); /* 초록 = 확대: /about과 같은 max-width */
+}
+
+.windowSymbol {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--point-color);
+}
+
+.windowBody {
+  padding: 1.5rem 2rem 2rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.windowBody summary {
+  color: var(--point-color);
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0.75rem 0 0.25rem;
+}
+.windowBody img {
+  max-width: 100%;
+}
+.windowSubtitle {
+  font-weight: 500;
+}
+
+.listBody {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  list-style: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.listBody li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.listBody a {
+  color: var(--point-color);
+  font-weight: 500;
+}
+.listBody a:hover {
+  color: var(--point-color-hover);
+}
+.listBody span {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
