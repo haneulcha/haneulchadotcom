@@ -6,7 +6,6 @@ import {
   DECK_FRACTION,
   FLOOR_DEEP,
   FLOOR_SHALLOW,
-  WATER_Y,
   WORLD_DEPTH,
   type PoolColors,
   type SceneFloat,
@@ -18,6 +17,7 @@ import {
   type FloatObject,
 } from './floats';
 import { worldZFromTopFraction } from './geometry';
+import { createWater, type Water } from './water';
 
 export type PoolSceneOptions = {
   colors: PoolColors;
@@ -95,46 +95,6 @@ function createDeck(colors: PoolColors, worldWidth: number) {
   return { mesh, geometry, material };
 }
 
-/** Task 5의 물: 평평하다. Task 6이 Gerstner·굴절·프레넬로 교체한다. */
-function createWater(colors: PoolColors, worldWidth: number) {
-  const waterDepth = WORLD_DEPTH / 2 - DECK_Z;
-  const geometry = new THREE.PlaneGeometry(worldWidth, waterDepth, 192, 192);
-  const material = new THREE.ShaderMaterial({
-    transparent: true,
-    uniforms: {
-      uShallow: { value: new THREE.Color(colors.shallow) },
-      uMid: { value: new THREE.Color(colors.mid) },
-      uDeep: { value: new THREE.Color(colors.deep) },
-      // Task 6의 Gerstner 파가 읽는다. reduced-motion이면 멈춘 채로 남는다.
-      uTime: { value: 0 },
-    },
-    vertexShader: /* glsl */ `
-      varying float vT;
-      void main() {
-        vT = uv.y;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    // 수심 필드에 대한 3밴드 양자화 (스펙 「시각 스타일」). 합성 이미지가 아니라
-    // 수심을 임계한다 — 그래야 밴딩이 아니라 스타일이 된다.
-    fragmentShader: /* glsl */ `
-      uniform vec3 uShallow;
-      uniform vec3 uMid;
-      uniform vec3 uDeep;
-      varying float vT;
-      void main() {
-        float d = 1.0 - vT; // 0 = 데크 쪽(얕음), 1 = 먼 쪽(깊음)
-        vec3 c = d < 0.333 ? uShallow : (d < 0.666 ? uMid : uDeep);
-        gl_FragColor = vec4(c, 0.82);
-      }
-    `,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.set(0, WATER_Y, DECK_Z + waterDepth / 2);
-  return { mesh, geometry, material };
-}
-
 export function createPoolScene(
   canvas: HTMLCanvasElement,
   opts: PoolSceneOptions,
@@ -158,11 +118,28 @@ export function createPoolScene(
   const ambient = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(sun, ambient);
 
+  const waterDepth = WORLD_DEPTH / 2 - DECK_Z;
+  const waterCenterZ = DECK_Z + waterDepth / 2;
+  const segments = opts.rippleSize === 256 ? 96 : 192;
+
   let worldWidth = WORLD_DEPTH;
   let floor = createFloor(opts.colors, worldWidth);
   let deck = createDeck(opts.colors, worldWidth);
-  let water = createWater(opts.colors, worldWidth);
+  let water: Water = createWater(
+    opts.colors,
+    worldWidth,
+    waterDepth,
+    waterCenterZ,
+    segments,
+  );
   scene.add(floor.mesh, deck.mesh, water.mesh);
+
+  // 굴절용 씬 렌더 타깃 — 수면을 끈 채로 바닥·데크·부표를 굽는다.
+  const sceneRT = new THREE.WebGLRenderTarget(1, 1, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+  });
+  water.material.uniforms.uSceneTex.value = sceneRT.texture;
 
   const floatObjects: FloatObject[] = createFloats(opts.floats, worldWidth);
   for (const f of floatObjects) scene.add(f.mesh);
@@ -173,11 +150,11 @@ export function createPoolScene(
     floor.material.dispose();
     deck.geometry.dispose();
     deck.material.dispose();
-    water.geometry.dispose();
-    water.material.dispose();
+    water.dispose();
     floor = createFloor(opts.colors, w);
     deck = createDeck(opts.colors, w);
-    water = createWater(opts.colors, w);
+    water = createWater(opts.colors, w, waterDepth, waterCenterZ, segments);
+    water.material.uniforms.uSceneTex.value = sceneRT.texture;
     scene.add(floor.mesh, deck.mesh, water.mesh);
     repositionFloats(floatObjects, opts.floats, w);
   }
@@ -187,6 +164,8 @@ export function createPoolScene(
     const h = canvas.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
+    const dpr = renderer.getPixelRatio();
+    sceneRT.setSize(Math.round(w * dpr), Math.round(h * dpr));
     worldWidth = (WORLD_DEPTH * w) / h;
     camera.left = -worldWidth / 2;
     camera.right = worldWidth / 2;
@@ -209,6 +188,7 @@ export function createPoolScene(
   }
 
   let raf = 0;
+  let elapsed = 0;
   let last = performance.now();
   let readyFired = false;
   let reduced = opts.reducedMotion;
@@ -217,9 +197,17 @@ export function createPoolScene(
     const dt = Math.min((now - last) / 1000, 1 / 20);
     last = now;
     // reduced-motion이면 시간이 흐르지 않는다 — 수면이 그대로 멈춘다.
-    water.material.uniforms.uTime.value += reduced ? 0 : dt;
+    if (!reduced) elapsed += dt;
+    water.update(elapsed);
     // Task 7: 여기서 물결 시뮬레이션과 부력(updateFloats)이 들어온다.
     syncProxies();
+
+    // 1) 수면을 끄고 물 아래를 RT에 굽는다 → 2) 수면이 그것을 왜곡해 샘플한다.
+    water.mesh.visible = false;
+    renderer.setRenderTarget(sceneRT);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    water.mesh.visible = true;
     renderer.render(scene, camera);
     if (!readyFired) {
       readyFired = true;
@@ -247,8 +235,8 @@ export function createPoolScene(
       floor.material.dispose();
       deck.geometry.dispose();
       deck.material.dispose();
-      water.geometry.dispose();
-      water.material.dispose();
+      water.dispose();
+      sceneRT.dispose();
       renderer.dispose();
     },
     setReducedMotion(value: boolean) {
