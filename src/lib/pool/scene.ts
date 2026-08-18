@@ -19,6 +19,12 @@ import {
   type WaveSampler,
 } from './floats';
 import { worldZFromTopFraction } from './geometry';
+import {
+  createCaustics,
+  createFloatMask,
+  type Caustics,
+  type FloatMask,
+} from './caustics';
 import { createRipple, type RippleSim } from './ripple';
 import {
   createWater,
@@ -55,9 +61,15 @@ function createFloor(colors: PoolColors, worldWidth: number) {
   );
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      uTile: { value: new THREE.Color(0xffffff) },
+      // 순백이면 커스틱(거의 순백)이 얹힐 헤드룸이 없다 — 흰 위의 흰색은 안 보인다.
+      // 물빛이 밴 옅은 타일로 두어야 흰 마크가 마크로 읽힌다.
+      uTile: { value: new THREE.Color(0xcfe4ea) },
       uLine: { value: new THREE.Color(colors.tileLine) },
       uScale: { value: 3.0 },
+      uCaustics: { value: null },
+      uMask: { value: null },
+      uCaustic: { value: new THREE.Color(colors.caustic) },
+      uBounds: { value: new THREE.Vector4(-1, 1, -1, 1) },
     },
     vertexShader: /* glsl */ `
       varying vec3 vWorld;
@@ -70,12 +82,29 @@ function createFloor(colors: PoolColors, worldWidth: number) {
       uniform vec3 uTile;
       uniform vec3 uLine;
       uniform float uScale;
+      uniform sampler2D uCaustics;
+      uniform sampler2D uMask;
+      uniform vec3 uCaustic;
+      uniform vec4 uBounds;
       varying vec3 vWorld;
       void main() {
         vec2 g = fract(vWorld.xz * uScale);
         vec2 d = min(g, 1.0 - g);
         float line = 1.0 - smoothstep(0.0, 0.035, min(d.x, d.y));
-        gl_FragColor = vec4(mix(uTile, uLine, line), 1.0);
+        vec3 base = mix(uTile, uLine, line);
+
+        vec2 nuv = vec2(
+          (vWorld.x - uBounds.x) / (uBounds.y - uBounds.x),
+          (vWorld.z - uBounds.z) / (uBounds.w - uBounds.z)
+        );
+        float caustic = texture2D(uCaustics, nuv).r;
+        // 마스크 카메라는 v가 뒤집혀 있다.
+        float shadow = texture2D(uMask, vec2(nuv.x, 1.0 - nuv.y)).r;
+
+        // #10 그림자가 바닥을 어둡게 하고, 그 안에서 커스틱이 죽는다.
+        base *= 1.0 - shadow * 0.45;
+        base = mix(base, uCaustic, clamp(caustic, 0.0, 1.0) * (1.0 - shadow));
+        gl_FragColor = vec4(base, 1.0);
       }
     `,
   });
@@ -159,6 +188,46 @@ export function createPoolScene(
   water.material.uniforms.uRippleTex.value = ripple.texture;
   water.material.uniforms.uRippleAmount.value = RIPPLE_AMOUNT;
 
+  const waterBounds = () => ({
+    minX: -worldWidth / 2,
+    maxX: worldWidth / 2,
+    minZ: waterCenterZ - waterDepth / 2,
+    maxZ: waterCenterZ + waterDepth / 2,
+  });
+  const floorY = (FLOOR_SHALLOW + FLOOR_DEEP) / 2;
+  const sunDir = new THREE.Vector3(0.15, 1, 0.1).normalize();
+
+  const caustics: Caustics = createCaustics(
+    renderer,
+    opts.rippleSize,
+    waterBounds(),
+    floorY,
+    sunDir,
+  );
+  const floatMask: FloatMask = createFloatMask(renderer, 256);
+  // 마스크 카메라는 물 영역만 덮는다 — 바닥·수면 셰이더의 uv와 짝이다.
+  const maskCamera = new THREE.OrthographicCamera(0, 1, 1, 0, 0.1, 50);
+  maskCamera.up.set(0, 0, -1);
+  maskCamera.position.set(0, 10, 0);
+  maskCamera.lookAt(0, 0, 0);
+
+  function syncBounds() {
+    const b = waterBounds();
+    ripple.setBounds(b);
+    caustics.setBounds(b, floorY);
+    maskCamera.left = b.minX;
+    maskCamera.right = b.maxX;
+    maskCamera.top = -b.minZ;
+    maskCamera.bottom = -b.maxZ;
+    maskCamera.updateProjectionMatrix();
+    const v = new THREE.Vector4(b.minX, b.maxX, b.minZ, b.maxZ);
+    floor.material.uniforms.uBounds.value.copy(v);
+    floor.material.uniforms.uCaustics.value = caustics.texture;
+    floor.material.uniforms.uMask.value = floatMask.texture;
+    water.material.uniforms.uBounds.value.copy(v);
+    water.material.uniforms.uMask.value = floatMask.texture;
+  }
+
   const waves: WaveSampler = {
     height: (x, z) =>
       gerstnerHeight(x, z, elapsed) + ripple.sampleHeight(x, z) * RIPPLE_AMOUNT,
@@ -176,6 +245,7 @@ export function createPoolScene(
 
   const floatObjects: FloatObject[] = createFloats(opts.floats, worldWidth);
   for (const f of floatObjects) scene.add(f.mesh);
+  syncBounds();
 
   function rebuildForWidth(w: number) {
     scene.remove(floor.mesh, deck.mesh, water.mesh);
@@ -192,12 +262,7 @@ export function createPoolScene(
     water.material.uniforms.uRippleAmount.value = RIPPLE_AMOUNT;
     scene.add(floor.mesh, deck.mesh, water.mesh);
     repositionFloats(floatObjects, opts.floats, w);
-    ripple.setBounds({
-      minX: -w / 2,
-      maxX: w / 2,
-      minZ: waterCenterZ - waterDepth / 2,
-      maxZ: waterCenterZ + waterDepth / 2,
-    });
+    syncBounds();
   }
 
   function resize() {
@@ -253,6 +318,18 @@ export function createPoolScene(
       updateFloats(floatObjects, dt, waves);
     }
     water.material.uniforms.uRippleTex.value = ripple.texture;
+
+    // 커스틱은 **지금 이 수면**에서 계산한다 — 파문을 만들면 그 자리가 함께 변한다 (#5).
+    floatMask.update(
+      floatObjects.map((f) => f.mesh),
+      maskCamera,
+    );
+    caustics.update(ripple.texture, elapsed, RIPPLE_AMOUNT);
+    floor.material.uniforms.uCaustics.value = caustics.texture;
+    floor.material.uniforms.uMask.value = floatMask.texture;
+    water.material.uniforms.uMask.value = floatMask.texture;
+    renderer.setClearColor(opts.colors.deck, 1);
+
     syncProxies();
 
     // 1) 수면을 끄고 물 아래를 RT에 굽는다 → 2) 수면이 그것을 왜곡해 샘플한다.
@@ -290,6 +367,8 @@ export function createPoolScene(
       deck.material.dispose();
       water.dispose();
       ripple.dispose();
+      caustics.dispose();
+      floatMask.dispose();
       sceneRT.dispose();
       renderer.dispose();
     },

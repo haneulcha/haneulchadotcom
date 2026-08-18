@@ -23,8 +23,30 @@ const float A${i} = ${w.amp.toFixed(4)};`;
   }).join('\n');
 }
 
-const VERT = /* glsl */ `
+/**
+ * 수면 높이장 GLSL. 커스틱 패스가 **같은 수면**을 봐야 파문과 커스틱이 동기화된다
+ * (체크리스트 #5). 그래서 문자열로 노출해 두 셰이더가 공유한다.
+ */
+export const WAVE_GLSL = /* glsl */ `
 ${waveConstants()}
+
+float waveH(vec2 p, vec4 w, float a, float t) {
+  return a * sin(dot(w.xy, p) * w.z + t * w.w);
+}
+vec2 waveD(vec2 p, vec4 w, float a, float t) {
+  float c = a * w.z * cos(dot(w.xy, p) * w.z + t * w.w);
+  return vec2(c * w.x, c * w.y);
+}
+float surfaceH(vec2 p, float t) {
+  return waveH(p, W0, A0, t) + waveH(p, W1, A1, t) + waveH(p, W2, A2, t);
+}
+vec2 surfaceD(vec2 p, float t) {
+  return waveD(p, W0, A0, t) + waveD(p, W1, A1, t) + waveD(p, W2, A2, t);
+}
+`;
+
+const VERT = /* glsl */ `
+${WAVE_GLSL}
 
 uniform float uTime;
 uniform sampler2D uRippleTex;
@@ -36,21 +58,12 @@ varying vec3 vNormal2;
 varying vec2 vScreenUv;
 varying float vDepthT;
 
-// 높이장과 그 해석적 미분. 진폭이 낮아 순수 사인 합으로 두고, 노멀은 미분에서 얻는다.
-float waveH(vec2 p, vec4 w, float a) {
-  return a * sin(dot(w.xy, p) * w.z + uTime * w.w);
-}
-vec2 waveD(vec2 p, vec4 w, float a) {
-  float c = a * w.z * cos(dot(w.xy, p) * w.z + uTime * w.w);
-  return vec2(c * w.x, c * w.y);
-}
-
 void main() {
   vec4 world = modelMatrix * vec4(position, 1.0);
   vec2 p = world.xz;
 
-  float h = waveH(p, W0, A0) + waveH(p, W1, A1) + waveH(p, W2, A2);
-  vec2 d = waveD(p, W0, A0) + waveD(p, W1, A1) + waveD(p, W2, A2);
+  float h = surfaceH(p, uTime);
+  vec2 d = surfaceD(p, uTime);
 
   // Task 7의 물결 시뮬 높이. uRippleAmount가 0이면 무시된다.
   // plane을 -90° 눕히면 uv.y가 world z와 반대 방향이 된다.
@@ -80,6 +93,9 @@ uniform vec3 uDeep;
 uniform sampler2D uSceneTex;
 uniform vec3 uSunDir;
 uniform vec3 uVirtualEye;
+uniform sampler2D uMask;
+uniform vec4 uBounds;
+uniform float uFoamWidth;
 
 varying vec3 vWorld;
 varying vec3 vNormal2;
@@ -113,6 +129,19 @@ void main() {
   // 정오 스페큘러 — 좁고 하드한 하이라이트
   float spec = pow(max(dot(reflect(-uSunDir, n), viewDir), 0.0), 240.0);
   color += spec * 0.8;
+
+  // #7 접촉 포말. 마스크의 G(살짝 키운 실루엣) − R(실제)이 부표 둘레의 링이고,
+  // 풀 경계까지의 거리가 벽 쪽 포말이다. 하드 엣지가 스타일이므로 step으로 자른다.
+  vec2 nuv = vec2(
+    (vWorld.x - uBounds.x) / (uBounds.y - uBounds.x),
+    (vWorld.z - uBounds.z) / (uBounds.w - uBounds.z)
+  );
+  vec4 m = texture2D(uMask, vec2(nuv.x, 1.0 - nuv.y));
+  float ring = clamp(m.g - m.r, 0.0, 1.0);
+  float edge = min(min(nuv.x, 1.0 - nuv.x), min(nuv.y, 1.0 - nuv.y));
+  float wall = 1.0 - smoothstep(0.0, uFoamWidth, edge);
+  float foam = max(step(0.4, ring), step(0.5, wall));
+  color = mix(color, vec3(1.0), foam);
 
   gl_FragColor = vec4(color, 1.0);
 }
@@ -192,6 +221,16 @@ export function createWater(
         ),
       },
       uSunDir: { value: new THREE.Vector3(0.15, 1, 0.1).normalize() },
+      uMask: { value: null },
+      uBounds: {
+        value: new THREE.Vector4(
+          -worldWidth / 2,
+          worldWidth / 2,
+          centerZ - waterDepth / 2,
+          centerZ + waterDepth / 2,
+        ),
+      },
+      uFoamWidth: { value: 0.012 }, // 판단 필요 (J4)
       // 데크 쪽 위에 선 가상 시점 — 먼 쪽일수록 시선각이 낮아진다.
       uVirtualEye: {
         value: new THREE.Vector3(0, 3.0, centerZ - waterDepth / 2 - 1.0),
