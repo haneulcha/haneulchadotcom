@@ -96,6 +96,11 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
   (`eslint-config-prettier`로 충돌 규칙을 꺼 둔다).
 - pre-commit에서 lint-staged가, commit-msg에서 commitlint가 husky를 통해 돈다.
 
+## 모델 분담
+
+Fable5는 판단과 설계와 품질 게이트에 충실하며, 리서치는 Sonnet, 구현은 Codex, 기계 작업은
+하위 모델에게 위임한다.
+
 ## 버전이 최신이 아닌 이유
 
 **TypeScript 6.0.3** (최신 7.0.2): `typescript-eslint`가 TS 7.0에서 실행을 거부한다.
