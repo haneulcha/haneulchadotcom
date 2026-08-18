@@ -1,0 +1,107 @@
+.pool {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--pool-deck);
+}
+
+.deck {
+  position: relative;
+  z-index: 2;
+  height: 14vh; /* positions.ts의 DECK_FRACTION 0.14와 짝 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  background: var(--pool-deck);
+  color: var(--color);
+}
+
+.deckNav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.deckItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--point-color);
+}
+.deckItem:hover {
+  color: var(--point-color-hover);
+}
+
+.listToggle {
+  color: var(--point-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+}
+
+.copyright {
+  font-size: 0.8rem;
+  color: var(--color);
+  opacity: 0.5;
+}
+
+.water {
+  position: absolute;
+  inset: 14vh 0 0 0;
+  z-index: 2;
+  /* 캔버스 부재 시(그리고 캔버스 로드 전) 물색 밴드 폴백 */
+  background: linear-gradient(
+    to bottom,
+    var(--pool-water-shallow) 0 33%,
+    var(--pool-water-mid) 33% 66%,
+    var(--pool-water-deep) 66% 100%
+  );
+}
+
+.proxy {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+.proxy[data-status='archived'] {
+  filter: saturate(0.4) opacity(0.75);
+}
+
+.proxySymbol {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.18);
+}
+
+.proxyLabel {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+}
+.proxyLabel small {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* 포커스 링 = 물결 링 (정적 버전) */
+.proxy:focus-visible {
+  outline: none;
+}
+.proxy:focus-visible .proxySymbol {
+  box-shadow:
+    0 0 0 3px rgb(255 255 255 / 0.9),
+    0 0 0 7px rgb(255 255 255 / 0.35);
+}
