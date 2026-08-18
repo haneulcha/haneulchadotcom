@@ -1,7 +1,8 @@
 # CLAUDE.md
 
-차하늘의 개인 웹사이트(haneulcha.com). 랜딩 화면과 이력서 화면 두 개로 이루어진
-정적 사이트이며 Vercel에 배포된다.
+차하늘의 개인 웹사이트(haneulcha.com). 탑다운 수영장 랜딩(`/`), 부표별 창(`/p/$id`),
+이력서(`/about`)로 이루어진 정적 사이트이며 Vercel에 배포된다. 랜딩은 Three.js 물 캔버스
+위에 DOM 오버레이(부표 프록시 `<a>`)가 얹힌 구조다 — 캔버스가 없어도 완결 동작한다.
 
 ## 명령어
 
@@ -27,16 +28,22 @@ Node는 `.nvmrc`의 22를 따른다.
 ```
 src/
 ├── routes/
-│   ├── __root.tsx      루트 문서. <html lang="ko">, head(), global.css
-│   ├── index.tsx       / — 랜딩
-│   └── about.tsx       /about — 이력서
-├── router.tsx          라우터 생성 (getRouter export)
-├── routeTree.gen.ts    자동 생성. 커밋하되 직접 수정하지 않는다
+│   ├── __root.tsx        루트 문서. <html lang="ko">, head(), global.css
+│   ├── _pool.tsx         풀 레이아웃 (캔버스 + 프록시 + <Outlet>)
+│   ├── _pool.index.tsx   / — 풀 (창 없음)
+│   ├── _pool.p.$id.tsx   /p/$id — 부표 창
+│   └── about.tsx         /about — 이력서 (캔버스 밖)
+├── components/pool/      데크·프록시·창·목록·심볼·캔버스 경계
+├── lib/pool/             Three.js 씬 (jeantimex/threejs-water 포팅 기반)
+├── router.tsx            라우터 생성 (getRouter export)
+├── routeTree.gen.ts      자동 생성. 커밋하되 직접 수정하지 않는다
 ├── contents/
-│   └── resume.json     이력서의 단일 데이터 소스
+│   ├── pool.json         부표의 단일 데이터 소스 (전 필드 평문 — HTML 금지)
+│   ├── resume.json       이력서의 단일 데이터 소스 (최종 수정일 포함)
+│   └── types.ts + pool.ts/resume.ts   타입과 재수출 모듈
 └── styles/
-    ├── global.css      CSS 변수 토큰 + 리셋
-    └── *.module.css    화면별 CSS Modules
+    ├── global.css        CSS 변수 토큰 (--pool-* 포함) + 리셋
+    └── *.module.css      화면별 CSS Modules
 ```
 
 경로 별칭은 `@/*` → `src/*`, `@/public/*` → `public/*`. **`tsconfig.json`과
@@ -46,9 +53,12 @@ src/
 ## 알아둘 것
 
 **이력서 내용은 `src/contents/resume.json`에서 고친다.** `/about`은 이 JSON을 그대로
-렌더하므로 항목을 추가·수정할 때 컴포넌트 구조를 손댈 일은 없다. **예외가 하나 있다** —
-"최종 수정" 날짜만은 `src/routes/about.tsx`에 하드코딩되어 있어 거기서 갱신해야 한다
-(이 날짜를 JSON으로 옮기는 건 아래 기술 부채에 있다).
+렌더하므로 항목을 추가·수정할 때 컴포넌트 구조를 손댈 일은 없다. 이력서 수정은
+`resume.json` 한 파일로 닫힌다 ("최종 수정" 날짜는 `lastUpdatedAt` 필드).
+
+**부표는 `src/contents/pool.json`에서 고친다.** 전 필드 평문 — HTML 문자열 금지. 항목을
+추가하면 `/p/$id`가 자동으로 생기므로 `public/sitemap.xml`에 URL을 추가한다. 세로 위치는
+`date`에서 √ 매핑으로 계산된다 (`lib/pool/positions.ts`) — 선형으로 바꾸지 마라.
 
 **`resume.json` 안의 HTML 문자열은 속성에 작은따옴표를 쓴다** (`<a href='...'>`).
 JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. 기존 관례를 따라라.
@@ -59,6 +69,7 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 **`about.tsx`의 닫기 버튼은 `<button>`이어야 한다.** `About.module.css`가
 `.buttonWrapper button`으로 엘리먼트 선택자를 쓰기 때문에 `<Link>`(=`<a>`)로 바꾸면
 타이틀바 신호등 스타일이 깨진다. 그래서 라우팅에 `<Link>`가 아니라 `useNavigate()`를 쓴다.
+`/p/$id` 창의 신호등도 `About.module.css`를 공유하므로 같은 제약이다.
 
 **`about.tsx`의 `className={`aboutPage ${styles.main}`}`에서 `aboutPage`는 전역
 클래스다.** CSS Modules 클래스가 아니라 `global.css`의 `.aboutPage *::selection`이 걸려
@@ -77,10 +88,15 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 **라우트를 추가하면 `public/sitemap.xml`도 갱신한다.** 생성기를 붙이지 않고 정적 파일로
 관리한다.
 
+**Playwright 스크린샷은 reduced-motion을 강제해 캔버스를 결정적으로 만든 상태에서 찍는다**
+(`tests/pages.spec.ts`의 `gotoPoolDeterministic`). 캔버스를 마스킹하지 마라.
+
 ## 테스트
 
-`tests/pages.spec.ts`가 Playwright로 두 라우트의 스크린샷과 상호작용(`<details>` 전체 토글,
-닫기 버튼 내비게이션)을 검사한다. 기준선 PNG는 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
+`tests/pages.spec.ts`가 Playwright로 두 화면의 스크린샷(랜딩은 reduced-motion 강제로
+결정화), 부표 창 열기/닫기(클릭·Esc·닫기 버튼), 프록시 순서(최신→과거), 목록 창 토글,
+데크→이력서 내비게이션, `/about`의 `<details>` 토글을 검사한다. 기준선 PNG는
+`tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
 
 - **`pnpm test` 전에 `pnpm build`가 필요하다.** 빌드 결과물을 서빙해서 검사한다.
 - 기준선은 **darwin 전용**이다. 다른 OS에서는 스크린샷이 어긋나므로 CI에 붙어 있지 않다.
@@ -119,9 +135,6 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
 **이 목록이 정본이다** — 설계 문서에도 비슷한 목록이 있지만 그건 작성 시점의 스냅숏이다.
 
 - `about.tsx`가 183줄 단일 컴포넌트다. 섹션별로 쪼갤 여지가 있다.
-- `resume.json`에 타입 정의가 없다. 구조적 추론에만 기대고 있다.
-- "최종 수정" 날짜가 `about.tsx`에 하드코딩되어 있다. `resume.json`으로 옮기면
-  이력서 수정이 JSON 한 파일로 닫힌다.
 - Playwright 기준선이 darwin 전용이라 CI에 붙어 있지 않다. CI에서 돌리려면 리눅스
   기준선을 함께 만들거나 컨테이너로 렌더 환경을 고정해야 한다.
 - OG 이미지가 없다.

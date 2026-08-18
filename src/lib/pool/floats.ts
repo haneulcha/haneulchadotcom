@@ -99,7 +99,7 @@ export function updateFloats(
     o.nextImpulse -= dt;
     if (o.nextImpulse <= 0) {
       o.nextImpulse = 0.8;
-      waves.impulse(x, z, 0.02 * o.bobScale, 0.15);
+      waves.impulse(x, z, 0.05 * o.bobScale, 0.06);
     }
   }
 }

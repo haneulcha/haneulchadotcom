@@ -110,7 +110,8 @@ export function createAvatar(colors: PoolColors, startZ: number): Avatar {
       wakeTimer -= dt;
       if (speed > 0.15 && wakeTimer <= 0) {
         wakeTimer = WAKE_INTERVAL;
-        ripple.addImpulse(pos.x, pos.z, 0.015, 0.1);
+        // 판단 필요 (J4): 0.015/0.1로는 화면에서 항적이 보이지 않았다.
+        ripple.addImpulse(pos.x, pos.z, 0.14, 0.05);
       }
 
       // dwell

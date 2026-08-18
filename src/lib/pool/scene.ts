@@ -19,6 +19,7 @@ import {
   type WaveSampler,
 } from './floats';
 import { worldZFromTopFraction } from './geometry';
+import { createProfiler, type Profiler } from './profiler';
 import { createAvatar, type Avatar } from './avatar';
 import {
   createCaustics,
@@ -257,6 +258,14 @@ export function createPoolScene(
   const avatar: Avatar = createAvatar(opts.colors, DECK_Z + 0.5);
   scene.add(avatar.mesh);
 
+  // dev 전용 프로파일러. ?profile이 있을 때만, 확장이 있을 때만.
+  const profiler: Profiler | null =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).has('profile')
+      ? createProfiler(renderer.getContext() as WebGL2RenderingContext)
+      : null;
+  let sinceReport = 0;
+
   // 모바일은 예산이 넉넉하다 (33ms = 30fps).
   const budgetSeconds = opts.rippleSize === 256 ? 1 / 30 : 1 / 60;
 
@@ -336,7 +345,9 @@ export function createPoolScene(
     water.update(elapsed);
     ripple.setPaused(reduced);
     if (!reduced) {
+      profiler?.begin('ripple');
       ripple.step(dt);
+      profiler?.end('ripple');
       // 부력 샘플용 readback은 ~20Hz로 충분하다 (부표 8개, 한 프레임 지연 무해).
       sinceReadback += dt;
       if (sinceReadback >= 1 / 20) {
@@ -358,7 +369,9 @@ export function createPoolScene(
     // reduced-motion이면 한 번만 계산하고 그 프레임을 고정한다 —
     // 정지 화면에도 커스틱 마크는 남아 있어야 한다.
     if (!reduced || !frozenCaustics) {
+      profiler?.begin('caustics');
       caustics.update(ripple.texture, elapsed, RIPPLE_AMOUNT);
+      profiler?.end('caustics');
       if (reduced) frozenCaustics = true;
     }
     floor.material.uniforms.uCaustics.value = caustics.texture;
@@ -370,11 +383,30 @@ export function createPoolScene(
 
     // 1) 수면을 끄고 물 아래를 RT에 굽는다 → 2) 수면이 그것을 왜곡해 샘플한다.
     water.mesh.visible = false;
+    profiler?.begin('refraction-rt');
     renderer.setRenderTarget(sceneRT);
     renderer.render(scene, camera);
     renderer.setRenderTarget(null);
+    profiler?.end('refraction-rt');
     water.mesh.visible = true;
+    profiler?.begin('water');
     renderer.render(scene, camera);
+    profiler?.end('water');
+
+    if (profiler) {
+      sinceReport += dt;
+      if (sinceReport >= 5) {
+        sinceReport = 0;
+        const r = profiler.report();
+        if (r) {
+          console.table(r);
+          console.info('[pool] renderer.info', {
+            calls: renderer.info.render.calls,
+            triangles: renderer.info.render.triangles,
+          });
+        }
+      }
+    }
     if (!readyFired) {
       readyFired = true;
       opts.onReady();
