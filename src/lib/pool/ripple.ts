@@ -25,6 +25,8 @@ export type RippleSim = {
   sampleHeight(worldX: number, worldZ: number): number;
   sampleNormal(worldX: number, worldZ: number): { x: number; z: number };
   setPaused(v: boolean): void;
+  /** 프레임 예산 초과 시 한 단계 내린다. 성공하면 true. */
+  downgrade(): boolean;
   dispose(): void;
 };
 
@@ -143,11 +145,12 @@ export function createRipple(
   let paused = false;
   let readbackPending = false;
   let accumulator = 0;
+  let current = size;
 
   function updateWorldPerTexel() {
     updateMat.uniforms.uWorldPerTexel.value.set(
-      (box.maxX - box.minX) / size,
-      (box.maxZ - box.minZ) / size,
+      (box.maxX - box.minX) / current,
+      (box.maxZ - box.minZ) / current,
     );
   }
   updateWorldPerTexel();
@@ -260,6 +263,15 @@ export function createRipple(
     },
     setPaused(v) {
       paused = v;
+    },
+    downgrade() {
+      if (current <= 128) return false;
+      current = current / 2;
+      a.setSize(current, current);
+      b.setSize(current, current);
+      updateMat.uniforms.uTexel.value.set(1 / current, 1 / current);
+      updateWorldPerTexel();
+      return true;
     },
     dispose() {
       a.dispose();

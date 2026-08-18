@@ -255,8 +255,10 @@ export function createPoolScene(
   syncBounds();
 
   const avatar: Avatar = createAvatar(opts.colors, DECK_Z + 0.5);
-  avatar.setReducedMotion(opts.reducedMotion);
   scene.add(avatar.mesh);
+
+  // 모바일은 예산이 넉넉하다 (33ms = 30fps).
+  const budgetSeconds = opts.rippleSize === 256 ? 1 / 30 : 1 / 60;
 
   function rebuildForWidth(w: number) {
     scene.remove(floor.mesh, deck.mesh, water.mesh);
@@ -304,8 +306,23 @@ export function createPoolScene(
     }
   }
 
+  /**
+   * reduced-motion: 물이 완전히 멈춘다 (스펙 「접근성」).
+   * 파고 진폭 0, 물결 시뮬 정지, 커스틱은 한 프레임 계산 후 고정, 아바타는 즉시 이동.
+   * 프레임 루프 자체는 유지한다 — 프록시 동기화와 즉시 이동을 반영해야 하므로.
+   */
+  function applyReduced(v: boolean) {
+    water.material.uniforms.uWaveAmp.value = v ? 0 : 1;
+    ripple.setPaused(v);
+    avatar.setReducedMotion(v);
+    if (v) frozenCaustics = false; // 다음 프레임에 한 번만 계산하고 고정
+  }
+
   let raf = 0;
   let elapsed = 0;
+  let frozenCaustics = false;
+  let frameAvg = 1 / 60;
+  let downgraded = false;
   let sinceReadback = 0;
   let last = performance.now();
   let readyFired = false;
@@ -338,7 +355,12 @@ export function createPoolScene(
       floatObjects.map((f) => f.mesh),
       maskCamera,
     );
-    caustics.update(ripple.texture, elapsed, RIPPLE_AMOUNT);
+    // reduced-motion이면 한 번만 계산하고 그 프레임을 고정한다 —
+    // 정지 화면에도 커스틱 마크는 남아 있어야 한다.
+    if (!reduced || !frozenCaustics) {
+      caustics.update(ripple.texture, elapsed, RIPPLE_AMOUNT);
+      if (reduced) frozenCaustics = true;
+    }
     floor.material.uniforms.uCaustics.value = caustics.texture;
     floor.material.uniforms.uMask.value = floatMask.texture;
     water.material.uniforms.uMask.value = floatMask.texture;
@@ -357,11 +379,24 @@ export function createPoolScene(
       readyFired = true;
       opts.onReady();
     }
+    // 자동 다운그레이드: 프레임 시간 이동 평균이 예산을 넘으면 물결 RT를 한 단계 내린다.
+    // 세션당 1회, 한 방향으로만 (스펙: 예산 검사는 개발 도구지 런타임 게이트가 아니다).
+    frameAvg = frameAvg * (119 / 120) + dt / 120;
+    if (!downgraded && !reduced && frameAvg > budgetSeconds) {
+      downgraded = true;
+      if (ripple.downgrade()) {
+        console.info(
+          `[pool] 프레임 예산 초과 (평균 ${(frameAvg * 1000).toFixed(1)}ms) — 물결 해상도를 낮춥니다.`,
+        );
+      }
+    }
+
     raf = requestAnimationFrame(frame);
   }
 
   return {
     start() {
+      applyReduced(reduced);
       if (!raf) {
         last = performance.now();
         raf = requestAnimationFrame(frame);
@@ -389,7 +424,7 @@ export function createPoolScene(
     },
     setReducedMotion(value: boolean) {
       reduced = value;
-      avatar.setReducedMotion(value);
+      applyReduced(value);
     },
     setKeys(dx, dz) {
       avatar.setKeys(dx, dz);

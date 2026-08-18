@@ -51,6 +51,7 @@ ${WAVE_GLSL}
 uniform float uTime;
 uniform sampler2D uRippleTex;
 uniform float uRippleAmount;
+uniform float uWaveAmp;
 uniform vec2 uWaterMinMaxZ;
 
 varying vec3 vWorld;
@@ -62,8 +63,9 @@ void main() {
   vec4 world = modelMatrix * vec4(position, 1.0);
   vec2 p = world.xz;
 
-  float h = surfaceH(p, uTime);
-  vec2 d = surfaceD(p, uTime);
+  // reduced-motion이면 uWaveAmp = 0 → 수면이 완전히 평평해진다 (스펙 「접근성」).
+  float h = surfaceH(p, uTime) * uWaveAmp;
+  vec2 d = surfaceD(p, uTime) * uWaveAmp;
 
   // Task 7의 물결 시뮬 높이. uRippleAmount가 0이면 무시된다.
   // plane을 -90° 눕히면 uv.y가 world z와 반대 방향이 된다.
@@ -214,6 +216,7 @@ export function createWater(
       uSceneTex: { value: null },
       uRippleTex: { value: null },
       uRippleAmount: { value: 0 }, // Task 7에서 켠다
+      uWaveAmp: { value: 1 },
       uWaterMinMaxZ: {
         value: new THREE.Vector2(
           centerZ - waterDepth / 2,

@@ -39,13 +39,15 @@ export default function PoolCanvasImpl({ onReady, proxyEls }: PoolCanvasProps) {
     }));
 
     const media = window.matchMedia(REDUCED_MOTION);
-    const isNarrow = window.matchMedia('(max-width: 640px)').matches;
+    // 모바일 판정: 좁은 화면이거나 거친 포인터. 참이면 물결 RT와 수면 분할을 낮춘다.
+    const isMobile =
+      window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
 
     const scene = createPoolScene(canvas, {
       colors: readPoolColors(),
       floats: sceneFloats,
       reducedMotion: media.matches,
-      rippleSize: isNarrow ? 256 : 512,
+      rippleSize: isMobile ? 256 : 512,
       // 매 프레임이라 React 상태를 거치지 않고 DOM을 직접 갱신한다.
       onProxyMove: (id, leftPct, topPct) => {
         const el = proxyEls.current?.get(id);
