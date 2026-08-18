@@ -14,10 +14,19 @@ import {
   createFloats,
   disposeFloats,
   repositionFloats,
+  updateFloats,
   type FloatObject,
+  type WaveSampler,
 } from './floats';
 import { worldZFromTopFraction } from './geometry';
-import { createWater, type Water } from './water';
+import { createRipple, type RippleSim } from './ripple';
+import {
+  createWater,
+  gerstnerGradient,
+  gerstnerHeight,
+  RIPPLE_AMOUNT,
+  type Water,
+} from './water';
 
 export type PoolSceneOptions = {
   colors: PoolColors;
@@ -141,6 +150,30 @@ export function createPoolScene(
   });
   water.material.uniforms.uSceneTex.value = sceneRT.texture;
 
+  const ripple: RippleSim = createRipple(renderer, opts.rippleSize, {
+    minX: -worldWidth / 2,
+    maxX: worldWidth / 2,
+    minZ: waterCenterZ - waterDepth / 2,
+    maxZ: waterCenterZ + waterDepth / 2,
+  });
+  water.material.uniforms.uRippleTex.value = ripple.texture;
+  water.material.uniforms.uRippleAmount.value = RIPPLE_AMOUNT;
+
+  const waves: WaveSampler = {
+    height: (x, z) =>
+      gerstnerHeight(x, z, elapsed) + ripple.sampleHeight(x, z) * RIPPLE_AMOUNT,
+    gradient: (x, z) => {
+      const g = gerstnerGradient(x, z, elapsed);
+      const r = ripple.sampleNormal(x, z);
+      return {
+        x: g.x + r.x * RIPPLE_AMOUNT,
+        z: g.z + r.z * RIPPLE_AMOUNT,
+      };
+    },
+    impulse: (x, z, strength, radius) =>
+      ripple.addImpulse(x, z, strength, radius),
+  };
+
   const floatObjects: FloatObject[] = createFloats(opts.floats, worldWidth);
   for (const f of floatObjects) scene.add(f.mesh);
 
@@ -155,8 +188,16 @@ export function createPoolScene(
     deck = createDeck(opts.colors, w);
     water = createWater(opts.colors, w, waterDepth, waterCenterZ, segments);
     water.material.uniforms.uSceneTex.value = sceneRT.texture;
+    water.material.uniforms.uRippleTex.value = ripple.texture;
+    water.material.uniforms.uRippleAmount.value = RIPPLE_AMOUNT;
     scene.add(floor.mesh, deck.mesh, water.mesh);
     repositionFloats(floatObjects, opts.floats, w);
+    ripple.setBounds({
+      minX: -w / 2,
+      maxX: w / 2,
+      minZ: waterCenterZ - waterDepth / 2,
+      maxZ: waterCenterZ + waterDepth / 2,
+    });
   }
 
   function resize() {
@@ -189,6 +230,7 @@ export function createPoolScene(
 
   let raf = 0;
   let elapsed = 0;
+  let sinceReadback = 0;
   let last = performance.now();
   let readyFired = false;
   let reduced = opts.reducedMotion;
@@ -199,7 +241,18 @@ export function createPoolScene(
     // reduced-motion이면 시간이 흐르지 않는다 — 수면이 그대로 멈춘다.
     if (!reduced) elapsed += dt;
     water.update(elapsed);
-    // Task 7: 여기서 물결 시뮬레이션과 부력(updateFloats)이 들어온다.
+    ripple.setPaused(reduced);
+    if (!reduced) {
+      ripple.step(dt);
+      // 부력 샘플용 readback은 ~20Hz로 충분하다 (부표 8개, 한 프레임 지연 무해).
+      sinceReadback += dt;
+      if (sinceReadback >= 1 / 20) {
+        sinceReadback = 0;
+        ripple.readback();
+      }
+      updateFloats(floatObjects, dt, waves);
+    }
+    water.material.uniforms.uRippleTex.value = ripple.texture;
     syncProxies();
 
     // 1) 수면을 끄고 물 아래를 RT에 굽는다 → 2) 수면이 그것을 왜곡해 샘플한다.
@@ -236,6 +289,7 @@ export function createPoolScene(
       deck.geometry.dispose();
       deck.material.dispose();
       water.dispose();
+      ripple.dispose();
       sceneRT.dispose();
       renderer.dispose();
     },

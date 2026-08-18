@@ -53,7 +53,8 @@ void main() {
   vec2 d = waveD(p, W0, A0) + waveD(p, W1, A1) + waveD(p, W2, A2);
 
   // Task 7의 물결 시뮬 높이. uRippleAmount가 0이면 무시된다.
-  vec2 rippleUv = vec2(uv.x, uv.y);
+  // plane을 -90° 눕히면 uv.y가 world z와 반대 방향이 된다.
+  vec2 rippleUv = vec2(uv.x, 1.0 - uv.y);
   vec4 ripple = texture2D(uRippleTex, rippleUv);
   h += ripple.r * uRippleAmount;
   d += ripple.ba * uRippleAmount;
@@ -116,6 +117,43 @@ void main() {
   gl_FragColor = vec4(color, 1.0);
 }
 `;
+
+/** 물결 시뮬 높이에 곱하는 배율. 판단 필요 (J4). */
+export const RIPPLE_AMOUNT = 0.35;
+
+const CPU_WAVES = WAVES.map((w) => {
+  const len = Math.hypot(w.dir[0], w.dir[1]);
+  return {
+    dx: w.dir[0] / len,
+    dz: w.dir[1] / len,
+    k: (Math.PI * 2) / w.length,
+    amp: w.amp,
+    speed: w.speed,
+  };
+});
+
+/** 셰이더 버텍스와 같은 높이장 — 부력이 CPU에서 같은 값을 봐야 한다. */
+export function gerstnerHeight(x: number, z: number, t: number): number {
+  let h = 0;
+  for (const w of CPU_WAVES)
+    h += w.amp * Math.sin((w.dx * x + w.dz * z) * w.k + t * w.speed);
+  return h;
+}
+
+export function gerstnerGradient(
+  x: number,
+  z: number,
+  t: number,
+): { x: number; z: number } {
+  let gx = 0;
+  let gz = 0;
+  for (const w of CPU_WAVES) {
+    const c = w.amp * w.k * Math.cos((w.dx * x + w.dz * z) * w.k + t * w.speed);
+    gx += c * w.dx;
+    gz += c * w.dz;
+  }
+  return { x: gx, z: gz };
+}
 
 export type Water = {
   mesh: THREE.Mesh;
