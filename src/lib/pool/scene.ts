@@ -19,6 +19,7 @@ import {
   type WaveSampler,
 } from './floats';
 import { worldZFromTopFraction } from './geometry';
+import { createAvatar, type Avatar } from './avatar';
 import {
   createCaustics,
   createFloatMask,
@@ -42,6 +43,8 @@ export type PoolSceneOptions = {
   /** 매 프레임, 부표별 화면 좌표(%)를 콜백 — PoolShell이 프록시 style에 반영 */
   onProxyMove: (id: string, leftPct: number, topPct: number) => void;
   onReady: () => void; // 첫 프레임 렌더 후 1회
+  /** 아바타가 부표에 머물러 열릴 때 (dwell) */
+  onDwell?: (id: string) => void;
 };
 
 export type PoolScene = {
@@ -49,6 +52,10 @@ export type PoolScene = {
   stop(): void;
   dispose(): void;
   setReducedMotion(v: boolean): void;
+  setKeys(dx: number, dz: number): void;
+  /** 화면 좌표(px) → 월드 좌표. 물 클릭·탭이 쓴다. */
+  swimToScreen(clientX: number, clientY: number): void;
+  swimToFloat(id: string): void;
 };
 
 const DECK_Z = worldZFromTopFraction(DECK_FRACTION); // 데크와 물의 경계
@@ -247,6 +254,10 @@ export function createPoolScene(
   for (const f of floatObjects) scene.add(f.mesh);
   syncBounds();
 
+  const avatar: Avatar = createAvatar(opts.colors, DECK_Z + 0.5);
+  avatar.setReducedMotion(opts.reducedMotion);
+  scene.add(avatar.mesh);
+
   function rebuildForWidth(w: number) {
     scene.remove(floor.mesh, deck.mesh, water.mesh);
     floor.geometry.dispose();
@@ -316,6 +327,9 @@ export function createPoolScene(
         ripple.readback();
       }
       updateFloats(floatObjects, dt, waves);
+      avatar.update(dt, ripple, floatObjects);
+      const dwelled = avatar.pollDwell();
+      if (dwelled) opts.onDwell?.(dwelled);
     }
     water.material.uniforms.uRippleTex.value = ripple.texture;
 
@@ -369,11 +383,27 @@ export function createPoolScene(
       ripple.dispose();
       caustics.dispose();
       floatMask.dispose();
+      avatar.dispose();
       sceneRT.dispose();
       renderer.dispose();
     },
     setReducedMotion(value: boolean) {
       reduced = value;
+      avatar.setReducedMotion(value);
+    },
+    setKeys(dx, dz) {
+      avatar.setKeys(dx, dz);
+    },
+    swimToScreen(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const ndcX = ((clientX - rect.left) / rect.width) * 2 - 1;
+      const ndcY = 1 - ((clientY - rect.top) / rect.height) * 2;
+      // 카메라 up = (0,0,-1)이므로 ndcY = -2z/DEPTH (geometry.ts와 같은 규약).
+      avatar.swimTo((ndcX * worldWidth) / 2, (-ndcY * WORLD_DEPTH) / 2);
+    },
+    swimToFloat(id) {
+      const f = floatObjects.find((o) => o.id === id);
+      if (f) avatar.swimTo(f.mesh.position.x, f.mesh.position.z);
     },
   };
 }
