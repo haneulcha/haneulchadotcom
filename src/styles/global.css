@@ -7,6 +7,15 @@
   --point-color-hover: #1678ef;
   --point-color-selection: #3067ab;
   --border-color: #e6e8e6;
+
+  --pool-deck: #f5f3ee;
+  --pool-water-shallow: #4ec5d9;
+  --pool-water-mid: #1e9bc4;
+  --pool-water-deep: #0b5e7d;
+  --pool-caustic: #fbffff; /* 커스틱 마크 — 거의 순백 */
+  --pool-tile-line: #d8dee2; /* 바닥 타일 그리드 */
+  --pool-ink: #0b3b4a; /* 물·크림 위에 얹는 잉크 */
+  --pool-avatar: #ad1d1d; /* ㅊ — 기존 typo1의 승격 */
 }
 
 html,

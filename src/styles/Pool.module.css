@@ -1,0 +1,370 @@
+.pool {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--pool-deck);
+}
+
+/*
+ * 데크는 물가다 — 헤더가 아니라 콘크리트 바닥. 아래 가장자리의 coping(테두리석)이
+ * 물과 만나는 경계를 만들고, 미세한 줄눈이 콘크리트 판을 나눈다.
+ */
+.deck {
+  position: relative;
+  z-index: 3;
+  height: 14vh;
+  min-height: 92px;
+  /* 줄눈을 그렸더니 콘크리트가 아니라 레이아웃 컬럼으로 읽혔다. 대신 물에서
+     올라온 반사광이 콘크리트 아래쪽을 살짝 밝히는 결만 남긴다. */
+  background: linear-gradient(
+    to bottom,
+    var(--pool-deck) 55%,
+    color-mix(in oklab, var(--pool-deck) 92%, var(--pool-water-shallow)) 100%
+  );
+  color: var(--pool-ink);
+}
+
+.deckInner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 clamp(1rem, 3vw, 2.5rem) 0.5rem;
+}
+
+/* 물가의 테두리석. 데크와 물 사이의 밝은 한 줄. */
+.coping {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 7px;
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.85),
+    rgb(255 255 255 / 0.25)
+  );
+  border-bottom: 1px solid rgb(11 59 74 / 0.16);
+}
+
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--pool-ink);
+}
+
+.wordmarkSub {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  opacity: 0.55;
+}
+
+.deckNav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1.8vw, 1.5rem);
+  font-size: 0.9375rem;
+}
+
+.deckItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--pool-ink);
+  font-weight: 500;
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.deckItem:hover,
+.deckItem:focus-visible {
+  border-bottom-color: var(--pool-ink);
+}
+
+.listToggle {
+  color: var(--pool-ink);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding: 0.25rem 0.7rem;
+  border: 1.5px solid rgb(11 59 74 / 0.35);
+  border-radius: 999px;
+  transition: background-color 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.listToggle:hover,
+.listToggle:focus-visible {
+  background: rgb(11 59 74 / 0.08);
+}
+
+/* 물. Three.js 시각 층을 폐기했으므로(2026-08-19 postmortem) 이 밴드가 물 자체다. */
+.waterBands {
+  position: absolute;
+  inset: 14vh 0 0 0;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--pool-water-shallow) 0 33%,
+    var(--pool-water-mid) 33% 66%,
+    var(--pool-water-deep) 66% 100%
+  );
+}
+
+/*
+ * 프록시의 위치 기준은 **풀 전체**여야 한다 — 캔버스가 뷰포트 전체를 덮고,
+ * syncProxies가 주는 좌표도 뷰포트 기준이기 때문이다. 이 컨테이너를 물 영역으로
+ * 좁히면 같은 숫자가 다른 기준으로 해석되어 심볼이 몸체에서 미끄러진다.
+ */
+.water {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none; /* 빈 영역이 클릭을 가로채지 않도록 */
+}
+
+/*
+ * 프록시의 기준점은 부표의 중심이고, 크기는 --float-size가 정한다. 이름표를
+ * `top: 100%`에 두면 몸체를 비켜간다.
+ */
+.proxy {
+  position: absolute;
+  pointer-events: auto;
+  width: var(--float-size, 56px);
+  height: var(--float-size, 56px);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.proxy[data-status='archived'] {
+  opacity: 0.85;
+}
+
+/*
+ * 3D 몸체를 폐기했으므로(2026-08-19 postmortem) 이 원반이 곧 부표다.
+ * 심볼을 물 위에 직접 놓으면 밴드마다 대비가 달라진다 — 얕은 청록에서 5.5:1이던
+ * 잉크가 깊은 남색에서는 1.6:1로 떨어진다. 원반이 자기 배경을 들고 다녀야
+ * 세 밴드 어디에서든 같은 대비로 읽힌다.
+ */
+.proxySymbol {
+  view-transition-name: var(--vt-name);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--pool-deck);
+  color: var(--pool-ink);
+}
+
+/* 지나간 것은 물빛 쪽으로 가라앉는다. */
+.proxy[data-status='archived'] .proxySymbol {
+  background: color-mix(in oklab, var(--pool-deck) 42%, var(--pool-water-deep));
+  color: color-mix(in oklab, var(--pool-ink) 55%, var(--pool-deck));
+}
+
+/*
+ * 이름표는 물 위에 놓인 크림색 태그다. 흰 글씨 + 밝은 청록 물은 대비가 2:1도 안 나와
+ * 읽히지 않았다 — 불투명한 판 위의 잉크라야 어느 밴드 위에서든 읽힌다.
+ */
+.proxyLabel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-block;
+  width: max-content;
+  max-width: 34vw;
+  padding: 0.2em 0.5em;
+  background: var(--pool-deck);
+  color: var(--pool-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* 한 줄 설명은 평소엔 감춘다. 여덟 개가 동시에 떠 있으면 물이 글자로 뒤덮인다. */
+.proxySub {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 30vw;
+  padding: 0.15em 0.45em;
+  background: var(--pool-ink);
+  color: var(--pool-deck);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.proxy:hover .proxySub,
+.proxy:focus-visible .proxySub {
+  opacity: 1;
+}
+.proxy:hover .proxyLabel,
+.proxy:focus-visible .proxyLabel {
+  opacity: 0;
+}
+
+.proxy:focus-visible {
+  outline: none;
+}
+.proxy:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 2px solid var(--pool-deck);
+  border-radius: 50%;
+}
+
+.floatWindow,
+.listWindow {
+  position: absolute;
+  z-index: 4;
+  top: 18vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 92vw);
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.25);
+  background: rgb(251 252 255 / 0.88); /* 살짝 반투명 — 물이 비친다 */
+  color: var(--color);
+}
+
+.floatWindow.zoomed {
+  width: min(1024px, 96vw); /* 초록 = 확대: /about과 같은 max-width */
+}
+
+/*
+ * 창 심볼은 타이틀바 안에 인라인으로 앉는다. 예전엔 타이틀바 위로 띄웠는데
+ * 타이틀바가 position:static이라 기준을 못 찾고 화면 최상단으로 떨어져 나갔다.
+ */
+.windowSymbol {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.4rem;
+  vertical-align: -0.3em;
+  color: var(--pool-ink);
+}
+.windowSymbol svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 정보는 두 칸 격자로 — dt/dd가 줄바꿈되어 늘어지지 않게. */
+.windowBody dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 1.25rem;
+  margin: 0.35rem 0 0;
+}
+.windowBody dt {
+  font-weight: 500;
+  opacity: 0.6;
+}
+.windowBody dd {
+  margin: 0;
+}
+.windowBody ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.windowBody {
+  padding: 1.5rem 2rem 2rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.windowBody summary {
+  color: var(--point-color);
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0.75rem 0 0.25rem;
+}
+.windowBody img {
+  max-width: 100%;
+}
+.windowSubtitle {
+  font-weight: 500;
+}
+
+.listBody {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  list-style: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.listBody li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.listBody a {
+  color: var(--point-color);
+  font-weight: 500;
+}
+.listBody a:hover {
+  color: var(--point-color-hover);
+}
+.listBody span {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/*
+ * 창이 열리면 프록시의 전환 이름을 끈다. 같은 view-transition-name이 두 엘리먼트에
+ * 동시에 존재하면 브라우저가 전환 전체를 건너뛴다.
+ */
+.pool:has([role='dialog']) .proxySymbol {
+  view-transition-name: none;
+}
+
+/* 세로 화면: 데크가 3줄로 줄바꿈되던 것을 한 줄로 눌러 담는다. */
+@media (max-width: 640px) {
+  /* 데크 높이는 14vh를 유지한다 — 씬이 DECK_FRACTION으로 같은 비율을 예약하므로
+     줄이면 캔버스의 데크 띠가 DOM 데크 아래로 삐져나온다 (크림색 빈 공간). */
+  .deckInner {
+    padding: 0 0.9rem 0.4rem;
+    gap: 0.5rem;
+  }
+  .wordmark {
+    font-size: 1.05rem;
+  }
+  .wordmarkSub {
+    display: none;
+  }
+  .deckNav {
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .deckItem svg {
+    display: none;
+  }
+  .listToggle {
+    font-size: 0.8125rem;
+    padding: 0.2rem 0.55rem;
+  }
+  .proxyLabel {
+    font-size: 0.75rem;
+    max-width: 46vw;
+  }
+}

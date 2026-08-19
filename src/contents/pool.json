@@ -1,0 +1,120 @@
+[
+  {
+    "id": "jecheori",
+    "kind": "made",
+    "date": "2026-08",
+    "x": 0.3,
+    "title": "제철어리",
+    "subtitle": "이번 주 제철 과일·채소",
+    "symbol": "fruit",
+    "status": "live",
+    "tech": ["TanStack Start"],
+    "links": [
+      { "label": "사이트", "href": "https://haneulcha.github.io/jecheori/" },
+      { "label": "저장소", "href": "https://github.com/haneulcha/jecheori" }
+    ]
+  },
+  {
+    "id": "health-defense",
+    "kind": "made",
+    "date": "2026-08",
+    "x": 0.68,
+    "title": "health-defense",
+    "subtitle": "건강을 지키는 타워디펜스 PoC (만드는 중)",
+    "symbol": "shield",
+    "status": "wip",
+    "tech": ["PixiJS", "TypeScript"],
+    "links": [
+      {
+        "label": "저장소",
+        "href": "https://github.com/haneulcha/health-defense-webview-poc"
+      }
+    ]
+  },
+  {
+    "id": "pourover",
+    "kind": "made",
+    "date": "2026-07",
+    "x": 0.48,
+    "title": "pourover.work",
+    "subtitle": "핸드드립 레시피 계산기",
+    "symbol": "dripper",
+    "status": "live",
+    "tech": ["TypeScript"],
+    "links": [
+      { "label": "사이트", "href": "https://pourover.work" },
+      {
+        "label": "저장소",
+        "href": "https://github.com/haneulcha/pourover-work"
+      }
+    ]
+  },
+  {
+    "id": "knitt",
+    "kind": "made",
+    "date": "2026-03",
+    "x": 0.78,
+    "title": "knitt",
+    "subtitle": "뜨개 패턴 DSL — 코수 검증과 SVG 렌더 (만드는 중)",
+    "symbol": "yarn",
+    "status": "wip",
+    "tech": ["TypeScript"],
+    "links": [
+      { "label": "저장소", "href": "https://github.com/haneulcha/knitt" }
+    ]
+  },
+  {
+    "id": "blog",
+    "kind": "written",
+    "date": "2025-11",
+    "x": 0.22,
+    "title": "blog.haneulcha.com",
+    "subtitle": "시시콜콜한 것들을 쓰는 블로그",
+    "symbol": "notebook",
+    "status": "live",
+    "tech": ["Astro", "MDX"],
+    "links": [
+      { "label": "블로그", "href": "https://blog.haneulcha.com/" },
+      { "label": "저장소", "href": "https://github.com/haneulcha/bloguu" }
+    ]
+  },
+  {
+    "id": "tistory",
+    "kind": "written",
+    "date": "2022-07",
+    "x": 0.6,
+    "title": "kicksky.tistory.com",
+    "subtitle": "2022년까지의 개발 블로그",
+    "symbol": "pen",
+    "status": "archived",
+    "links": [{ "label": "블로그", "href": "https://kicksky.tistory.com/" }]
+  },
+  {
+    "id": "galpi",
+    "kind": "made",
+    "date": "2020-07",
+    "x": 0.35,
+    "title": "갈피",
+    "subtitle": "책 글귀를 이미지 카드로 남기는 소셜 앱",
+    "symbol": "book",
+    "status": "archived",
+    "tech": ["React", "redux", "Node.js/Express", "MongoDB"],
+    "links": [
+      { "label": "저장소", "href": "https://github.com/haneulcha/galpi" }
+    ]
+  },
+  {
+    "id": "kinderguri",
+    "kind": "made",
+    "date": "2020-04",
+    "x": 0.72,
+    "title": "킨더구리",
+    "subtitle": "구리시 유치원·어린이집 검색",
+    "symbol": "building",
+    "status": "archived",
+    "tech": ["React", "Apollo", "KakaoMap API"],
+    "links": [
+      { "label": "저장소", "href": "https://github.com/haneulcha/kinderguri" }
+    ]
+  }
+]
