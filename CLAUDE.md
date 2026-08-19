@@ -1,8 +1,12 @@
 # CLAUDE.md
 
 차하늘의 개인 웹사이트(haneulcha.com). 탑다운 수영장 랜딩(`/`), 부표별 창(`/p/$id`),
-이력서(`/about`)로 이루어진 정적 사이트이며 Vercel에 배포된다. 랜딩은 Three.js 물 캔버스
-위에 DOM 오버레이(부표 프록시 `<a>`)가 얹힌 구조다 — 캔버스가 없어도 완결 동작한다.
+이력서(`/about`)로 이루어진 정적 사이트이며 Vercel에 배포된다. 랜딩은 CSS 물 밴드 위에
+부표 프록시 `<a>`가 놓인 DOM 구조다.
+
+**Three.js 시각 층은 폐기됐다** (2026-08-19). 배경과 판단 근거는
+`docs/superpowers/specs/2026-08-19-pool-canvas-postmortem.md`. 다시 시도하기 전에
+그 문서를 먼저 읽어라 — 같은 방식으로 실패하지 않기 위한 기록이다.
 
 ## 명령어
 
@@ -33,8 +37,8 @@ src/
 │   ├── _pool.index.tsx   / — 풀 (창 없음)
 │   ├── _pool.p.$id.tsx   /p/$id — 부표 창
 │   └── about.tsx         /about — 이력서 (캔버스 밖)
-├── components/pool/      데크·프록시·창·목록·심볼·캔버스 경계
-├── lib/pool/             Three.js 씬 (jeantimex/threejs-water 포팅 기반)
+├── components/pool/      데크·프록시·창·목록·심볼
+├── lib/pool/             positions.ts — date → 세로 위치 √ 매핑
 ├── router.tsx            라우터 생성 (getRouter export)
 ├── routeTree.gen.ts      자동 생성. 커밋하되 직접 수정하지 않는다
 ├── contents/
@@ -88,13 +92,13 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 **라우트를 추가하면 `public/sitemap.xml`도 갱신한다.** 생성기를 붙이지 않고 정적 파일로
 관리한다.
 
-**Playwright 스크린샷은 reduced-motion을 강제해 캔버스를 결정적으로 만든 상태에서 찍는다**
-(`tests/pages.spec.ts`의 `gotoPoolDeterministic`). 캔버스를 마스킹하지 마라.
+**Playwright 스크린샷은 reduced-motion을 강제한 상태에서 찍는다**
+(`tests/pages.spec.ts`의 `gotoPoolDeterministic`).
 
 ## 테스트
 
-`tests/pages.spec.ts`가 Playwright로 두 화면의 스크린샷(랜딩은 reduced-motion 강제로
-결정화), 부표 창 열기/닫기(클릭·Esc·닫기 버튼), 프록시 순서(최신→과거), 목록 창 토글,
+`tests/pages.spec.ts`가 Playwright로 두 화면의 스크린샷(랜딩은 reduced-motion 강제),
+부표 창 열기/닫기(클릭·Esc·닫기 버튼), 프록시 순서(최신→과거), 목록 창 토글,
 데크→이력서 내비게이션, `/about`의 `<details>` 토글을 검사한다. 기준선 PNG는
 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
 
@@ -138,4 +142,6 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
 - Playwright 기준선이 darwin 전용이라 CI에 붙어 있지 않다. CI에서 돌리려면 리눅스
   기준선을 함께 만들거나 컨테이너로 렌더 환경을 고정해야 한다.
 - OG 이미지가 없다.
+- 랜딩의 시각 층이 CSS 밴드 세 개뿐이다. 시각 언어를 다시 올릴지, 수영장 컨셉 자체를
+  다시 볼지는 미정 (postmortem 참고).
 - `__root.tsx`의 description이 같은 말을 반복하는 키워드 나열이다. 다시 쓸 가치가 있다.

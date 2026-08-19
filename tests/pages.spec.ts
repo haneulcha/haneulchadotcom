@@ -8,13 +8,11 @@ async function waitForFonts(page: Page) {
   });
 }
 
-// WebGL 출력은 실행 간 비결정적이다. 캔버스를 마스킹하는 대신 reduced-motion을
-// 강제해 씬 자체를 결정적으로 만든다 (파도 0, 시뮬 정지, 정적 커스틱, 아바타 고정).
 async function gotoPoolDeterministic(page: Page, url: string) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(url);
   await waitForFonts(page);
-  await page.waitForSelector('[data-pool-ready="canvas"]', { timeout: 15000 });
+  await page.waitForSelector('nav[aria-label="풀에 떠 있는 것들"]');
 }
 
 test('pool landing renders', async ({ page }) => {

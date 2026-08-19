@@ -101,7 +101,7 @@
   background: rgb(11 59 74 / 0.08);
 }
 
-/* 캔버스 부재 시(그리고 캔버스 로드 전) 물색 밴드 폴백. 물 영역만 덮는다. */
+/* 물. Three.js 시각 층을 폐기했으므로(2026-08-19 postmortem) 이 밴드가 물 자체다. */
 .waterBands {
   position: absolute;
   inset: 14vh 0 0 0;
@@ -127,9 +127,8 @@
 }
 
 /*
- * 프록시의 기준점은 **부표 몸체의 중심**이다. 캔버스가 매 프레임 몸체의 화면 지름을
- * --float-size로 넣어 주므로, 프록시는 몸체와 정확히 같은 크기를 갖는다. 그 덕에
- * 이름표를 `top: 100%`에 두기만 하면 뷰포트와 무관하게 몸체를 비켜간다.
+ * 프록시의 기준점은 부표의 중심이고, 크기는 --float-size가 정한다. 이름표를
+ * `top: 100%`에 두면 몸체를 비켜간다.
  */
 .proxy {
   position: absolute;
@@ -145,8 +144,10 @@
 }
 
 /*
- * 심볼은 몸체 위에 직접 얹은 잉크 자국이다. 예전의 반투명 흰 원은 물에 뜬 물건이
- * 아니라 UI 버튼처럼 읽혔다.
+ * 3D 몸체를 폐기했으므로(2026-08-19 postmortem) 이 원반이 곧 부표다.
+ * 심볼을 물 위에 직접 놓으면 밴드마다 대비가 달라진다 — 얕은 청록에서 5.5:1이던
+ * 잉크가 깊은 남색에서는 1.6:1로 떨어진다. 원반이 자기 배경을 들고 다녀야
+ * 세 밴드 어디에서든 같은 대비로 읽힌다.
  */
 .proxySymbol {
   view-transition-name: var(--vt-name);
@@ -156,14 +157,17 @@
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--pool-deck);
   color: var(--pool-ink);
-  opacity: 0.88;
 }
 
-/* 물빛으로 가라앉은 몸체 위에서는 잉크가 얼룩이 된다 — 크림색으로 뒤집는다. */
+/* 지나간 것은 물빛 쪽으로 가라앉는다. */
 .proxy[data-status='archived'] .proxySymbol {
-  color: var(--pool-deck);
-  opacity: 0.8;
+  background: color-mix(in oklab, var(--pool-deck) 42%, var(--pool-water-deep));
+  color: color-mix(in oklab, var(--pool-ink) 55%, var(--pool-deck));
 }
 
 /*
@@ -323,19 +327,6 @@
 .listBody span {
   font-size: 0.85rem;
   opacity: 0.7;
-}
-
-.canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-}
-
-/* 캔버스가 뜨면 밴드 폴백 배경을 끈다 (캔버스가 같은 밴드를 그린다). */
-.pool[data-pool-ready='canvas'] .waterBands {
-  background: none;
 }
 
 /*
