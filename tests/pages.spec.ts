@@ -66,7 +66,7 @@ test('window close button navigates back to pool', async ({ page }) => {
 
 test('list toggle opens and closes the list window', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '목록으로 보기' }).click();
+  await page.getByRole('button', { name: '목록', exact: true }).click();
   const list = page.getByRole('dialog', { name: '목록으로 보기' });
   await expect(list).toBeVisible();
   await expect(list.locator('a[href^="/p/"]')).toHaveCount(8);

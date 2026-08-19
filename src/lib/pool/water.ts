@@ -5,10 +5,18 @@ import * as THREE from 'three';
 import { WATER_Y, type PoolColors } from './constants';
 
 // 판단 필요 (J4): 정오의 잔물결 — 낮은 진폭. 방향(xz) / 파장 / 진폭 / 속도.
+/*
+ * 판단 필요 (J4): 정오의 잔물결 — 낮은 진폭.
+ * 파장은 서로 정수비가 되지 않게 고른다. 3개에 정수비가 섞이면 커스틱이 일정 간격으로
+ * 반복되는 세로 리본이 되어 타일링한 텍스처처럼 보인다 — 실제로 그랬다.
+ * 방향도 고르게 흩어야 세로 결이 생기지 않는다.
+ */
 const WAVES = [
-  { dir: [1.0, 0.3], length: 1.8, amp: 0.025, speed: 0.6 },
-  { dir: [-0.6, 1.0], length: 1.1, amp: 0.018, speed: 0.9 },
-  { dir: [0.3, -1.0], length: 0.6, amp: 0.01, speed: 1.3 },
+  { dir: [1.0, 0.28], length: 1.83, amp: 0.024, speed: 0.61 },
+  { dir: [-0.62, 1.0], length: 1.09, amp: 0.017, speed: 0.89 },
+  { dir: [0.31, -1.0], length: 0.67, amp: 0.011, speed: 1.27 },
+  { dir: [0.86, 0.74], length: 2.71, amp: 0.014, speed: 0.43 },
+  { dir: [-0.93, -0.41], length: 0.41, amp: 0.007, speed: 1.71 },
 ] as const;
 
 function waveConstants(): string {
@@ -38,10 +46,12 @@ vec2 waveD(vec2 p, vec4 w, float a, float t) {
   return vec2(c * w.x, c * w.y);
 }
 float surfaceH(vec2 p, float t) {
-  return waveH(p, W0, A0, t) + waveH(p, W1, A1, t) + waveH(p, W2, A2, t);
+  return waveH(p, W0, A0, t) + waveH(p, W1, A1, t) + waveH(p, W2, A2, t)
+       + waveH(p, W3, A3, t) + waveH(p, W4, A4, t);
 }
 vec2 surfaceD(vec2 p, float t) {
-  return waveD(p, W0, A0, t) + waveD(p, W1, A1, t) + waveD(p, W2, A2, t);
+  return waveD(p, W0, A0, t) + waveD(p, W1, A1, t) + waveD(p, W2, A2, t)
+       + waveD(p, W3, A3, t) + waveD(p, W4, A4, t);
 }
 `;
 
@@ -109,9 +119,19 @@ void main() {
 
   // #1 수심 밴드 — 부드러운 그라디언트가 아니라 하드 경계 3단.
   // 양자화 대상은 **수심 필드**다 (합성 이미지가 아니라). 스펙 「시각 스타일」.
+  //
+  // 경계를 수심만으로 자르면 화면을 가로지르는 완벽한 직선이 되어 CSS 그라디언트처럼
+  // 보인다. 수면의 실제 기울기로 임계값을 흔들어 Hockney의 "직소 퍼즐 조각" 같은
+  // 들쭉날쭉한 색면 경계를 만든다 — 여전히 임계 대상은 수심 필드다.
+  // 교란은 **저주파**여야 한다. 파 노멀(고주파)을 쓰면 표범 무늬가 된다 — 실제로 그랬다.
+  // 월드 좌표를 느리게 도는 사인 둘로 해안선처럼 완만하게 굽은 경계를 만든다.
+  float wobble =
+      sin(vWorld.x * 0.42 + vWorld.z * 0.21) * 0.035
+    + sin(vWorld.x * 0.17 - vWorld.z * 0.33 + 1.7) * 0.028;
+  float band = vDepthT + wobble;
   vec3 waterColor = uShallow;
-  waterColor = mix(waterColor, uMid, step(0.33, vDepthT));
-  waterColor = mix(waterColor, uDeep, step(0.66, vDepthT));
+  waterColor = mix(waterColor, uMid, step(0.33, band));
+  waterColor = mix(waterColor, uDeep, step(0.66, band));
 
   // #3 굴절 + #4 어긋남이 수심에 비례
   vec2 refractUv = vScreenUv + n.xz * (0.02 + 0.06 * vDepthT);
@@ -123,10 +143,18 @@ void main() {
   // 가상 시점만으로는 깊은 쪽 물색이 어두워 상쇄되어 먼 가장자리가 밝아지지 않았다.
   // 계획이 지정한 대체 근사: 수심 가중을 더해 먼 쪽 반사를 확실히 세운다.
   float grazing = pow(1.0 - max(dot(n, viewDir), 0.0), 3.0);
-  float fresnel = smoothstep(0.6, 1.0, vDepthT) * 0.5 + grazing;
-  vec3 sky = vec3(0.92, 0.97, 1.0);
+  float fresnel = smoothstep(0.6, 1.0, vDepthT) * 0.22 + grazing * 0.6;
+  // 거의 흰 하늘을 섞으면 깊은 쪽이 회색 안개가 된다 — 실제로 그랬다.
+  // 채도 있는 하늘색이라야 깊은 물이 물로 남는다.
+  vec3 sky = vec3(0.62, 0.84, 0.94);
 
-  vec3 color = mix(floorSeen * waterColor, sky, clamp(fresnel, 0.0, 1.0) * 0.6);
+  // 물빛이 주인공이고 바닥은 그 안에 비쳐 보이는 무늬다.
+  // 곱하기(floorSeen * waterColor)로 합성하면 깊은 쪽에서 두 어두운 값이 겹쳐
+  // 채도가 죽고 회색 진흙색이 된다 — 실제로 그랬다. 얕을수록 바닥이 잘 보이는
+  // mix로 바꿔 물색의 채도를 끝까지 지킨다.
+  float clarity = 1.0 - vDepthT * 0.72;
+  vec3 color = mix(waterColor, floorSeen, clarity * 0.40);
+  color = mix(color, sky, clamp(fresnel, 0.0, 1.0) * 0.30);
 
   // 정오 스페큘러 — 좁고 하드한 하이라이트
   float spec = pow(max(dot(reflect(-uSunDir, n), viewDir), 0.0), 240.0);
@@ -142,8 +170,9 @@ void main() {
   float ring = clamp(m.g - m.r, 0.0, 1.0);
   float edge = min(min(nuv.x, 1.0 - nuv.x), min(nuv.y, 1.0 - nuv.y));
   float wall = 1.0 - smoothstep(0.0, uFoamWidth, edge);
-  float foam = max(step(0.4, ring), step(0.5, wall));
-  color = mix(color, vec3(1.0), foam);
+  // 부표를 꽉 두른 흰 테두리는 스티커처럼 보였다. 접촉선은 얇게, 흰색을 다 쓰지 않는다.
+  float foam = max(step(0.8, ring) * 0.42, step(0.5, wall) * 0.85);
+  color = mix(color, vec3(0.97, 0.995, 1.0), foam);
 
   gl_FragColor = vec4(color, 1.0);
 }

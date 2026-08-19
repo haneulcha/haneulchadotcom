@@ -49,11 +49,12 @@ export default function PoolCanvasImpl({ onReady, proxyEls }: PoolCanvasProps) {
       reducedMotion: media.matches,
       rippleSize: isMobile ? 256 : 512,
       // 매 프레임이라 React 상태를 거치지 않고 DOM을 직접 갱신한다.
-      onProxyMove: (id, leftPct, topPct) => {
+      onProxyMove: (id, leftPct, topPct, diameterPx) => {
         const el = proxyEls.current?.get(id);
         if (el) {
           el.style.left = `${leftPct}%`;
           el.style.top = `${topPct}%`;
+          el.style.setProperty('--float-size', `${Math.round(diameterPx)}px`);
         }
       },
       onReady,

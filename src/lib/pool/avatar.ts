@@ -29,11 +29,16 @@ function glyphTexture(color: string): THREE.CanvasTexture {
   canvas.height = size;
   const ctx = canvas.getContext('2d')!;
   ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = color;
-  ctx.font = `bold 200px 'Noto Sans KR', -apple-system, sans-serif`;
+  ctx.font = `bold 190px 'Noto Sans KR', -apple-system, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('ㅊ', size / 2, size / 2 + 10);
+  ctx.lineJoin = 'round';
+  // 크림색 외곽선 — 얕은 청록부터 깊은 남색까지 어느 밴드 위에서도 읽혀야 한다.
+  ctx.strokeStyle = '#f5f3ee';
+  ctx.lineWidth = 22;
+  ctx.strokeText('ㅊ', size / 2, size / 2 + 8);
+  ctx.fillStyle = color;
+  ctx.fillText('ㅊ', size / 2, size / 2 + 8);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
@@ -41,7 +46,7 @@ function glyphTexture(color: string): THREE.CanvasTexture {
 
 export function createAvatar(colors: PoolColors, startZ: number): Avatar {
   const texture = glyphTexture(colors.avatar || '#ad1d1d');
-  const geometry = new THREE.PlaneGeometry(0.8, 0.8);
+  const geometry = new THREE.PlaneGeometry(1.15, 1.15);
   const material = new THREE.MeshBasicMaterial({
     map: texture,
     transparent: true,

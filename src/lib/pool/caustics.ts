@@ -197,7 +197,7 @@ export function createFloatMask(
       // 바깥(초록, 살짝 키움) 먼저 → 안쪽(빨강)이 덮어쓴다. 차이가 접촉 링.
       for (const m of meshes) {
         const big = m.clone();
-        big.scale.multiplyScalar(1.06);
+        big.scale.multiplyScalar(1.09);
         (big as THREE.Mesh).material = outer;
         scene.add(big);
       }

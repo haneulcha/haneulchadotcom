@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import {
   DECK_FRACTION,
   FLOOR_DEEP,
-  FLOOR_SHALLOW,
   WORLD_DEPTH,
   type PoolColors,
   type SceneFloat,
@@ -41,8 +40,17 @@ export type PoolSceneOptions = {
   floats: SceneFloat[];
   reducedMotion: boolean;
   rippleSize: 512 | 256;
-  /** 매 프레임, 부표별 화면 좌표(%)를 콜백 — PoolShell이 프록시 style에 반영 */
-  onProxyMove: (id: string, leftPct: number, topPct: number) => void;
+  /**
+   * 매 프레임, 부표별 화면 좌표(%)와 **화면 지름(px)**을 콜백.
+   * 지름을 넘기는 이유: 프록시가 자기 크기를 몸체에 맞춰야 라벨이 몸체를 비켜간다.
+   * 고정 px로 두면 뷰포트에 따라 라벨이 몸체 위로 올라탄다 — 실제로 그랬다.
+   */
+  onProxyMove: (
+    id: string,
+    leftPct: number,
+    topPct: number,
+    diameterPx: number,
+  ) => void;
   onReady: () => void; // 첫 프레임 렌더 후 1회
   /** 아바타가 부표에 머물러 열릴 때 (dwell) */
   onDwell?: (id: string) => void;
@@ -64,8 +72,8 @@ const DECK_Z = worldZFromTopFraction(DECK_FRACTION); // 데크와 물의 경계
 /** 프로시저럴 타일 바닥. 텍스처 에셋을 쓰지 않는다 (스펙 「시각 스타일」). */
 function createFloor(colors: PoolColors, worldWidth: number) {
   const geometry = new THREE.PlaneGeometry(
-    worldWidth,
-    WORLD_DEPTH / 2 - DECK_Z,
+    worldWidth * 1.05,
+    (WORLD_DEPTH / 2 - DECK_Z) * 1.05,
   );
   const material = new THREE.ShaderMaterial({
     uniforms: {
@@ -73,7 +81,7 @@ function createFloor(colors: PoolColors, worldWidth: number) {
       // 물빛이 밴 옅은 타일로 두어야 흰 마크가 마크로 읽힌다.
       uTile: { value: new THREE.Color(0xcfe4ea) },
       uLine: { value: new THREE.Color(colors.tileLine) },
-      uScale: { value: 3.0 },
+      uScale: { value: 1.15 },
       uCaustics: { value: null },
       uMask: { value: null },
       uCaustic: { value: new THREE.Color(colors.caustic) },
@@ -98,7 +106,7 @@ function createFloor(colors: PoolColors, worldWidth: number) {
       void main() {
         vec2 g = fract(vWorld.xz * uScale);
         vec2 d = min(g, 1.0 - g);
-        float line = 1.0 - smoothstep(0.0, 0.035, min(d.x, d.y));
+        float line = 1.0 - smoothstep(0.0, 0.018, min(d.x, d.y));
         vec3 base = mix(uTile, uLine, line);
 
         vec2 nuv = vec2(
@@ -116,16 +124,16 @@ function createFloor(colors: PoolColors, worldWidth: number) {
       }
     `,
   });
-  // 데크 아래(먼 쪽) 물 영역만 덮는다. 바닥은 얕은 쪽에서 깊은 쪽으로 기운다.
+  /*
+   * 바닥은 평평하다. 얕음→깊음으로 기울이면 기운 만큼 z 투영 길이가 짧아져 물 영역
+   * 끝을 못 덮고(화면 아래가 회색으로 비었다), 타일 격자도 사선으로 찌그러진다 —
+   * 실제로 그랬다. 깊이감은 물색 밴드가 표현하므로 바닥은 평평한 게 맞고,
+   * 그게 Hockney의 평면 색면에도 맞다.
+   */
   const waterDepth = WORLD_DEPTH / 2 - DECK_Z;
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(
-    0,
-    (FLOOR_SHALLOW + FLOOR_DEEP) / 2,
-    DECK_Z + waterDepth / 2,
-  );
-  mesh.rotation.x =
-    -Math.PI / 2 + Math.atan2(FLOOR_SHALLOW - FLOOR_DEEP, waterDepth);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(0, FLOOR_DEEP, DECK_Z + waterDepth / 2);
   return { mesh, geometry, material };
 }
 
@@ -202,7 +210,7 @@ export function createPoolScene(
     minZ: waterCenterZ - waterDepth / 2,
     maxZ: waterCenterZ + waterDepth / 2,
   });
-  const floorY = (FLOOR_SHALLOW + FLOOR_DEEP) / 2;
+  const floorY = FLOOR_DEEP;
   const sunDir = new THREE.Vector3(0.15, 1, 0.1).normalize();
 
   const caustics: Caustics = createCaustics(
@@ -308,10 +316,20 @@ export function createPoolScene(
   resize();
 
   const v = new THREE.Vector3();
+  const bbox = new THREE.Box3();
+  const bsize = new THREE.Vector3();
   function syncProxies() {
+    // 정사영이므로 월드→픽셀 배율은 화면 높이 / WORLD_DEPTH 하나로 결정된다.
+    const pxPerWorld = canvas.clientHeight / WORLD_DEPTH;
     for (const f of floatObjects) {
       v.copy(f.mesh.position).project(camera);
-      opts.onProxyMove(f.id, (v.x * 0.5 + 0.5) * 100, (-v.y * 0.5 + 0.5) * 100);
+      bbox.setFromObject(f.mesh).getSize(bsize);
+      opts.onProxyMove(
+        f.id,
+        (v.x * 0.5 + 0.5) * 100,
+        (-v.y * 0.5 + 0.5) * 100,
+        Math.max(bsize.x, bsize.z) * pxPerWorld,
+      );
     }
   }
 

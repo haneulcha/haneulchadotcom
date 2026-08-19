@@ -41,10 +41,8 @@ export function FloatProxy({ float, y, anchorRef }: Props) {
       >
         <FloatSymbol name={float.symbol} />
       </span>
-      <span className={styles.proxyLabel}>
-        {float.title}
-        <small>{float.subtitle}</small>
-      </span>
+      <span className={styles.proxyLabel}>{float.title}</span>
+      <span className={styles.proxySub}>{float.subtitle}</span>
     </Link>
   );
 }
