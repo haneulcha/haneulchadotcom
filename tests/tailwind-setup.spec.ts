@@ -1,16 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-// global.css는 __root.tsx에서 `?url`로 로드된다. Tailwind 플러그인이 그
-// 경로를 처리하지 못하면 유틸리티가 한 줄도 생성되지 않는다 — 그 경우
-// 이 테스트만 실패하고 스크린샷은 멀쩡히 통과해 문제를 놓치게 된다.
 test('tailwind utilities reach the page through the ?url stylesheet', async ({
   page,
 }) => {
   await page.goto('/');
-  const value = await page
-    .locator('main')
-    .evaluate((el) => getComputedStyle(el).getPropertyValue('--tw-smoke'));
-  expect(value.trim()).toBe('ok');
+  // 랜딩의 'ㅊ'은 이제 text-[#ad1d1d] 유틸리티로만 칠해진다.
+  // 유틸리티가 안 오면 상속색이 나오므로 이 단언이 깨진다.
+  const color = await page
+    .locator('h1 a')
+    .first()
+    .evaluate((el) => getComputedStyle(el).color);
+  expect(color).toBe('rgb(173, 29, 29)');
 });
 
 // 리셋이 @layer base 안에 있는지 스타일시트에서 직접 확인한다. 비레이어로
