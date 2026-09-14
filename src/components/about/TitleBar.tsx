@@ -12,7 +12,7 @@ const glyph = 'inline-block align-top min-w-2 text-[10px] leading-[14px]';
 
 export function TitleBar({ onClose, onToggleAll }: TitleBarProps) {
   return (
-    <div className="relative cursor-default rounded-t-md border-t border-b border-t-[#f3f1f3] border-b-[#b1aeb1] bg-linear-to-r from-[#ebebeb] to-[#d5d5d5] py-[5px] text-center text-[11pt] text-[#4d494d] select-none">
+    <div className="relative cursor-default rounded-t-md border-t border-b border-t-[#f3f1f3] border-b-[#b1aeb1] bg-linear-to-r/srgb from-[#ebebeb] to-[#d5d5d5] py-[5px] text-center text-[11pt] text-[#4d494d] select-none">
       <nav className="absolute top-1/2 flex -translate-y-1/2 gap-x-[7px] pl-3">
         <button
           className={`${light} border border-[#e14640] bg-[#ff6057] hover:border-[#b03537] hover:bg-[#c14645]`}
