@@ -52,7 +52,7 @@ function About() {
           </h1>
 
           <table className={c.infoTable}>
-            <caption className="invisible pointer-events-none absolute -z-10">
+            <caption className="invisible pointer-events-none absolute z-[-1]">
               개인 정보와 관련 링크
             </caption>
             <tbody>
