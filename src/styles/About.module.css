@@ -1,12 +1,8 @@
-.main a {
-  color: var(--point-color);
-}
-.main a:hover {
-  color: var(--point-color-hover);
-}
-
-/* ---------------------------- */
-
+/* 아래 .experienceSection 규칙들은 이제 경력 섹션이 아니라 "개인 프로젝트"
+   (포트폴리오) 섹션에서만 쓰인다 — 이 태스크의 범위 밖이라 about.tsx의 포트폴리오
+   블록은 아직 styles.experienceSection을 그대로 쓴다. JobSection.tsx로 옮겨간
+   부분(h4 div, > ul, details 전부)만 여기서 지웠다; 지우면 포트폴리오 렌더가
+   바뀌는 규칙은 남겨뒀다. */
 .experienceSection {
   margin-top: 1rem;
 }
@@ -14,10 +10,6 @@
 .experienceSection h4 {
   margin: 1.75rem 0 1rem;
   font-size: 20px;
-}
-
-.experienceSection h4 div {
-  display: inline-block;
 }
 
 .experienceSection h4 span {
@@ -40,48 +32,6 @@
   margin: 0 0.7rem;
   font-size: 14px;
   vertical-align: top;
-}
-
-.experienceSection > ul {
-  margin: 1rem 0;
-  padding-left: 0.85rem;
-  list-style: none;
-}
-
-.experienceSection details {
-  overflow: visible;
-}
-
-.experienceSection details summary {
-  margin: 0.35rem 0;
-  line-height: 1.65;
-  font-weight: 500;
-  font-size: 18px;
-  color: var(--point-color);
-  cursor: pointer;
-}
-
-.experienceSection details summary:hover {
-  color: var(--point-color-hover);
-}
-
-.experienceSection details summary span {
-  margin-left: 0.35rem;
-  color: var(--color);
-}
-
-.experienceSection details ul {
-  margin: 0.5rem 0 1rem;
-  padding-left: 1.75rem;
-  list-style-type: '•';
-}
-
-.experienceSection details li {
-  margin-bottom: 0.4rem;
-  font-size: 16px;
-}
-.experienceSection details li div {
-  margin-left: 0.5rem;
 }
 
 .language ul {

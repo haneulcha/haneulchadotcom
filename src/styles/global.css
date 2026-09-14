@@ -74,4 +74,14 @@
     background: var(--point-color-selection);
     color: var(--bg);
   }
+
+  /* resume.json의 HTML 문자열 안에 있는 <a>. dangerouslySetInnerHTML이 만든
+     노드라 JSX에서 className을 못 붙인다 — Tailwind로 옮길 수 없는 유일한
+     규칙이다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다. */
+  .resumeHtml a {
+    color: var(--point-color);
+  }
+  .resumeHtml a:hover {
+    color: var(--point-color-hover);
+  }
 }

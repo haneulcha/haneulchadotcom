@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
+import { ExperienceItem } from '@/components/about/ExperienceItem';
 import { TitleBar } from '@/components/about/TitleBar';
 import * as c from '@/components/about/classes';
 import content from '@/contents/resume';
@@ -81,78 +82,7 @@ function About() {
 
           <h2 className={h2}>경력</h2>
           {content.experience.map((item, idx) => (
-            <div key={item.company + idx}>
-              <h3 className="mt-2 text-[24px]">{item.company}</h3>
-              <table className={c.infoTable}>
-                <tbody>
-                  <tr className={c.infoTableRow} key="info-table-1">
-                    <th className={c.infoTableTh} scope="row">
-                      기간
-                    </th>
-                    <td className={c.infoTableTd}>{item.period}</td>
-                  </tr>
-                  <tr className={c.infoTableRow} key="info-table-2">
-                    <th className={c.infoTableTh} scope="row">
-                      업무
-                    </th>
-                    <td className={c.infoTableTd}>{item.position}</td>
-                  </tr>
-                  <tr className={c.infoTableRow} key="info-table-3">
-                    <th className={c.infoTableTh} scope="row">
-                      <strong>기술</strong>
-                    </th>
-                    <td className={c.infoTableTd}>
-                      {item.tech.map(
-                        (tech, idx) =>
-                          `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {item.section.map((item, idx) => (
-                <section
-                  aria-label="주요 업무"
-                  className={styles.experienceSection}
-                  key={item.title + idx}
-                >
-                  <h4>
-                    <div dangerouslySetInnerHTML={{ __html: item.title }} />
-                    {!!item.period && <span>({item.period})</span>}
-                  </h4>
-                  <p>{item.desc}</p>
-                  <p>
-                    <span>기술 스택</span>
-                    {item.tech.map(
-                      (tech, idx) =>
-                        `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
-                    )}
-                  </p>
-
-                  <ul aria-label="상세 업무">
-                    {item.jobs.map((job, idx) => (
-                      <li key={idx}>
-                        <details open>
-                          <summary>
-                            <span>{job.summary}</span>
-                          </summary>
-                          <ul>
-                            {job.detail.map((item, idx) => (
-                              <li key={item[0] + idx}>
-                                <div
-                                  dangerouslySetInnerHTML={{ __html: item }}
-                                />
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
-            </div>
+            <ExperienceItem item={item} key={item.company + idx} />
           ))}
 
           <h2 className={h2}>개인 프로젝트</h2>
