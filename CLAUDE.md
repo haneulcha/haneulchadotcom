@@ -37,12 +37,19 @@ src/
 │   └── about.tsx         /about — 이력서
 ├── router.tsx            라우터 생성 (getRouter export)
 ├── routeTree.gen.ts      자동 생성. 커밋하되 직접 수정하지 않는다
+├── components/
+│   └── about/             /about 전용 컴포넌트
+│       ├── TitleBar.tsx        macOS 타이틀바 + 신호등 버튼
+│       ├── ExperienceItem.tsx
+│       ├── JobSection.tsx
+│       ├── PortfolioItem.tsx
+│       ├── LanguageList.tsx
+│       └── classes.ts          반복되는 Tailwind 클래스 문자열 상수
 ├── contents/
 │   ├── resume.json       이력서의 단일 데이터 소스 (최종 수정일 포함)
 │   └── types.ts + resume.ts           타입과 재수출 모듈
 └── styles/
-    ├── global.css        CSS 변수 토큰 + 리셋
-    └── *.module.css      화면별 CSS Modules
+    └── global.css        CSS 변수 토큰 + 리셋 + Tailwind import
 ```
 
 경로 별칭은 `@/*` → `src/*`, `@/public/*` → `public/*`. **`tsconfig.json`과
@@ -61,18 +68,36 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 **`package.json`의 `"type": "module"`을 지우지 마라.** 없으면 `vite.config.ts`가 CJS로
 취급되고, ESM 전용인 `@tanstack/react-start/plugin/vite` 로드에 실패해 빌드가 죽는다.
 
-**`about.tsx`의 닫기 버튼은 `<button>`이어야 한다.** `About.module.css`가
-`.buttonWrapper button`으로 엘리먼트 선택자를 쓰기 때문에 `<Link>`(=`<a>`)로 바꾸면
-타이틀바 신호등 스타일이 깨진다. 그래서 라우팅에 `<Link>`가 아니라 `useNavigate()`를 쓴다.
+**`TitleBar`의 닫기 버튼은 `<button>`이어야 한다.** `tests/pages.spec.ts`가
+`page.locator('nav button')`으로 신호등을 찾기 때문에 `<Link>`(=`<a>`)로 바꾸면
+상호작용 테스트 두 개가 깨진다. 그래서 라우팅에 `<Link>`가 아니라
+`useNavigate()`를 쓴다. (Tailwind 이전 전에는 이유가 달랐다 —
+`.buttonWrapper button` 엘리먼트 선택자였다.)
 
-**`about.tsx`의 `className={`aboutPage ${styles.main}`}`에서 `aboutPage`는 전역
-클래스다.** CSS Modules 클래스가 아니라 `global.css`의 `.aboutPage *::selection`이 걸려
-있다. 지우면 텍스트 선택 하이라이트 색이 조용히 사라진다.
+**`about.tsx`의 `className="aboutPage ..."`에서 `aboutPage`는 전역 클래스다.**
+`global.css`의 `.aboutPage *::selection`이 이 클래스를 잡아 텍스트 선택
+하이라이트 색을 입힌다. CSS Modules가 사라진 지금도 이 클래스만은 지우면 안
+된다 — 지우면 선택 하이라이트 색이 조용히 사라진다.
+
+**`global.css`의 리셋은 `@layer base` 안에 있다. 밖으로 꺼내지 마라.** CSS
+캐스케이드에서 비레이어 선언은 레이어 선언을 특정도와 무관하게 이긴다. 리셋이
+비레이어로 돌아가면 `button { all: unset }`이 모든 Tailwind 유틸리티를 이겨
+신호등 버튼이 사각형이 되고, `.aboutPage *::selection`이 `selection:` 유틸리티를
+이겨 선택 하이라이트가 조용히 바뀐다.
+
+**Tailwind는 preflight 없이 쓴다.** `global.css`가 이미 리셋을 갖고 있어
+겹치면 기존 렌더가 흔들린다. `tailwindcss/theme.css`와
+`tailwindcss/utilities.css`만 import한다.
+
+**`global.css`에 자손 선택자가 하나 남아 있다** (`.resumeHtml a`).
+`resume.json`의 HTML 문자열이 `dangerouslySetInnerHTML`로 들어가는 두 자리의
+링크를 잡는다. 그 노드는 React가 만든 것이 아니라 JSX에서 `className`을 붙일 수
+없다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다.
 
 **새로 추가하는 색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
 `--point-color-hover`, `--point-color-selection`, `--border-color`). 다만 기존 코드에는
-하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `About.module.css`의 macOS
-타이틀바·신호등 버튼 색과 `Home.module.css`의 랜딩 타이포 색은 토큰화 대상이 아니다.
+하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `TitleBar.tsx`의 macOS
+타이틀바·신호등 버튼 색과 `index.tsx`의 랜딩 타이포 색은 토큰화 대상이 아니다.
 시키지 않은 색 리팩터링을 시작하지 마라.
 
 **`dangerouslySetInnerHTML`이 `/about`에 두 군데 있다.** `resume.json`의 문자열에
@@ -123,7 +148,6 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
 
 **이 목록이 정본이다** — 설계 문서에도 비슷한 목록이 있지만 그건 작성 시점의 스냅숏이다.
 
-- `about.tsx`가 183줄 단일 컴포넌트다. 섹션별로 쪼갤 여지가 있다.
 - Playwright 기준선이 darwin 전용이라 CI에 붙어 있지 않다. CI에서 돌리려면 리눅스
   기준선을 함께 만들거나 컨테이너로 렌더 환경을 고정해야 한다.
 - OG 이미지가 없다.
