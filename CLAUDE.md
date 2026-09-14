@@ -89,10 +89,20 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 겹치면 기존 렌더가 흔들린다. `tailwindcss/theme.css`와
 `tailwindcss/utilities.css`만 import한다.
 
-**`global.css`에 자손 선택자가 하나 남아 있다** (`.resumeHtml a`).
+**`global.css`에 자손 선택자가 하나 더 있다** (`.resumeHtml a`).
 `resume.json`의 HTML 문자열이 `dangerouslySetInnerHTML`로 들어가는 두 자리의
 링크를 잡는다. 그 노드는 React가 만든 것이 아니라 JSX에서 `className`을 붙일 수
 없다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다.
+
+**Tailwind v4의 `max-[Npx]:`는 `width < Npx`(배타)로 컴파일된다.** CSS의
+`max-width: Npx`는 Npx를 포함(포괄)하므로 그대로 옮기면 정확히 그 픽셀에서
+동작이 어긋난다. `about.tsx`와 `classes.ts`의 `max-[1025px]:`·`max-[321px]:`
+같은 N+1 패턴은 이 어긋남을 상쇄하려고 일부러 한 픽셀 올려 쓴 것이다.
+
+**`global.css`의 유틸리티 import는 `source('..')`를 달고 있다.** 기본 자동
+탐지가 저장소 전체(`docs/`의 예시 클래스 문자열까지)를 훑는 것을 막아 `src`만
+스캔하도록 좁힌 것이다. `global.css`가 다른 위치로 옮겨지거나 두 번째 CSS
+진입점이 생기면 이 상대 경로가 조용히 깨진다.
 
 **새로 추가하는 색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
 `--point-color-hover`, `--point-color-selection`, `--border-color`). 다만 기존 코드에는
