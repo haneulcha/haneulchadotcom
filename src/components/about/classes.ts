@@ -5,6 +5,10 @@
 // exact widths instead of one pixel later. Verified by hand in `pnpm dev`.
 
 /** .infoTable */
+// `max-[321px]:block` on the <table> element is harmless only because this
+// table never gets a background or border — the original 320px rule never
+// touched the <table> itself, only its tr/th/td. Add a background or border
+// to the table later and the divergence becomes visible at ≤320px.
 export const infoTable =
   'mt-5 min-w-40 border-collapse text-[14px] max-[321px]:block';
 

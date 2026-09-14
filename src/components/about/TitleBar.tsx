@@ -7,6 +7,13 @@ interface TitleBarProps {
 
 // 신호등은 macOS UI를 그대로 인용한 것이라 색이 하드코딩돼 있다.
 // 팔레트 토큰화 대상이 아니다 (CLAUDE.md 참조).
+//
+// `rounded-full`은 원본의 `border-radius: 50%`보다 훨씬 큰 반지름 값을 내는데,
+// 브라우저가 이를 `min(width, height) / 2`로 clamp하기 때문에 지금은 결과가
+// 같다 — 이는 버튼이 지금 정사각형(12×12px, glyph `<strong>`이 비어 있어 높이가
+// line-height + border로만 정해짐)이라서 성립하는 우연이다. glyph에 내용이 생겨
+// 버튼의 가로세로 비율이 달라지면 `rounded-full`과 `border-radius: 50%`는 서로
+// 다른 모양을 만든다.
 const light = 'w-[10px] leading-[10px] rounded-full';
 const glyph = 'inline-block align-top min-w-2 text-[10px] leading-[14px]';
 
