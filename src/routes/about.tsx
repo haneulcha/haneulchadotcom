@@ -19,21 +19,28 @@ function About() {
     });
   };
 
+  const h2 =
+    'mt-10 mb-4 -ml-[1.8rem] text-[30px] ' +
+    "before:content-['˙'] before:text-[56px] " +
+    'before:leading-[28px] before:text-[color:var(--point-color)]';
+
   return (
-    <main className={`aboutPage ${styles.main}`}>
+    <main className="aboutPage overflow-auto text-[color:var(--color)]">
       <div
-        className={styles.contentWrapper}
+        className="mx-auto my-[6vh] max-w-[1024px] rounded-md border border-[#acacac] bg-[var(--bg)] font-[HelveticaNeue,'Helvetica_Neue','Lucida_Grande',Arial,sans-serif] shadow-[0px_0px_20px_#acacac] max-[1024px]:mx-auto max-[1024px]:my-0"
         style={{ viewTransitionName: 'window-about' }}
       >
         <TitleBar
           onClose={() => navigate({ to: '/', viewTransition: true })}
           onToggleAll={closeToggleHandler}
         />
-        <article className={styles.content}>
-          <p className={styles.lastUpdatedAt}>
+        <article className="px-36 pt-24 pb-32 font-['Noto_Sans_KR',sans-serif] text-[16px] leading-[1.5] font-normal max-[1024px]:px-[10vw] max-[1024px]:pt-[9vw] max-[1024px]:pb-[10vw]">
+          <p className="float-right m-0 text-[12px]">
             최종 수정: {content.lastUpdatedAt}
           </p>
-          <h1>{content.title}</h1>
+          <h1 className="mb-8 text-[42px] font-bold tracking-[6px]">
+            {content.title}
+          </h1>
 
           <table className={styles.infoTable}>
             <caption>개인 정보와 관련 링크</caption>
@@ -55,13 +62,15 @@ function About() {
             </tbody>
           </table>
 
-          <h2>소개</h2>
-          <p>{content.introduction}</p>
+          <h2 className={h2}>소개</h2>
+          <p className="my-[0.4rem] leading-[1.6] selection:bg-[var(--point-color)] selection:text-[var(--bg)]">
+            {content.introduction}
+          </p>
 
-          <h2>경력</h2>
+          <h2 className={h2}>경력</h2>
           {content.experience.map((item, idx) => (
             <div key={item.company + idx}>
-              <h3>{item.company}</h3>
+              <h3 className="mt-2 text-[24px]">{item.company}</h3>
               <table className={styles.infoTable}>
                 <tbody>
                   <tr key="info-table-1">
@@ -130,7 +139,7 @@ function About() {
             </div>
           ))}
 
-          <h2>개인 프로젝트</h2>
+          <h2 className={h2}>개인 프로젝트</h2>
           {content.portfolio.map((item, idx) => (
             <section
               className={styles.experienceSection}
@@ -153,7 +162,7 @@ function About() {
             </section>
           ))}
 
-          <h2>언어</h2>
+          <h2 className={h2}>언어</h2>
           <section className={styles.language}>
             <ul>
               {content.language.map((lang, idx) => (
