@@ -53,7 +53,7 @@ button {
 } /* utilities 레이어 — 진다 */
 ```
 
-신호등 버튼을 유틸리티로 옮기는 순간(Task 4) `all: unset`이 그걸 전부 지운다. 리셋을 `@layer base`로 옮기면 `theme → base → components → utilities` 순서가 되어 유틸리티가 이긴다.
+신호등 버튼을 유틸리티로 옮기는 순간(Task 3) `all: unset`이 그걸 전부 지운다. 리셋을 `@layer base`로 옮기면 `theme → base → components → utilities` 순서가 되어 유틸리티가 이긴다.
 
 같은 이유로 `.aboutPage *::selection`도 `selection:` 유틸리티를 이긴다. **선택 하이라이트는 스크린샷에 안 잡히므로 이건 조용히 회귀한다** — 레이어로 옮겨야 막힌다.
 
@@ -69,7 +69,7 @@ JSX가 참조하지 않는다. 옮길 필요 없이 사라진다. 각 태스크�
 | `About.module.css` | `.buttons` `.closebutton` `.minimizebutton` `.zoombutton`                | 신호등 ×/−/+ 글리프가 미배선 |
 | `About.module.css` | `.buttons:hover a`, `.close:hover .closebutton` 등 hover 글리프 규칙 3종 | 위 클래스에 딸린 것          |
 
-**`.infoTable caption`은 죽지 않았다.** `<caption>`에 클래스가 없어 죽어 보이지만, `.infoTable`이 붙은 `<table>`의 자손을 자손 선택자로 잡고 있다. 지우면 "개인 정보와 관련 링크"가 화면에 나타난다. Task 6에서 `<caption>`에 유틸리티를 직접 붙여 옮긴다.
+**`.infoTable caption`은 죽지 않았다.** `<caption>`에 클래스가 없어 죽어 보이지만, `.infoTable`이 붙은 `<table>`의 자손을 자손 선택자로 잡고 있다. 지우면 "개인 정보와 관련 링크"가 화면에 나타난다. Task 5에서 `<caption>`에 유틸리티를 직접 붙여 옮긴다.
 
 ---
 
@@ -79,7 +79,7 @@ JSX가 참조하지 않는다. 옮길 필요 없이 사라진다. 각 태스크�
 
 | 파일                                      | 책임                                                  |
 | ----------------------------------------- | ----------------------------------------------------- |
-| `src/components/about/classes.ts`         | 두 번 이상 쓰이는 유틸리티 문자열 상수                |
+| `src/components/about/classes.ts`         | 두 번 이상 쓰이는 유틸리티 문자열 상수 (Task 5)       |
 | `src/components/about/TitleBar.tsx`       | macOS 타이틀바 + 신호등 3개 + 닫기/토글 핸들러        |
 | `src/components/about/ExperienceItem.tsx` | 회사 1건 — 제목, 정보 표, `section[]` 반복            |
 | `src/components/about/JobSection.tsx`     | `section[]` 한 건 — 헤더, 기술 스택, `<details>` 목록 |
@@ -89,7 +89,7 @@ JSX가 참조하지 않는다. 옮길 필요 없이 사라진다. 각 태스크�
 
 **수정**: `package.json`, `vite.config.ts`, `src/styles/global.css`, `src/routes/index.tsx`, `src/routes/about.tsx`, `CLAUDE.md`
 
-**삭제**: `src/styles/Home.module.css`(Task 2), `src/styles/About.module.css`(Task 8)
+**삭제**: `src/styles/Home.module.css`(Task 2), `src/styles/About.module.css`(Task 7)
 
 `InfoTable`을 컴포넌트로 만들지 **않는다.** 표가 두 군데 쓰이지만 내용 모양이 다르다(연락처 표는 `infoLink` 반복, 회사 표는 고정 3행). 공통은 스타일뿐이므로 `classes.ts`의 문자열 상수로 공유한다. 맞지 않는 추상을 발명하지 않는다.
 
@@ -239,51 +239,61 @@ test('tailwind utilities reach the page through the ?url stylesheet', async ({
   expect(value.trim()).toBe('ok');
 });
 
-// 리셋이 @layer base로 들어갔는지 확인한다. 비레이어로 남아 있으면
-// button { all: unset }이 유틸리티를 이겨 Task 4가 조용히 실패한다.
-test('utilities beat the base-layer reset on buttons', async ({ page }) => {
-  await page.goto('/about');
-  const radius = await page
-    .locator('nav button')
-    .first()
-    .evaluate((el) => {
-      el.classList.add('rounded-[7px]');
-      return getComputedStyle(el).borderRadius;
+// 리셋이 @layer base 안에 있는지 스타일시트에서 직접 확인한다. 비레이어로
+// 남으면 button { all: unset }이 모든 유틸리티를 이겨 Task 3(신호등)이 죽고,
+// .aboutPage *::selection이 selection: 유틸리티를 이겨 선택 하이라이트가
+// 조용히 바뀐다 — 후자는 스크린샷에 안 잡히므로 여기서 잡아야 한다.
+//
+// 클래스를 심어 간접 확인하지 않는 이유: 소스에 없는 클래스는 Tailwind가
+// 생성하지 않아 렌더에 쓰이지 않는 프로브 상수를 코드에 남겨야 한다.
+test('the global reset lives inside @layer base', async ({ page }) => {
+  await page.goto('/');
+  const found = await page.evaluate(() => {
+    const walk = (rules: CSSRuleList, insideBase: boolean): boolean => {
+      for (const rule of Array.from(rules)) {
+        const isBaseLayer =
+          rule instanceof CSSLayerBlockRule && rule.name === 'base';
+        const nested = (rule as CSSGroupingRule).cssRules;
+        if (nested && walk(nested, insideBase || isBaseLayer)) return true;
+        if (
+          insideBase &&
+          rule instanceof CSSStyleRule &&
+          rule.selectorText === 'button' &&
+          rule.style.getPropertyValue('cursor') === 'pointer'
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+    return Array.from(document.styleSheets).some((sheet) => {
+      try {
+        return walk(sheet.cssRules, false);
+      } catch {
+        return false; // 교차 출처 시트는 cssRules 접근에서 던진다
+      }
     });
-  expect(radius).toBe('7px');
+  });
+  expect(found).toBe(true);
 });
 ```
 
-두 번째 테스트는 `.close`의 `border-radius: 50%`를 `rounded-[7px]`로 덮을 수 있는지 본다. `all: unset`이 비레이어로 남아 있으면 `50%`(모듈, 비레이어)가 이겨 `7px`이 안 나온다.
+> `CSSLayerBlockRule`은 Playwright가 쓰는 chromium에 있다. `pnpm type-check`가 이 타입을 모른다고 하면 `tsconfig.json`의 `lib`에 `DOM`이 있는지 확인하고, 그래도 없으면 `rule.constructor.name === 'CSSLayerBlockRule'`로 바꾼다.
 
-> **`rounded-[7px]`는 JSX 소스에 없으므로 Tailwind가 생성하지 않는다.** 테스트가 통과하려면 이 클래스가 컴파일돼 있어야 하므로, `src/routes/about.tsx`의 `<article>`에 `hidden`이 아닌 무해한 형태로 한 번 등장시켜야 한다. Step 6에서 처리한다.
-
-- [ ] **Step 6: `rounded-[7px]`를 컴파일 대상에 넣는다**
-
-`src/routes/about.tsx` 맨 위, `import` 아래에 주석 딸린 상수를 둔다. 렌더에 쓰이지 않지만 Tailwind의 소스 스캐너가 문자열을 찾는다.
-
-```tsx
-// Tailwind는 소스 파일에서 클래스 문자열을 찾아 그때그때 생성한다.
-// tests/tailwind-setup.spec.ts가 런타임에 이 클래스를 붙여 레이어 순서를
-// 검사하므로, 스캐너가 볼 수 있도록 여기 남겨 둔다. Task 8에서 지운다.
-const TAILWIND_LAYER_PROBE = 'rounded-[7px]';
-void TAILWIND_LAYER_PROBE;
-```
-
-- [ ] **Step 7: 전체 게이트**
+- [ ] **Step 6: 전체 게이트**
 
 ```bash
 pnpm type-check && pnpm lint && pnpm format:check && pnpm build && pnpm test
 ```
 
-기대: 5개 전부 통과. 특히 `landing.png`·`about.png`가 **변화 없이** 통과해야 한다. 스모크 클래스와 프로브 상수는 아무것도 칠하지 않으므로 픽셀이 움직일 이유가 없다.
+기대: 5개 전부 통과. 특히 `landing.png`·`about.png`가 **변화 없이** 통과해야 한다. 스모크 클래스는 커스텀 속성만 설정하므로 픽셀이 움직일 이유가 없다.
 
 **실패하면:** `--tw-smoke` 테스트가 실패하면 `?url` 경로가 문제다. `__root.tsx`에서 `?url` 대신 `import '@/styles/global.css'`로 바꾸고 `links`의 스타일시트 항목을 빼서 다시 시도한다. 그래도 안 되면 **여기서 멈추고 보고한다** — 설계 전제가 틀린 것이라 계획을 다시 짜야 한다.
 
-- [ ] **Step 8: 커밋**
+- [ ] **Step 7: 커밋**
 
 ```bash
-git add package.json pnpm-lock.yaml vite.config.ts src/styles/global.css src/routes/index.tsx src/routes/about.tsx tests/tailwind-setup.spec.ts
+git add package.json pnpm-lock.yaml vite.config.ts src/styles/global.css src/routes/index.tsx tests/tailwind-setup.spec.ts
 git commit -m "build: add tailwind v4 without preflight"
 ```
 
@@ -352,15 +362,9 @@ function Home() {
 git rm src/styles/Home.module.css
 ```
 
-- [ ] **Step 3: 전체 게이트**
+- [ ] **Step 3: 스모크 테스트를 먼저 갱신한다**
 
-```bash
-pnpm type-check && pnpm lint && pnpm format:check && pnpm build && pnpm test
-```
-
-기대: `landing.png` 무변화 통과. `tailwind-setup.spec.ts`의 첫 테스트는 `--tw-smoke`를 지웠으므로 **실패한다.**
-
-- [ ] **Step 4: 스모크 테스트를 갱신한다**
+Step 1에서 `[--tw-smoke:ok]`를 지웠으므로 그 테스트는 이제 실패한다. **게이트를 돌리기 전에** 고친다 — 일부러 빨간 게이트를 만들고 지나가면 다음에 진짜 실패가 났을 때 눈이 무뎌진다.
 
 `--tw-smoke` 테스트는 역할을 다했다(Task 1에서 배선을 증명했고, 이제 랜딩 전체가 유틸리티로 그려진다). 랜딩이 유틸리티로 칠해지는지 보는 테스트로 바꾼다.
 
@@ -379,11 +383,15 @@ test('tailwind utilities reach the page through the ?url stylesheet', async ({
 });
 ```
 
-- [ ] **Step 5: 전체 게이트 재실행**
+- [ ] **Step 4: 전체 게이트**
 
-기대: 5개 전부 통과.
+```bash
+pnpm type-check && pnpm lint && pnpm format:check && pnpm build && pnpm test
+```
 
-- [ ] **Step 6: 커밋**
+기대: 5개 전부 통과. `landing.png` 무변화.
+
+- [ ] **Step 5: 커밋**
 
 ```bash
 git add src/routes/index.tsx tests/tailwind-setup.spec.ts
@@ -392,91 +400,7 @@ git commit -m "refactor: port the landing to tailwind utilities"
 
 ---
 
-## Task 3: 공유 클래스 상수와 파생 타입
-
-Task 4~8이 쓸 문자열을 한곳에 모으고, 컴포넌트 props에 쓸 타입을 `Resume`에서 파생시킨다.
-
-> **`@/contents/types`는 `Resume` 하나만 export한다.** `Experience`·`Portfolio` 같은 이름은 **없다** — 전부 `Resume` 안에 인라인으로 중첩돼 있다. 컴포넌트 props를 쓰려면 파생 별칭이 필요하다. 새 타입을 **발명**하는 것이 아니라 이미 있는 구조에 이름을 붙이는 것이므로 `Resume`이 정본으로 남는다.
-
-**Files:**
-
-- Create: `src/components/about/classes.ts`
-- Modify: `src/contents/types.ts`
-
-**Interfaces:**
-
-- Produces (`classes.ts`): `infoTable`, `infoTableRow`, `infoTableTh`, `infoTableTd`, `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP` — 전부 `string` 상수.
-- Produces (`types.ts`): `Experience`, `ExperienceSection`, `Portfolio`, `Language` — `Resume`에서 인덱스 접근으로 파생한 타입.
-
-- [ ] **Step 1: `types.ts` 맨 아래에 파생 별칭을 더한다**
-
-`Resume` 정의는 **한 글자도 건드리지 않는다.** 아래 네 줄만 덧붙인다.
-
-```ts
-// Resume 안에 인라인으로 중첩된 항목 타입들에 이름을 붙인다. 컴포넌트가
-// props 타입으로 쓴다. 인덱스 접근으로 파생하므로 Resume이 정본으로 남고,
-// resume.json의 모양이 바뀌면 여기도 자동으로 따라온다.
-export type Experience = Resume['experience'][number];
-export type ExperienceSection = Experience['section'][number];
-export type Portfolio = Resume['portfolio'][number];
-export type Language = Resume['language'][number];
-```
-
-- [ ] **Step 2: `classes.ts`를 만든다**
-
-원본 `About.module.css`의 해당 규칙을 그대로 옮긴 것이다. 값이 바뀌면 스크린샷이 잡는다.
-
-```ts
-// About.module.css에서 두 번 이상 쓰이던 규칙만 상수로 뽑았다.
-// 한 번만 쓰이는 것은 해당 컴포넌트의 className에 직접 적는다 —
-// 여기로 모으면 스타일이 쓰이는 자리에서 멀어지기만 한다.
-
-/** .infoTable */
-export const infoTable =
-  'mt-5 min-w-40 border-collapse text-[14px] max-[320px]:block';
-
-/** .infoTable tr */
-export const infoTableRow =
-  'border-t border-b border-[var(--border-color)] max-[320px]:block';
-
-/** .infoTable tr th[scope='row'] */
-export const infoTableTh =
-  'min-w-31 pl-2 text-left leading-10 font-bold ' +
-  'max-[375px]:min-w-16 max-[320px]:block max-[320px]:leading-[2.3]';
-
-/** .infoTable tr td */
-export const infoTableTd =
-  'pr-6 max-[320px]:block max-[320px]:py-0 max-[320px]:pr-0 max-[320px]:pl-2 max-[320px]:leading-[2.3]';
-
-/** .experienceSection */
-export const sectionWrap = 'mt-4';
-
-/** .experienceSection h4 */
-export const sectionH4 = 'my-7 mb-4 text-[20px]';
-
-/** .experienceSection h4 span */
-export const sectionH4Span = 'ml-1 text-[16px]';
-
-/** .experienceSection > p */
-export const bodyP = 'my-[0.4rem] text-[16px] leading-[1.6]';
-```
-
-> **단위 환산 표.** `min-width: 7.75rem` = 124px = `min-w-31`. `min-width: 4rem` = `min-w-16`. `min-width: 10rem` = `min-w-40`. `line-height: 2.5` = `leading-10`(2.5rem). `margin-top: 1.25rem` = `mt-5`. `padding-left: 0.5rem` = `pl-2`. `padding-right: 1.5rem` = `pr-6`. 확신이 안 서면 arbitrary value(`min-w-[7.75rem]`)를 써라 — **정확성이 관용구보다 우선이다.**
-
-- [ ] **Step 3: 전체 게이트**
-
-아무 데서도 아직 안 쓰이므로 렌더가 안 바뀐다. `pnpm type-check`가 파생 타입을 받아들이는지, `pnpm lint`가 미사용 export를 잡지 않는지 확인한다 (잡으면 Task 4부터 쓰이기 시작하므로 이 태스크를 Task 4와 합친다).
-
-- [ ] **Step 4: 커밋**
-
-```bash
-git add src/components/about/classes.ts src/contents/types.ts
-git commit -m "refactor: add shared about-page class strings and derived types"
-```
-
----
-
-## Task 4: TitleBar 분리와 이식
+## Task 3: TitleBar 분리와 이식
 
 신호등 버튼이 `button { all: unset }`과 부딪히는 자리다. Task 1의 레이어 보강이 실제로 먹는지 여기서 확인된다.
 
@@ -579,7 +503,7 @@ git commit -m "refactor: extract the about titlebar and port it to tailwind"
 
 ---
 
-## Task 5: 페이지 셸과 타이포 이식
+## Task 4: 페이지 셸과 타이포 이식
 
 `.main`, `.contentWrapper`, `.content`와 그 안의 제목·본문 규칙이다. `h2::before`의 점이 여기 있다.
 
@@ -589,7 +513,7 @@ git commit -m "refactor: extract the about titlebar and port it to tailwind"
 
 **Interfaces:**
 
-- Consumes: Task 4의 `TitleBar`.
+- Consumes: Task 3의 `TitleBar`.
 - Produces: `<article>`에 붙는 셸 클래스. 이후 태스크의 자식들이 이 안에서 렌더된다.
 
 - [ ] **Step 1: 셸 세 겹을 유틸리티로 바꾼다**
@@ -642,7 +566,7 @@ const h2 =
 
 삭제 대상: `.main`, `.main p::selection`, `.main p::-moz-selection`, `.contentWrapper`와 그 `@media (max-width: 1024px)`, `.content`와 그 `@media`, `.content h1`, `.content h2`, `.content h2::before`, `.content h3`, `.content p`, `.content p.lastUpdatedAt`.
 
-`.main a` / `.main a:hover`는 **남긴다** — Task 7에서 `.resumeHtml a`로 옮긴다.
+`.main a` / `.main a:hover`는 **남긴다** — Task 6에서 `.resumeHtml a`로 옮긴다.
 
 - [ ] **Step 4: 전체 게이트 + 육안 확인**
 
@@ -657,7 +581,7 @@ git commit -m "refactor: port the about page shell and typography to tailwind"
 
 ---
 
-## Task 6: 표 두 개 이식
+## Task 5: 표 두 개 이식
 
 **Files:**
 
@@ -665,9 +589,48 @@ git commit -m "refactor: port the about page shell and typography to tailwind"
 
 **Interfaces:**
 
-- Consumes: Task 3의 `infoTable`, `infoTableRow`, `infoTableTh`, `infoTableTd`.
+- Produces: `src/components/about/classes.ts` — `infoTable`, `infoTableRow`, `infoTableTh`, `infoTableTd`, `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP` (전부 `string` 상수). Task 6·7이 쓴다.
 
-- [ ] **Step 1: 연락처 표**
+- [ ] **Step 1: `classes.ts`를 만든다**
+
+`About.module.css`에서 **두 번 이상 쓰이는** 규칙만 상수로 뽑는다. 한 번만 쓰이는 것은 해당 컴포넌트의 `className`에 직접 적는다 — 여기로 모으면 스타일이 쓰이는 자리에서 멀어지기만 한다. 값이 틀리면 스크린샷이 잡는다.
+
+```ts
+/** .infoTable */
+export const infoTable =
+  'mt-5 min-w-40 border-collapse text-[14px] max-[320px]:block';
+
+/** .infoTable tr */
+export const infoTableRow =
+  'border-t border-b border-[var(--border-color)] max-[320px]:block';
+
+/** .infoTable tr th[scope='row'] */
+export const infoTableTh =
+  'min-w-31 pl-2 text-left leading-10 font-bold ' +
+  'max-[375px]:min-w-16 max-[320px]:block max-[320px]:leading-[2.3]';
+
+/** .infoTable tr td */
+export const infoTableTd =
+  'pr-6 max-[320px]:block max-[320px]:py-0 max-[320px]:pr-0 max-[320px]:pl-2 max-[320px]:leading-[2.3]';
+
+/** .experienceSection */
+export const sectionWrap = 'mt-4';
+
+/** .experienceSection h4 */
+export const sectionH4 = 'my-7 mb-4 text-[20px]';
+
+/** .experienceSection h4 span */
+export const sectionH4Span = 'ml-1 text-[16px]';
+
+/** .experienceSection > p */
+export const bodyP = 'my-[0.4rem] text-[16px] leading-[1.6]';
+```
+
+> **단위 환산.** `min-width: 7.75rem` = 124px = `min-w-31`. `4rem` = `min-w-16`. `10rem` = `min-w-40`. `line-height: 2.5` = `leading-10`(2.5rem). `margin-top: 1.25rem` = `mt-5`. `padding-left: 0.5rem` = `pl-2`. `padding-right: 1.5rem` = `pr-6`. **확신이 안 서면 arbitrary value(`min-w-[7.75rem]`)를 써라 — 정확성이 관용구보다 우선이다.**
+>
+> `sectionWrap`·`sectionH4`·`sectionH4Span`·`bodyP`는 Task 6·7이 처음 쓴다. 이 태스크에서는 표 상수 네 개만 소비된다.
+
+- [ ] **Step 2: 연락처 표**
 
 ```tsx
 import * as c from '@/components/about/classes';
@@ -702,42 +665,59 @@ import * as c from '@/components/about/classes';
 
 > `.infoTable caption`은 **살아있는 규칙이다.** `visibility: hidden; position: absolute; pointer-events: none; z-index: -1`을 `<caption>`에 직접 붙여야 한다. 빠뜨리면 "개인 정보와 관련 링크"가 화면에 나타나 스크린샷이 깨진다.
 
-- [ ] **Step 2: 회사 정보 표**
+- [ ] **Step 3: 회사 정보 표**
 
 `경력` 아래 `<table className={styles.infoTable}>`도 같은 상수를 쓴다. 행이 세 개 고정이므로 반복 없이 각 `<tr>`/`<th>`/`<td>`에 붙인다. `<th scope="row"><strong>기술</strong></th>`의 `<strong>`은 그대로 둔다.
 
-- [ ] **Step 3: `About.module.css`에서 지운다**
+- [ ] **Step 4: `About.module.css`에서 지운다**
 
 삭제 대상: `.infoTable`, `.infoTable caption`, `.infoTable tr`, `.infoTable tr th[scope='row']`, `.infoTable tr td`, `@media (max-width: 375px)` 블록, `@media (max-width: 320px)` 블록.
 
-- [ ] **Step 4: 전체 게이트 + 좁은 화면 확인**
+- [ ] **Step 5: 전체 게이트 + 좁은 화면 확인**
 
 스크린샷은 데스크톱 폭이라 320px·375px 규칙을 **검사하지 않는다.** `pnpm dev`로 띄워 브라우저를 320px까지 줄여 표가 세로로 무너지는지 직접 본다.
 
-- [ ] **Step 5: 커밋**
+- [ ] **Step 6: 커밋**
 
 ```bash
-git add src/routes/about.tsx src/styles/About.module.css
+git add src/components/about/classes.ts src/routes/about.tsx src/styles/About.module.css
 git commit -m "refactor: port the about page tables to tailwind"
 ```
 
 ---
 
-## Task 7: 경력 섹션 분리와 이식
+## Task 6: 경력 섹션 분리와 이식
 
 가장 큰 덩어리다. `nth-of-type` 제거, 문자열 리스트 마커, `dangerouslySetInnerHTML` 예외가 전부 여기 있다.
 
 **Files:**
 
 - Create: `src/components/about/ExperienceItem.tsx`, `src/components/about/JobSection.tsx`
-- Modify: `src/routes/about.tsx`, `src/styles/About.module.css`, `src/styles/global.css`
+- Modify: `src/routes/about.tsx`, `src/styles/About.module.css`, `src/styles/global.css`, `src/contents/types.ts`
 
 **Interfaces:**
 
-- Consumes: Task 3의 `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP`, `infoTable*`.
-- Produces: `export function ExperienceItem(props: { item: Experience }): JSX.Element`, `export function JobSection(props: { item: ExperienceSection }): JSX.Element`. 타입은 `@/contents/types`에서 가져온다 — 새로 만들지 않는다.
+- Consumes: Task 5의 `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP`, `infoTable*`.
+- Produces (`types.ts`): `Experience`, `ExperienceSection`, `Portfolio`, `Language` — `Resume`에서 파생. Task 7도 쓴다.
+- Produces: `export function ExperienceItem(props: { item: Experience }): JSX.Element`, `export function JobSection(props: { item: ExperienceSection }): JSX.Element`.
 
-- [ ] **Step 1: `global.css`에 `.resumeHtml` 규칙을 추가한다**
+- [ ] **Step 1: `types.ts`에 파생 별칭을 더한다**
+
+> **`@/contents/types`는 `Resume` 하나만 export한다.** `Experience`·`Portfolio` 같은 이름은 **없고**, 전부 `Resume` 안에 인라인으로 중첩돼 있다. 컴포넌트 props에 쓰려면 이름이 필요하다. 인덱스 접근으로 파생하므로 타입을 **발명**하는 것이 아니라 이미 있는 구조에 이름을 붙이는 것이고, `Resume`이 정본으로 남는다.
+
+`Resume` 정의는 **한 글자도 건드리지 않는다.** 파일 맨 아래에 네 줄만 덧붙인다.
+
+```ts
+// Resume 안에 인라인으로 중첩된 항목 타입들에 이름을 붙인다. 컴포넌트가
+// props 타입으로 쓴다. 인덱스 접근으로 파생하므로 resume.json의 모양이
+// 바뀌면 여기도 자동으로 따라온다.
+export type Experience = Resume['experience'][number];
+export type ExperienceSection = Experience['section'][number];
+export type Portfolio = Resume['portfolio'][number];
+export type Language = Resume['language'][number];
+```
+
+- [ ] **Step 2: `global.css`에 `.resumeHtml` 규칙을 추가한다**
 
 `@layer base` **안**에 넣는다. 유틸리티가 필요하면 이길 수 있어야 한다.
 
@@ -753,7 +733,7 @@ git commit -m "refactor: port the about page tables to tailwind"
 }
 ```
 
-- [ ] **Step 2: `JobSection.tsx`를 만든다**
+- [ ] **Step 3: `JobSection.tsx`를 만든다**
 
 ```tsx
 import * as c from '@/components/about/classes';
@@ -816,7 +796,7 @@ export function JobSection({ item }: { item: ExperienceSection }) {
 >
 > `<details className="overflow-visible">`의 `open` 속성과 `<span>` 구조를 유지해야 상호작용 테스트가 통과한다.
 
-- [ ] **Step 3: `ExperienceItem.tsx`를 만든다**
+- [ ] **Step 4: `ExperienceItem.tsx`를 만든다**
 
 ```tsx
 import * as c from '@/components/about/classes';
@@ -863,9 +843,9 @@ export function ExperienceItem({ item }: { item: Experience }) {
 }
 ```
 
-> Task 6에서 회사 정보 표를 `about.tsx` 안에 이미 옮겼다면, 여기로 **이동**하는 것이지 새로 만드는 것이 아니다. `about.tsx` 쪽의 중복을 반드시 지워라.
+> Task 5에서 회사 정보 표를 `about.tsx` 안에 이미 옮겼다면, 여기로 **이동**하는 것이지 새로 만드는 것이 아니다. `about.tsx` 쪽의 중복을 반드시 지워라.
 
-- [ ] **Step 4: `about.tsx`에서 갈아끼운다**
+- [ ] **Step 5: `about.tsx`에서 갈아끼운다**
 
 `content.experience.map(...)` 블록 전체를 교체한다.
 
@@ -877,24 +857,24 @@ export function ExperienceItem({ item }: { item: Experience }) {
 }
 ```
 
-- [ ] **Step 5: `About.module.css`에서 지운다**
+- [ ] **Step 6: `About.module.css`에서 지운다**
 
 삭제 대상: `.experienceSection` 및 그 하위 규칙 전부 (`> p`, `> p:nth-of-type(2) > span`과 `::after`, `> ul`, `h4`, `h4 div`, `h4 span`, `details`, `details summary`, `details summary span`, `details ul`, `details li`, `details li div`), 그리고 `.main a`, `.main a:hover`.
 
-- [ ] **Step 6: 전체 게이트**
+- [ ] **Step 7: 전체 게이트**
 
 기대: 5개 전부 통과. 상호작용 테스트(`<details>` 전체 토글)가 특히 중요하다 — `JobSection` 분리가 `document.querySelectorAll('details')`가 보는 DOM을 바꾸지 않았는지 검사한다.
 
-- [ ] **Step 7: 커밋**
+- [ ] **Step 8: 커밋**
 
 ```bash
-git add src/components/about/ExperienceItem.tsx src/components/about/JobSection.tsx src/routes/about.tsx src/styles/About.module.css src/styles/global.css
+git add src/components/about/ExperienceItem.tsx src/components/about/JobSection.tsx src/routes/about.tsx src/styles/About.module.css src/styles/global.css src/contents/types.ts
 git commit -m "refactor: extract the experience section and port it to tailwind"
 ```
 
 ---
 
-## Task 8: 포트폴리오·언어 이식과 모듈 파일 제거
+## Task 7: 포트폴리오·언어 이식과 모듈 파일 제거
 
 **Files:**
 
@@ -904,7 +884,7 @@ git commit -m "refactor: extract the experience section and port it to tailwind"
 
 **Interfaces:**
 
-- Consumes: Task 3의 `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP`.
+- Consumes: Task 5의 `sectionWrap`, `sectionH4`, `sectionH4Span`, `bodyP`; Task 6의 `Portfolio`·`Language` 타입.
 - Produces: `export function PortfolioItem(props: { item: Portfolio }): JSX.Element`, `export function LanguageList(props: { items: Language[] }): JSX.Element`
 
 - [ ] **Step 1: `PortfolioItem.tsx`**
@@ -964,9 +944,9 @@ export function LanguageList({ items }: { items: Language[] }) {
 }
 ```
 
-- [ ] **Step 3: `about.tsx`에서 갈아끼우고 프로브를 지운다**
+- [ ] **Step 3: `about.tsx`에서 갈아끼운다**
 
-`content.portfolio.map(...)`과 `<section className={styles.language}>` 블록을 교체하고, **Task 1에서 넣은 `TAILWIND_LAYER_PROBE` 상수와 `styles` import를 지운다.**
+`content.portfolio.map(...)`과 `<section className={styles.language}>` 블록을 교체하고, **`styles` import를 지운다.**
 
 ```tsx
 {content.portfolio.map((item, idx) => (
@@ -977,30 +957,13 @@ export function LanguageList({ items }: { items: Language[] }) {
 <LanguageList items={content.language} />
 ```
 
-- [ ] **Step 4: 프로브를 쓰던 테스트를 갱신한다**
-
-`tests/tailwind-setup.spec.ts`의 두 번째 테스트는 `rounded-[7px]`가 컴파일돼 있어야 도는데, 프로브 상수를 지웠으므로 실패한다. 레이어 순서는 **이제 신호등 버튼이 실제로 증명한다** — `all: unset`이 이기면 버튼이 원형으로 안 보이고 스크린샷이 깨진다. 테스트를 그 사실을 직접 보는 형태로 바꾼다.
-
-```ts
-// button { all: unset }은 @layer base에 있고 유틸리티는 layer(utilities)에
-// 있다. 순서가 틀어지면 신호등이 사각형이 되고 아래 단언이 깨진다.
-test('utilities beat the base-layer reset on buttons', async ({ page }) => {
-  await page.goto('/about');
-  const radius = await page
-    .locator('nav button')
-    .first()
-    .evaluate((el) => getComputedStyle(el).borderRadius);
-  expect(radius).toBe('50%');
-});
-```
-
-- [ ] **Step 5: `About.module.css` 삭제**
+- [ ] **Step 4: `About.module.css` 삭제**
 
 ```bash
 git rm src/styles/About.module.css
 ```
 
-- [ ] **Step 6: 남은 참조가 없는지 확인**
+- [ ] **Step 5: 남은 참조가 없는지 확인**
 
 ```bash
 grep -rn "module.css" src/ || echo "clean"
@@ -1008,20 +971,20 @@ grep -rn "module.css" src/ || echo "clean"
 
 기대: `clean`.
 
-- [ ] **Step 7: 전체 게이트**
+- [ ] **Step 6: 전체 게이트**
 
 기대: 5개 전부 통과. 이 시점에 CSS Modules가 저장소에서 사라진다.
 
-- [ ] **Step 8: 커밋**
+- [ ] **Step 7: 커밋**
 
 ```bash
-git add -A src/components/about src/routes/about.tsx src/styles tests/tailwind-setup.spec.ts
+git add -A src/components/about src/routes/about.tsx src/styles
 git commit -m "refactor: finish the tailwind port and drop css modules"
 ```
 
 ---
 
-## Task 9: CLAUDE.md 갱신
+## Task 8: CLAUDE.md 갱신
 
 이 작업으로 사실이 아니게 된 문단들을 고친다. 문서가 틀리면 다음 사람이 틀린 전제로 일한다.
 
@@ -1084,7 +1047,7 @@ git commit -m "docs: update CLAUDE.md for the tailwind migration"
 
 ## 자체 검토 기록
 
-**스펙 커버리지.** 스펙의 각 절이 어느 태스크에 대응하는지: 도입 방식 → T1 / 색을 바꾸지 않는 방법 → 전 태스크 Global Constraints / 무엇을 옮기나 → T2·T4~T8 / about.tsx 분해 → T4·T7·T8 / `dangerouslySetInnerHTML` 예외 → T7 Step 1 / 까다로운 지점 1(소제목 점) → T5 Step 2 / 2(리스트 마커) → T7 Step 2 / 3(`nth-of-type`) → T7 Step 2 / 4(`::selection`) → T5 Step 2 / 5(브레이크포인트) → T3·T6 / 검증 → 전 태스크 "전체 게이트" / CLAUDE.md 갱신 → T9. **빠진 절 없음.**
+**스펙 커버리지.** 스펙의 각 절이 어느 태스크에 대응하는지: 도입 방식 → T1 / 색을 바꾸지 않는 방법 → 전 태스크 Global Constraints / 무엇을 옮기나 → T2·T3~T7 / about.tsx 분해 → T3·T6·T7 / `dangerouslySetInnerHTML` 예외 → T6 Step 2 / 까다로운 지점 1(소제목 점) → T4 Step 2 / 2(리스트 마커) → T6 Step 3 / 3(`nth-of-type`) → T6 Step 3 / 4(`::selection`) → T4 Step 2 / 5(브레이크포인트) → T5 Step 1 / 검증 → 전 태스크 "전체 게이트" / CLAUDE.md 갱신 → T8. **빠진 절 없음.**
 
 **스펙과 달라진 점 두 가지** (계획에서 보강, 스펙 결정은 유지):
 
@@ -1093,8 +1056,10 @@ git commit -m "docs: update CLAUDE.md for the tailwind migration"
 
 **스펙의 오기 정정.** 스펙 「합격 기준」이 "PNG 두 장이 그대로여야 한다"고 썼고 커밋 메시지는 "byte-identical"이라고 했는데, `playwright.config.ts`에 `maxDiffPixelRatio: 0.001`이 걸려 있다. **바이트 동일이 아니라 0.1% 허용 안에서 통과**가 정확하다. 이 계획의 Global Constraints에 정정해 두었다.
 
-**타입 일관성.** `classes.ts`의 export 여덟 개(`infoTable` `infoTableRow` `infoTableTh` `infoTableTd` `sectionWrap` `sectionH4` `sectionH4Span` `bodyP`)를 T6·T7·T8이 `import * as c`로 쓴다. 초안에 있던 `techLabel`은 **삭제했다** — T7·T8이 기술 스택 라벨을 인라인으로 적기 때문에 아무도 쓰지 않았다. 두 곳뿐이고 `after:content` 때문에 문자열이 길어 상수화 이득이 적다.
+**타입 일관성.** `classes.ts`의 export 여덟 개(`infoTable` `infoTableRow` `infoTableTh` `infoTableTd` `sectionWrap` `sectionH4` `sectionH4Span` `bodyP`)를 T5·T6·T7이 `import * as c`로 쓴다. 초안에 있던 `techLabel`은 **삭제했다** — T6·T7이 기술 스택 라벨을 인라인으로 적기 때문에 아무도 쓰지 않았다. 두 곳뿐이고 `after:content` 때문에 문자열이 길어 상수화 이득이 적다.
 
-**컴포넌트 시그니처.** `TitleBar({ onClose, onToggleAll })` · `ExperienceItem({ item })` · `JobSection({ item })` · `PortfolioItem({ item })` · `LanguageList({ items })`. T4·T7·T8의 호출부와 일치한다.
+**컴포넌트 시그니처.** `TitleBar({ onClose, onToggleAll })` · `ExperienceItem({ item })` · `JobSection({ item })` · `PortfolioItem({ item })` · `LanguageList({ items })`. T3·T6·T7의 호출부와 일치한다.
 
-**타입 출처 — 초안의 실제 오류.** 초안은 `Experience` `ExperienceSection` `Portfolio` `Language`를 `@/contents/types`에서 import한다고 썼는데, **그 파일은 `Resume` 하나만 export한다.** 나머지는 전부 `Resume` 안에 인라인으로 중첩돼 있어 그대로면 T7·T8이 컴파일되지 않는다. T3 Step 1에 인덱스 접근 파생 별칭 네 줄을 추가해 고쳤다.
+**타입 출처 — 초안의 실제 오류.** 초안은 `Experience` `ExperienceSection` `Portfolio` `Language`를 `@/contents/types`에서 import한다고 썼는데, **그 파일은 `Resume` 하나만 export한다.** 나머지는 전부 `Resume` 안에 인라인으로 중첩돼 있어 그대로면 T6·T7이 컴파일되지 않는다. T6 Step 1에 인덱스 접근 파생 별칭 네 줄을 추가해 고쳤다.
+
+**실행 전 개정 (2026-09-15).** SDD 사전 점검에서 세 건을 고쳤다. ① Task 1이 렌더에 안 쓰이는 프로브 상수(`TAILWIND_LAYER_PROBE`)를 코드에 심게 했던 것을 `document.styleSheets` 직접 검사로 바꿨다 — 죽은 코드가 사라지고 옛 Task 8의 테스트 재작성 스텝도 함께 사라졌다. ② 아무도 import하지 않는 파일을 커밋하던 옛 Task 3을 해체해 `classes.ts`는 첫 소비자인 Task 5로, 파생 타입은 Task 6으로 접어넣었다 — 태스크가 9개에서 **8개**가 됐다. ③ Task 2가 일부러 실패하는 게이트를 거치게 했던 스텝 순서를 뒤집었다.
