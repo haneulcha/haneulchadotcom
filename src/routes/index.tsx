@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
 function Home() {
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
+      <main className={`${styles.main} [--tw-smoke:ok]`}>
         <h1 className={styles.title}>
           <Link to="/about" className={styles.typo1}>
             ㅊ
