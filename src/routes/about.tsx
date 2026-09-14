@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ExperienceItem } from '@/components/about/ExperienceItem';
+import { LanguageList } from '@/components/about/LanguageList';
+import { PortfolioItem } from '@/components/about/PortfolioItem';
 import { TitleBar } from '@/components/about/TitleBar';
 import * as c from '@/components/about/classes';
 import content from '@/contents/resume';
-import styles from '@/styles/About.module.css';
 
 export const Route = createFileRoute('/about')({
   component: About,
@@ -87,38 +88,11 @@ function About() {
 
           <h2 className={h2}>개인 프로젝트</h2>
           {content.portfolio.map((item, idx) => (
-            <section
-              className={styles.experienceSection}
-              key={item.title + idx}
-            >
-              <h4>
-                <a href={item.url} target="_blank" rel="noopener noreferrer">
-                  {item.title}
-                </a>
-                <span>({item.period})</span>
-              </h4>
-              <p>{item.desc}</p>
-              <p>
-                <span>기술 스택</span>
-                {item.tech.map(
-                  (tech, idx) =>
-                    `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
-                )}
-              </p>
-            </section>
+            <PortfolioItem item={item} key={item.title + idx} />
           ))}
 
           <h2 className={h2}>언어</h2>
-          <section className={styles.language}>
-            <ul>
-              {content.language.map((lang, idx) => (
-                <li key={lang.type + idx}>
-                  <span>{lang.type}</span>
-                  {lang.level}
-                </li>
-              ))}
-            </ul>
-          </section>
+          <LanguageList items={content.language} />
         </article>
       </div>
     </main>
