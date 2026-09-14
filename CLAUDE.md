@@ -112,6 +112,14 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 `tests/pages.spec.ts`가 Playwright로 두 라우트의 스크린샷과 상호작용(`<details>` 전체 토글,
 닫기 버튼 내비게이션)을 검사한다. 기준선 PNG는 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
 
+`tests/tailwind-setup.spec.ts`는 스크린샷으로 못 잡는 것 두 가지를 따로 검사한다. 하나는
+랜딩 'ㅊ'의 computed color가 `text-[#ad1d1d]` 유틸리티 값(`rgb(173, 29, 29)`)과 같은지
+확인해 Tailwind 유틸리티가 `?url` 스타일시트를 통해 실제로 페이지에 닿는지를 본다. 다른
+하나는 `document.styleSheets`를 직접 순회해 리셋이 `@layer base` 안에 있는지 확인한다 —
+위 "`@layer base` 밖으로 꺼내지 마라" 경고가 가리키는 바로 그 회귀를 잡는 테스트다.
+`.aboutPage *::selection`이 비레이어 리셋에 밀려나는 사고는 텍스트를 드래그해 선택하는
+테스트가 없는 한 스크린샷에 안 잡히므로, 이 테스트가 그 회귀의 유일한 방어선이다.
+
 - **`pnpm test` 전에 `pnpm build`가 필요하다.** 빌드 결과물을 서빙해서 검사한다.
 - 기준선은 **darwin 전용**이다. 다른 OS에서는 스크린샷이 어긋나므로 CI에 붙어 있지 않다.
 - 스크린샷이 실패하면 먼저 diff 이미지를 보고 **의도한 변경인지 확인한 뒤에만**
