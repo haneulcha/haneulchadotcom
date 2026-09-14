@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { TitleBar } from '@/components/about/TitleBar';
+import * as c from '@/components/about/classes';
 import content from '@/contents/resume';
 import styles from '@/styles/About.module.css';
 
@@ -42,14 +43,19 @@ function About() {
             {content.title}
           </h1>
 
-          <table className={styles.infoTable}>
-            <caption>개인 정보와 관련 링크</caption>
+          <table className={c.infoTable}>
+            <caption className="invisible pointer-events-none absolute -z-10">
+              개인 정보와 관련 링크
+            </caption>
             <tbody>
               {content.infoLink.map((item, idx) => (
-                <tr key={item.id + idx}>
-                  <th scope="row">{item.id}</th>
-                  <td>
+                <tr className={c.infoTableRow} key={item.id + idx}>
+                  <th className={c.infoTableTh} scope="row">
+                    {item.id}
+                  </th>
+                  <td className={c.infoTableTd}>
                     <a
+                      className="text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]"
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -71,21 +77,25 @@ function About() {
           {content.experience.map((item, idx) => (
             <div key={item.company + idx}>
               <h3 className="mt-2 text-[24px]">{item.company}</h3>
-              <table className={styles.infoTable}>
+              <table className={c.infoTable}>
                 <tbody>
-                  <tr key="info-table-1">
-                    <th scope="row">기간</th>
-                    <td>{item.period}</td>
+                  <tr className={c.infoTableRow} key="info-table-1">
+                    <th className={c.infoTableTh} scope="row">
+                      기간
+                    </th>
+                    <td className={c.infoTableTd}>{item.period}</td>
                   </tr>
-                  <tr key="info-table-2">
-                    <th scope="row">업무</th>
-                    <td>{item.position}</td>
+                  <tr className={c.infoTableRow} key="info-table-2">
+                    <th className={c.infoTableTh} scope="row">
+                      업무
+                    </th>
+                    <td className={c.infoTableTd}>{item.position}</td>
                   </tr>
-                  <tr key="info-table-3">
-                    <th scope="row">
+                  <tr className={c.infoTableRow} key="info-table-3">
+                    <th className={c.infoTableTh} scope="row">
                       <strong>기술</strong>
                     </th>
-                    <td>
+                    <td className={c.infoTableTd}>
                       {item.tech.map(
                         (tech, idx) =>
                           `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
