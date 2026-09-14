@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
+import { TitleBar } from '@/components/about/TitleBar';
 import content from '@/contents/resume';
 import styles from '@/styles/About.module.css';
 
@@ -24,28 +25,10 @@ function About() {
         className={styles.contentWrapper}
         style={{ viewTransitionName: 'window-about' }}
       >
-        <div className={styles.titlebar}>
-          <nav className={styles.buttonWrapper}>
-            <button
-              className={styles.close}
-              onClick={() => navigate({ to: '/', viewTransition: true })}
-            >
-              <strong className={styles.inlineContent}></strong>
-            </button>
-
-            <button
-              className={styles.minimize}
-              onClick={() => closeToggleHandler()}
-            >
-              <strong className={styles.inlineContent}></strong>
-            </button>
-
-            <button className={styles.zoom}>
-              <strong className={styles.inlineContent}></strong>
-            </button>
-          </nav>
-          이력서
-        </div>
+        <TitleBar
+          onClose={() => navigate({ to: '/', viewTransition: true })}
+          onToggleAll={closeToggleHandler}
+        />
         <article className={styles.content}>
           <p className={styles.lastUpdatedAt}>
             최종 수정: {content.lastUpdatedAt}
