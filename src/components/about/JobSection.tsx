@@ -18,9 +18,7 @@ export function JobSection({ item }: { item: ExperienceSection }) {
         {/* 원본은 `.experienceSection > p:nth-of-type(2) > span`으로 이 라벨을
             잡았다. 구조 선택자를 없애고 클래스를 직접 붙인다 — <p>의 순서가
             바뀌어도 안 깨진다. ::after의 구분선 '|'도 여기로 따라온다. */}
-        <span className="font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|']">
-          기술 스택
-        </span>
+        <span className={c.techLabel}>기술 스택</span>
         {item.tech.map(
           (tech, idx) => `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
         )}
@@ -30,7 +28,9 @@ export function JobSection({ item }: { item: ExperienceSection }) {
         {item.jobs.map((job, idx) => (
           <li key={idx}>
             <details className="overflow-visible" open>
-              <summary className="my-[0.35rem] cursor-pointer text-[18px] leading-[1.65] font-medium text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]">
+              <summary
+                className={`my-[0.35rem] cursor-pointer text-[18px] leading-[1.65] font-medium ${c.linkColor}`}
+              >
                 <span className="ml-[0.35rem] text-[color:var(--color)]">
                   {job.summary}
                 </span>

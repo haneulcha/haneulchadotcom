@@ -6,7 +6,7 @@ export function PortfolioItem({ item }: { item: Portfolio }) {
     <section className={c.sectionWrap}>
       <h4 className={c.sectionH4}>
         <a
-          className="text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]"
+          className={c.linkColor}
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
@@ -17,9 +17,7 @@ export function PortfolioItem({ item }: { item: Portfolio }) {
       </h4>
       <p className={c.bodyP}>{item.desc}</p>
       <p className={c.bodyP}>
-        <span className="font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|']">
-          기술 스택
-        </span>
+        <span className={c.techLabel}>기술 스택</span>
         {item.tech.map(
           (tech, idx) => `${tech}${idx === item.tech.length - 1 ? '' : ', '}`,
         )}

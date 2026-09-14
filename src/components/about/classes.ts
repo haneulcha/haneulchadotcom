@@ -30,7 +30,20 @@ export const sectionH4 = 'my-7 mb-4 text-[20px]';
 /** .experienceSection h4 span */
 export const sectionH4Span = 'ml-1 text-[16px]';
 
+/** .content p */
+export const contentP = 'my-[0.4rem] leading-[1.6]';
+
 /** .experienceSection > p, .content p, .main p::selection */
 export const bodyP =
   'my-[0.4rem] text-[16px] leading-[1.6] ' +
   'selection:bg-[var(--point-color)] selection:text-[var(--bg)]';
+
+/** .experienceSection > p:nth-of-type(2) > span, .experienceSection > p:nth-of-type(2) > span::after */
+export const techLabel =
+  "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|']";
+
+/** .main a, .main a:hover — also reused for the color half of
+ * .experienceSection details summary / details summary:hover, which shares
+ * the same two tokens. */
+export const linkColor =
+  'text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]';

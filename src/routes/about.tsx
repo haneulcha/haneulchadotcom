@@ -63,7 +63,7 @@ function About() {
                   </th>
                   <td className={c.infoTableTd}>
                     <a
-                      className="text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]"
+                      className={c.linkColor}
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -77,7 +77,9 @@ function About() {
           </table>
 
           <h2 className={h2}>소개</h2>
-          <p className="my-[0.4rem] leading-[1.6] selection:bg-[var(--point-color)] selection:text-[var(--bg)]">
+          <p
+            className={`${c.contentP} selection:bg-[var(--point-color)] selection:text-[var(--bg)]`}
+          >
             {content.introduction}
           </p>
 
