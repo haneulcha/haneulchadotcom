@@ -8,6 +8,14 @@
    조용히 통과할 수 있다. src만 스캔하도록 좁힌다. */
 @import 'tailwindcss/utilities.css' layer(utilities) source('..');
 
+/* Tailwind v4는 `hover:`를 기본적으로 `@media (hover: hover) { &:hover { … } }`로
+   컴파일한다 — 터치 기기에서 호버 스타일을 죽여 접근성을 높이려는 의도다. 하지만
+   이 브랜치가 대체한 원본 CSS의 `:hover` 규칙들(`.main a:hover`,
+   `.experienceSection details summary:hover` 등)은 그런 가드가 없었고, 이 마이그레이션의
+   목표는 픽셀 단위 충실도다. 미디어 쿼리 가드를 걷어내 `hover:`가 원본과 똑같이
+   무조건적인 `&:hover`로 컴파일되게 한다. */
+@custom-variant hover (&:hover);
+
 /* preflight를 일부러 뺐다. global.css가 이미 리셋을 갖고 있어 겹치면
    기존 렌더가 흔들린다. 리셋을 @layer base에 넣는 것도 같은 이유다 —
    비레이어 선언은 레이어 선언을 특정도와 무관하게 이기므로, 리셋이
