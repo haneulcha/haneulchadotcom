@@ -27,15 +27,21 @@ function About() {
 
   return (
     <main className="aboutPage overflow-auto text-[color:var(--color)]">
+      {/* Tailwind v4 compiles `max-[Npx]:` to `@media (width < Npx)` (exclusive),
+          while the original CSS used `@media (max-width: 1024px)` (inclusive).
+          1025px here reproduces the original inclusive-at-1024 behavior
+          exactly, so the layout still narrows at exactly 1024px instead of
+          one pixel later. Same mechanism as src/components/about/classes.ts. */}
       <div
-        className="mx-auto my-[6vh] max-w-[1024px] rounded-md border border-[#acacac] bg-[var(--bg)] font-[HelveticaNeue,'Helvetica_Neue','Lucida_Grande',Arial,sans-serif] shadow-[0px_0px_20px_#acacac] max-[1024px]:mx-auto max-[1024px]:my-0"
+        className="mx-auto my-[6vh] max-w-[1024px] rounded-md border border-[#acacac] bg-[var(--bg)] font-[HelveticaNeue,'Helvetica_Neue','Lucida_Grande',Arial,sans-serif] shadow-[0px_0px_20px_#acacac] max-[1025px]:mx-auto max-[1025px]:my-0"
         style={{ viewTransitionName: 'window-about' }}
       >
         <TitleBar
           onClose={() => navigate({ to: '/', viewTransition: true })}
           onToggleAll={closeToggleHandler}
         />
-        <article className="px-36 pt-24 pb-32 font-['Noto_Sans_KR',sans-serif] text-[16px] leading-[1.5] font-normal max-[1024px]:px-[10vw] max-[1024px]:pt-[9vw] max-[1024px]:pb-[10vw]">
+        {/* 1025px, not 1024px — same inclusive-at-1024 reasoning as above. */}
+        <article className="px-36 pt-24 pb-32 font-['Noto_Sans_KR',sans-serif] text-[16px] leading-[1.5] font-normal max-[1025px]:px-[10vw] max-[1025px]:pt-[9vw] max-[1025px]:pb-[10vw]">
           <p className="float-right m-0 text-[12px]">
             최종 수정: {content.lastUpdatedAt}
           </p>
