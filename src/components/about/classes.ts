@@ -30,5 +30,7 @@ export const sectionH4 = 'my-7 mb-4 text-[20px]';
 /** .experienceSection h4 span */
 export const sectionH4Span = 'ml-1 text-[16px]';
 
-/** .experienceSection > p */
-export const bodyP = 'my-[0.4rem] text-[16px] leading-[1.6]';
+/** .experienceSection > p, .content p, .main p::selection */
+export const bodyP =
+  'my-[0.4rem] text-[16px] leading-[1.6] ' +
+  'selection:bg-[var(--point-color)] selection:text-[var(--bg)]';

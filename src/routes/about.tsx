@@ -44,7 +44,7 @@ function About() {
         />
         {/* 1025px, not 1024px — same inclusive-at-1024 reasoning as above. */}
         <article className="px-36 pt-24 pb-32 font-['Noto_Sans_KR',sans-serif] text-[16px] leading-[1.5] font-normal max-[1025px]:px-[10vw] max-[1025px]:pt-[9vw] max-[1025px]:pb-[10vw]">
-          <p className="float-right m-0 text-[12px]">
+          <p className="float-right m-0 text-[12px] leading-[1.6] selection:bg-[var(--point-color)] selection:text-[var(--bg)]">
             최종 수정: {content.lastUpdatedAt}
           </p>
           <h1 className="mb-8 text-[42px] font-bold tracking-[6px]">
