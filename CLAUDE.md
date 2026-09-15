@@ -32,12 +32,15 @@ Node는 `.nvmrc`의 22를 따른다.
 ```
 src/
 ├── routes/
-│   ├── __root.tsx        루트 문서. <html lang="ko">, head(), global.css
+│   ├── __root.tsx        루트 문서. <html lang="ko">, head(), global.css,
+│   │                      첫 페인트 전 .dark를 붙이는 인라인 스크립트
 │   ├── index.tsx         / — 랜딩
 │   └── about.tsx         /about — 이력서
 ├── router.tsx            라우터 생성 (getRouter export)
 ├── routeTree.gen.ts      자동 생성. 커밋하되 직접 수정하지 않는다
 ├── components/
+│   ├── ColorBar.tsx       색 토큰 띠. __root.tsx에 있어 두 라우트 모두에 뜬다
+│   ├── ThemeToggle.tsx    시스템/라이트/다크 3순환 토글. 마찬가지로 두 라우트 모두
 │   └── about/             /about 전용 컴포넌트
 │       ├── TitleBar.tsx        macOS 타이틀바 + 신호등 버튼
 │       ├── ExperienceItem.tsx
@@ -48,8 +51,12 @@ src/
 ├── contents/
 │   ├── resume.json       이력서의 단일 데이터 소스 (최종 수정일 포함)
 │   └── types.ts + resume.ts           타입과 재수출 모듈
+├── lib/
+│   └── theme.ts           다크 판정 규칙(resolveDark)과 첫 페인트 인라인
+│                           스크립트(THEME_INIT_SCRIPT)를 한 파일에 둔다
 └── styles/
-    └── global.css        CSS 변수 토큰 + 리셋 + Tailwind import
+    ├── global.css         리셋 + Tailwind import + dark: variant 재정의
+    └── palette.theme.css  생성물. 팔레트 토큰(--color-{scale}-{role}), 직접 고치지 않는다
 ```
 
 경로 별칭은 `@/*` → `src/*`, `@/public/*` → `public/*`. **`tsconfig.json`과
@@ -74,25 +81,23 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 `useNavigate()`를 쓴다. (Tailwind 이전 전에는 이유가 달랐다 —
 `.buttonWrapper button` 엘리먼트 선택자였다.)
 
-**`about.tsx`의 `className="aboutPage ..."`에서 `aboutPage`는 전역 클래스다.**
-`global.css`의 `.aboutPage *::selection`이 이 클래스를 잡아 텍스트 선택
-하이라이트 색을 입힌다. CSS Modules가 사라진 지금도 이 클래스만은 지우면 안
-된다 — 지우면 선택 하이라이트 색이 조용히 사라진다.
-
 **`global.css`의 리셋은 `@layer base` 안에 있다. 밖으로 꺼내지 마라.** CSS
 캐스케이드에서 비레이어 선언은 레이어 선언을 특정도와 무관하게 이긴다. 리셋이
 비레이어로 돌아가면 `button { all: unset }`이 모든 Tailwind 유틸리티를 이겨
-신호등 버튼이 사각형이 되고, `.aboutPage *::selection`이 `selection:` 유틸리티를
+신호등 버튼이 사각형이 되고, 전역 `::selection`이 `selection:` 유틸리티를
 이겨 선택 하이라이트가 조용히 바뀐다.
 
 **Tailwind는 preflight 없이 쓴다.** `global.css`가 이미 리셋을 갖고 있어
-겹치면 기존 렌더가 흔들린다. `tailwindcss/theme.css`와
-`tailwindcss/utilities.css`만 import한다.
+겹치면 기존 렌더가 흔들린다. Tailwind 쪽에서는 `tailwindcss/theme.css`와
+`tailwindcss/utilities.css`만 가져온다 — `tailwindcss`를 통째로 불러오면
+같이 딸려 오는 preflight를 피하는 방법이다. (팔레트 토큰인
+`palette.theme.css`는 이 둘과 별개로 바로 뒤에서 import한다.)
 
 **`global.css`에 자손 선택자가 하나 더 있다** (`.resumeHtml a`).
 `resume.json`의 HTML 문자열이 `dangerouslySetInnerHTML`로 들어가는 두 자리의
 링크를 잡는다. 그 노드는 React가 만든 것이 아니라 JSX에서 `className`을 붙일 수
-없다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다.
+없다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다. 색은
+`var(--color-accent-text)`(호버 시 `--color-accent-text-strong`)로 토큰을 가리킨다.
 
 **Tailwind v4의 `max-[Npx]:`는 `width < Npx`(배타)로 컴파일된다.** CSS의
 `max-width: Npx`는 Npx를 포함(포괄)하므로 그대로 옮기면 정확히 그 픽셀에서
@@ -104,11 +109,35 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 스캔하도록 좁힌 것이다. `global.css`가 다른 위치로 옮겨지거나 두 번째 CSS
 진입점이 생기면 이 상대 경로가 조용히 깨진다.
 
-**새로 추가하는 색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
-`--point-color-hover`, `--point-color-selection`, `--border-color`). 다만 기존 코드에는
-하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `TitleBar.tsx`의 macOS
-타이틀바·신호등 버튼 색과 `index.tsx`의 랜딩 타이포 색은 토큰화 대상이 아니다.
-시키지 않은 색 리팩터링을 시작하지 마라.
+**새로 추가하는 색은 `src/styles/palette.theme.css`의 팔레트 토큰을 쓴다**
+(`--color-{scale}-{role}`, 예: `--color-accent-solid`, `--color-neutral-text-strong`).
+이 파일은 [design-system-starter](https://github.com/haneulcha/design-system-starter)가
+생성한 산출물이라 직접 고치지 않는다 — 팔레트를 다시 뽑아 통째로 덮어쓴다
+(`.prettierignore`에도 그래서 올라가 있다). 기존 6개 CSS 변수(`--color`, `--bg`,
+`--point-color` 등)는 이 토큰 체계로 완전히 대체됐다. 다만 `TitleBar.tsx`의 macOS
+타이틀바·신호등 버튼 색과 `about.tsx` 창 테두리·그림자 색은 여전히 하드코딩이고
+의도된 것이다 — 토큰화 대상이 아니다. 시키지 않은 색 리팩터링을 시작하지 마라.
+
+**다크 모드는 `<html>`의 `.dark` 클래스로 구동된다.** `palette.theme.css`가
+`.dark` 선택자를 하드코딩하므로(생성물이라 못 바꾼다) 클래스를 붙이는 쪽만
+우리가 맡는다. `src/lib/theme.ts`가 판정 규칙(`resolveDark`)과 첫 페인트 인라인
+스크립트(`THEME_INIT_SCRIPT`)를 **한 파일에** 갖고 있다 — 갈라지면 첫 페인트와
+이후 동작이 어긋난다.
+
+**`__root.tsx`의 `<head>`에 인라인 스크립트가 있다. 지우지 마라.** 첫 페인트
+전에 `.dark`를 결정하지 않으면 다크 사용자가 흰 화면을 한 번 보고 깜빡인다.
+라우터의 `headScripts`를 쓰지 않는 것은 그쪽이 하이드레이션 후 DOM을 다시
+만지기 때문이다. (렌더된 HTML에서 이 스크립트가 실제로 어디 놓이는지는
+`__root.tsx`의 주석을 봐라 — JSX 순서와 다르다.)
+
+**`dark:` 유틸리티도 `.dark` 클래스를 따르도록 `@custom-variant`로 바꿔 뒀다.**
+Tailwind 기본값은 `prefers-color-scheme`이라, 그대로 두면 팔레트(클래스 기반)와
+크롬 색(미디어 쿼리 기반)이 서로 다른 신호를 따라 갈라진다.
+
+**컬러 바(`ColorBar.tsx`)는 hex를 박지 않고 `var(--color-…)`를 그린다.** 팔레트를
+다시 뽑거나 테마를 바꾸면 띠가 자동으로 맞는다. 이 성질이 깨지면 띠는 팔레트의
+그림일 뿐 팔레트가 아니게 된다. 띠를 누르면 `/about#design-system` —
+이력서 개인 프로젝트의 `design-system-starter` 항목 — 으로 이동한다.
 
 **`dangerouslySetInnerHTML`이 `/about`에 두 군데 있다.** `resume.json`의 문자열에
 HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직접 작성한 콘텐츠일 때만 성립하는
@@ -120,15 +149,21 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 ## 테스트
 
 `tests/pages.spec.ts`가 Playwright로 두 라우트의 스크린샷과 상호작용(`<details>` 전체 토글,
-닫기 버튼 내비게이션)을 검사한다. 기준선 PNG는 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
+닫기 버튼 내비게이션)을 검사한다. 기준선은 **네 장**이다 — 라이트/다크 × 랜딩/이력서
+(`landing.png`, `landing-dark.png`, `about.png`, `about-dark.png`). 다크는
+`page.emulateMedia({ colorScheme: 'dark' })` 같은 에뮬레이션이 아니라
+`document.documentElement.classList.add('dark')`로 직접 클래스를 붙여 찍는다 —
+팔레트가 `.dark` 클래스로 동작하므로 실제 경로를 지나야 한다. 기준선 PNG는
+`tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
 
 `tests/tailwind-setup.spec.ts`는 스크린샷으로 못 잡는 것 두 가지를 따로 검사한다. 하나는
-랜딩 'ㅊ'의 computed color가 `text-[#ad1d1d]` 유틸리티 값(`rgb(173, 29, 29)`)과 같은지
-확인해 Tailwind 유틸리티가 `?url` 스타일시트를 통해 실제로 페이지에 닿는지를 본다. 다른
-하나는 `document.styleSheets`를 직접 순회해 리셋이 `@layer base` 안에 있는지 확인한다 —
-위 "`@layer base` 밖으로 꺼내지 마라" 경고가 가리키는 바로 그 회귀를 잡는 테스트다.
-`.aboutPage *::selection`이 비레이어 리셋에 밀려나는 사고는 텍스트를 드래그해 선택하는
-테스트가 없는 한 스크린샷에 안 잡히므로, 이 테스트가 그 회귀의 유일한 방어선이다.
+랜딩 'ㅊ'의 computed color가 `text-accent-solid` 유틸리티 값(`rgb(250, 134, 46)`,
+팔레트의 `--color-accent-500`)과 같은지 확인해 Tailwind 유틸리티가 `?url` 스타일시트를
+통해 실제로 페이지에 닿는지를 본다. 다른 하나는 `document.styleSheets`를 직접 순회해
+리셋이 `@layer base` 안에 있는지 확인한다 — 위 "`@layer base` 밖으로 꺼내지 마라" 경고가
+가리키는 바로 그 회귀를 잡는 테스트다. 전역 `::selection`이 비레이어 리셋에 밀려나는
+사고는 텍스트를 드래그해 선택하는 테스트가 없는 한 스크린샷에 안 잡히므로, 이 테스트가
+그 회귀의 유일한 방어선이다.
 
 - **`pnpm test` 전에 `pnpm build`가 필요하다.** 빌드 결과물을 서빙해서 검사한다.
 - 기준선은 **darwin 전용**이다. 다른 OS에서는 스크린샷이 어긋나므로 CI에 붙어 있지 않다.
@@ -169,7 +204,7 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
 - Playwright 기준선이 darwin 전용이라 CI에 붙어 있지 않다. CI에서 돌리려면 리눅스
   기준선을 함께 만들거나 컨테이너로 렌더 환경을 고정해야 한다.
 - OG 이미지가 없다.
-- 랜딩이 다시 `ㅊㅎㄴ` 세 글자다. 사이트가 살아있는 위성(pourover.work,
-  blog.haneulcha.com, jecheori)을 여전히 가리키지 않는다 — 수영장 랜딩이 풀려던 문제가
-  그대로 남았다.
+- 랜딩이 다시 `ㅊㅎㄴ` 세 글자다. 컬러 바가 `/about#design-system`으로는 이어주지만,
+  사이트가 살아있는 위성(pourover.work, blog.haneulcha.com, jecheori)은 여전히 어디서도
+  가리키지 않는다 — 수영장 랜딩이 풀려던 문제가 부분적으로만 해소됐다.
 - `__root.tsx`의 description이 같은 말을 반복하는 키워드 나열이다. 다시 쓸 가치가 있다.
