@@ -6,7 +6,10 @@ import { useState } from 'react';
 // 띠는 팔레트의 그림이 아니라 팔레트 그 자체다. 테마 전환에 JS가 필요 없고,
 // 팔레트를 다시 뽑아도 띠가 자동으로 맞는다.
 const CELLS = [
-  { label: '여백', varName: '--color-neutral-subtle-bg' },
+  // '여백'(landing 배경)이 아니라 '표면'이다 — 랜딩의 바탕색은 아직
+  // global.css의 하드코딩된 body 배경(rgba(170,183,191,0.2) / #1c1e1c)이고
+  // 토큰화 대상이 아니다. 이 변수가 실제로 그리는 건 /about 창 안쪽뿐이다.
+  { label: '표면', varName: '--color-neutral-subtle-bg' },
   { label: '테두리', varName: '--color-neutral-border' },
   { label: '본문', varName: '--color-neutral-text-strong' },
   { label: '링크', varName: '--color-accent-text' },
