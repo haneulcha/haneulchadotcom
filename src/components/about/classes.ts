@@ -43,8 +43,17 @@ export const bodyP =
   'selection:bg-[var(--point-color)] selection:text-[var(--bg)]';
 
 /** .experienceSection > p:nth-of-type(2) > span, .experienceSection > p:nth-of-type(2) > span::after */
+// Tailwind's `selection:` variant compiles to *two* rules — `.foo::selection`
+// and a descendant `.foo ::selection`. The parent <p> carries `bodyP`'s
+// `selection:bg-[var(--point-color)]`, so its descendant rule leaks the link
+// blue (--point-color, #0550ae) onto this span too. The original CSS
+// (`.main p::selection`) only ever matched the <p> itself, so this span fell
+// through to global.css's `.aboutPage *::selection` and got
+// --point-color-selection (#3067ab) instead. Re-declare that colour here to
+// restore it — this is not redundant, it is overriding the parent's leak.
 export const techLabel =
-  "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|']";
+  "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|'] " +
+  'selection:bg-[var(--point-color-selection)] selection:text-[var(--bg)]';
 
 /** .main a, .main a:hover — also reused for the color half of
  * .experienceSection details summary / details summary:hover, which shares
