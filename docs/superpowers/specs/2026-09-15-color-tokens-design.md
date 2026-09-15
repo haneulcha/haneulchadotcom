@@ -174,9 +174,12 @@ hex를 박지 않는다. 그러면 띠가 **팔레트의 그림이 아니라 팔
 | `desc`   | 디자인을 시작하기 위한 최소한의 결정이 무엇인지에 답하는 디자인 시스템 스타터. 실제 디자인 시스템 코퍼스를 분석해 기본값과 노브의 경계를 정하고, 색·타이포·간격·radius·elevation·컴포넌트 여섯 범주의 토큰과 AI 에이전트가 읽을 수 있는 `DESIGN.md`를 생성한다. **이 사이트의 색이 그 산출물이다.** |
 | `tech`   | TypeScript, oklch, Tailwind v4, Figma MCP, Vitest                                                                                                                                                                                                                                                   |
 
-`desc`에 링크를 넣으면 `dangerouslySetInnerHTML` 경로를 타므로 HTML 속성에
-**작은따옴표**를 쓴다 (`<a href='...'>`). JSON 문자열 안이라 큰따옴표는
-이스케이프가 필요하다 — 기존 관례를 따른다.
+`desc`는 `PortfolioItem.tsx`가 `{item.desc}`로 그대로 텍스트 렌더한다 —
+`dangerouslySetInnerHTML` 경로를 타지 않는다. 링크를 넣고 싶다면 HTML
+태그가 아니라 URL을 문장 안에 그냥 적는 식으로 표현한다. (HTML로 렌더되는
+자리는 `JobSection.tsx`가 다루는 `experience[].section[].title`과
+`jobs[].detail`뿐이며, 거기서는 JSON 문자열 안이라 속성에 작은따옴표를
+쓴다 — 기존 관례를 따른다.)
 
 `PortfolioItem`이 `id`를 받아 `<section id="design-system">`을 낸다. 컬러 바는
 `/about#design-system`으로 보낸다. 랜딩에서는 라우트 이동 + 앵커, `/about`에서는

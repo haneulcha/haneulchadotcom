@@ -69,8 +69,12 @@ src/
 렌더하므로 항목을 추가·수정할 때 컴포넌트 구조를 손댈 일은 없다. 이력서 수정은
 `resume.json` 한 파일로 닫힌다 ("최종 수정" 날짜는 `lastUpdatedAt` 필드).
 
-**`resume.json` 안의 HTML 문자열은 속성에 작은따옴표를 쓴다** (`<a href='...'>`).
-JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. 기존 관례를 따라라.
+**`resume.json`에서 `dangerouslySetInnerHTML`로 렌더되는 필드에 HTML을 넣을 때는
+속성에 작은따옴표를 쓴다** (`<a href='...'>`). JSON 문자열 안이라 큰따옴표를 쓰면
+이스케이프해야 한다. 기존 관례를 따라라. 이 규칙은 `JobSection.tsx`가 다루는
+`experience[].section[].title`과 `jobs[].detail`에만 해당한다 —
+`portfolio[].desc`는 `PortfolioItem.tsx`가 `{item.desc}`로 그대로 텍스트
+렌더하므로 여기 HTML 태그를 넣어도 글자 그대로 보일 뿐이다.
 
 **`package.json`의 `"type": "module"`을 지우지 마라.** 없으면 `vite.config.ts`가 CJS로
 취급되고, ESM 전용인 `@tanstack/react-start/plugin/vite` 로드에 실패해 빌드가 죽는다.
