@@ -37,12 +37,19 @@ src/
 │   └── about.tsx         /about — 이력서
 ├── router.tsx            라우터 생성 (getRouter export)
 ├── routeTree.gen.ts      자동 생성. 커밋하되 직접 수정하지 않는다
+├── components/
+│   └── about/             /about 전용 컴포넌트
+│       ├── TitleBar.tsx        macOS 타이틀바 + 신호등 버튼
+│       ├── ExperienceItem.tsx
+│       ├── JobSection.tsx
+│       ├── PortfolioItem.tsx
+│       ├── LanguageList.tsx
+│       └── classes.ts          반복되는 Tailwind 클래스 문자열 상수
 ├── contents/
 │   ├── resume.json       이력서의 단일 데이터 소스 (최종 수정일 포함)
 │   └── types.ts + resume.ts           타입과 재수출 모듈
 └── styles/
-    ├── global.css        CSS 변수 토큰 + 리셋
-    └── *.module.css      화면별 CSS Modules
+    └── global.css        CSS 변수 토큰 + 리셋 + Tailwind import
 ```
 
 경로 별칭은 `@/*` → `src/*`, `@/public/*` → `public/*`. **`tsconfig.json`과
@@ -61,18 +68,46 @@ JSON 문자열 안이라 큰따옴표를 쓰면 이스케이프해야 한다. �
 **`package.json`의 `"type": "module"`을 지우지 마라.** 없으면 `vite.config.ts`가 CJS로
 취급되고, ESM 전용인 `@tanstack/react-start/plugin/vite` 로드에 실패해 빌드가 죽는다.
 
-**`about.tsx`의 닫기 버튼은 `<button>`이어야 한다.** `About.module.css`가
-`.buttonWrapper button`으로 엘리먼트 선택자를 쓰기 때문에 `<Link>`(=`<a>`)로 바꾸면
-타이틀바 신호등 스타일이 깨진다. 그래서 라우팅에 `<Link>`가 아니라 `useNavigate()`를 쓴다.
+**`TitleBar`의 닫기 버튼은 `<button>`이어야 한다.** `tests/pages.spec.ts`가
+`page.locator('nav button')`으로 신호등을 찾기 때문에 `<Link>`(=`<a>`)로 바꾸면
+상호작용 테스트 두 개가 깨진다. 그래서 라우팅에 `<Link>`가 아니라
+`useNavigate()`를 쓴다. (Tailwind 이전 전에는 이유가 달랐다 —
+`.buttonWrapper button` 엘리먼트 선택자였다.)
 
-**`about.tsx`의 `className={`aboutPage ${styles.main}`}`에서 `aboutPage`는 전역
-클래스다.** CSS Modules 클래스가 아니라 `global.css`의 `.aboutPage *::selection`이 걸려
-있다. 지우면 텍스트 선택 하이라이트 색이 조용히 사라진다.
+**`about.tsx`의 `className="aboutPage ..."`에서 `aboutPage`는 전역 클래스다.**
+`global.css`의 `.aboutPage *::selection`이 이 클래스를 잡아 텍스트 선택
+하이라이트 색을 입힌다. CSS Modules가 사라진 지금도 이 클래스만은 지우면 안
+된다 — 지우면 선택 하이라이트 색이 조용히 사라진다.
+
+**`global.css`의 리셋은 `@layer base` 안에 있다. 밖으로 꺼내지 마라.** CSS
+캐스케이드에서 비레이어 선언은 레이어 선언을 특정도와 무관하게 이긴다. 리셋이
+비레이어로 돌아가면 `button { all: unset }`이 모든 Tailwind 유틸리티를 이겨
+신호등 버튼이 사각형이 되고, `.aboutPage *::selection`이 `selection:` 유틸리티를
+이겨 선택 하이라이트가 조용히 바뀐다.
+
+**Tailwind는 preflight 없이 쓴다.** `global.css`가 이미 리셋을 갖고 있어
+겹치면 기존 렌더가 흔들린다. `tailwindcss/theme.css`와
+`tailwindcss/utilities.css`만 import한다.
+
+**`global.css`에 자손 선택자가 하나 더 있다** (`.resumeHtml a`).
+`resume.json`의 HTML 문자열이 `dangerouslySetInnerHTML`로 들어가는 두 자리의
+링크를 잡는다. 그 노드는 React가 만든 것이 아니라 JSX에서 `className`을 붙일 수
+없다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다.
+
+**Tailwind v4의 `max-[Npx]:`는 `width < Npx`(배타)로 컴파일된다.** CSS의
+`max-width: Npx`는 Npx를 포함(포괄)하므로 그대로 옮기면 정확히 그 픽셀에서
+동작이 어긋난다. `about.tsx`와 `classes.ts`의 `max-[1025px]:`·`max-[321px]:`
+같은 N+1 패턴은 이 어긋남을 상쇄하려고 일부러 한 픽셀 올려 쓴 것이다.
+
+**`global.css`의 유틸리티 import는 `source('..')`를 달고 있다.** 기본 자동
+탐지가 저장소 전체(`docs/`의 예시 클래스 문자열까지)를 훑는 것을 막아 `src`만
+스캔하도록 좁힌 것이다. `global.css`가 다른 위치로 옮겨지거나 두 번째 CSS
+진입점이 생기면 이 상대 경로가 조용히 깨진다.
 
 **새로 추가하는 색은 `global.css`의 CSS 변수를 쓴다** (`--color`, `--bg`, `--point-color`,
 `--point-color-hover`, `--point-color-selection`, `--border-color`). 다만 기존 코드에는
-하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `About.module.css`의 macOS
-타이틀바·신호등 버튼 색과 `Home.module.css`의 랜딩 타이포 색은 토큰화 대상이 아니다.
+하드코딩된 색이 많이 남아 있고, 대부분은 의도된 것이다 — `TitleBar.tsx`의 macOS
+타이틀바·신호등 버튼 색과 `index.tsx`의 랜딩 타이포 색은 토큰화 대상이 아니다.
 시키지 않은 색 리팩터링을 시작하지 마라.
 
 **`dangerouslySetInnerHTML`이 `/about`에 두 군데 있다.** `resume.json`의 문자열에
@@ -86,6 +121,14 @@ HTML 태그를 허용하기 위한 것이다. 데이터가 저장소 안의 직�
 
 `tests/pages.spec.ts`가 Playwright로 두 라우트의 스크린샷과 상호작용(`<details>` 전체 토글,
 닫기 버튼 내비게이션)을 검사한다. 기준선 PNG는 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
+
+`tests/tailwind-setup.spec.ts`는 스크린샷으로 못 잡는 것 두 가지를 따로 검사한다. 하나는
+랜딩 'ㅊ'의 computed color가 `text-[#ad1d1d]` 유틸리티 값(`rgb(173, 29, 29)`)과 같은지
+확인해 Tailwind 유틸리티가 `?url` 스타일시트를 통해 실제로 페이지에 닿는지를 본다. 다른
+하나는 `document.styleSheets`를 직접 순회해 리셋이 `@layer base` 안에 있는지 확인한다 —
+위 "`@layer base` 밖으로 꺼내지 마라" 경고가 가리키는 바로 그 회귀를 잡는 테스트다.
+`.aboutPage *::selection`이 비레이어 리셋에 밀려나는 사고는 텍스트를 드래그해 선택하는
+테스트가 없는 한 스크린샷에 안 잡히므로, 이 테스트가 그 회귀의 유일한 방어선이다.
 
 - **`pnpm test` 전에 `pnpm build`가 필요하다.** 빌드 결과물을 서빙해서 검사한다.
 - 기준선은 **darwin 전용**이다. 다른 OS에서는 스크린샷이 어긋나므로 CI에 붙어 있지 않다.
@@ -123,7 +166,6 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
 
 **이 목록이 정본이다** — 설계 문서에도 비슷한 목록이 있지만 그건 작성 시점의 스냅숏이다.
 
-- `about.tsx`가 183줄 단일 컴포넌트다. 섹션별로 쪼갤 여지가 있다.
 - Playwright 기준선이 darwin 전용이라 CI에 붙어 있지 않다. CI에서 돌리려면 리눅스
   기준선을 함께 만들거나 컨테이너로 렌더 환경을 고정해야 한다.
 - OG 이미지가 없다.

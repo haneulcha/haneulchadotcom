@@ -1,4 +1,25 @@
+@layer theme, base, components, utilities;
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import 'tailwindcss/theme.css' layer(theme);
+/* source()는 이 파일(src/styles/global.css) 기준 상대 경로다. 기본 자동
+   탐지는 저장소 전체를 훑어 docs/ 안의 예시 클래스 문자열(예: max-[320px])까지
+   유틸리티로 살려낸다 — 그러면 실제 코드의 오타가 문서 어딘가의 우연한 일치로
+   조용히 통과할 수 있다. src만 스캔하도록 좁힌다. */
+@import 'tailwindcss/utilities.css' layer(utilities) source('..');
+
+/* Tailwind v4는 `hover:`를 기본적으로 `@media (hover: hover) { &:hover { … } }`로
+   컴파일한다 — 터치 기기에서 호버 스타일을 죽여 접근성을 높이려는 의도다. 하지만
+   이 브랜치가 대체한 원본 CSS의 `:hover` 규칙들(`.main a:hover`,
+   `.experienceSection details summary:hover` 등)은 그런 가드가 없었고, 이 마이그레이션의
+   목표는 픽셀 단위 충실도다. 미디어 쿼리 가드를 걷어내 `hover:`가 원본과 똑같이
+   무조건적인 `&:hover`로 컴파일되게 한다. */
+@custom-variant hover (&:hover);
+
+/* preflight를 일부러 뺐다. global.css가 이미 리셋을 갖고 있어 겹치면
+   기존 렌더가 흔들린다. 리셋을 @layer base에 넣는 것도 같은 이유다 —
+   비레이어 선언은 레이어 선언을 특정도와 무관하게 이기므로, 리셋이
+   비레이어면 button { all: unset }이 모든 유틸리티를 지워 버린다. */
 
 :root {
   --color: #24292f;
@@ -9,54 +30,66 @@
   --border-color: #e6e8e6;
 }
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
-  background-color: rgba(170, 183, 191, 0.2);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@layer base {
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      Segoe UI,
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      Fira Sans,
+      Droid Sans,
+      Helvetica Neue,
+      sans-serif;
+    background-color: rgba(170, 183, 191, 0.2);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
-  margin: 0;
-  padding: 0;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
+    padding: 0;
+  }
 
-button {
-  all: unset;
-  line-height: 1;
-  cursor: pointer;
-}
+  button {
+    all: unset;
+    line-height: 1;
+    cursor: pointer;
+  }
 
-a {
-  text-decoration: none;
-  cursor: pointer;
-}
+  a {
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-.aboutPage *::selection {
-  background: var(--point-color-selection);
-  color: var(--bg);
+  .aboutPage *::selection {
+    background: var(--point-color-selection);
+    color: var(--bg);
+  }
+
+  /* resume.json의 HTML 문자열 안에 있는 <a>. dangerouslySetInnerHTML이 만든
+     노드라 JSX에서 className을 못 붙인다 — Tailwind로 옮길 수 없는 유일한
+     규칙이다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다. */
+  .resumeHtml a {
+    color: var(--point-color);
+  }
+  .resumeHtml a:hover {
+    color: var(--point-color-hover);
+  }
 }

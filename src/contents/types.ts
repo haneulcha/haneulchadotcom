@@ -26,3 +26,11 @@ export type Resume = {
   }[];
   language: { type: string; level: string }[];
 };
+
+// Resume 안에 인라인으로 중첩된 항목 타입들에 이름을 붙인다. 컴포넌트가
+// props 타입으로 쓴다. 인덱스 접근으로 파생하므로 resume.json의 모양이
+// 바뀌면 여기도 자동으로 따라온다.
+export type Experience = Resume['experience'][number];
+export type ExperienceSection = Experience['section'][number];
+export type Portfolio = Resume['portfolio'][number];
+export type Language = Resume['language'][number];
