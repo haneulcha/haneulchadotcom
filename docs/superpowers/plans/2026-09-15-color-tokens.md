@@ -92,7 +92,7 @@ TanStack Router의 `headScripts`는 문자열 children을 SSR에서 인라인 `<
 **Files:**
 
 - Create: `src/styles/palette.theme.css`
-- Modify: `src/styles/global.css`, `src/routes/about.tsx`, `src/components/about/classes.ts`, `src/components/about/JobSection.tsx`, `src/routes/index.tsx`
+- Modify: `src/styles/global.css`, `src/routes/about.tsx`, `src/components/about/classes.ts`, `src/components/about/JobSection.tsx`, `src/routes/index.tsx`, `tests/tailwind-setup.spec.ts`, `.prettierignore`
 - Baselines: `tests/pages.spec.ts-snapshots/*.png` 재생성
 
 **Interfaces:**
@@ -120,6 +120,15 @@ https://haneulcha.github.io/design-system-starter/color-palette?v=1&a=fa862e&n=g
 ```css
 /* 생성물이다. 편집하지 마라 — 팔레트를 다시 뽑으면 날아간다.
    출처: https://haneulcha.github.io/design-system-starter/color-palette?v=1&a=fa862e&n=green-soft&t=7-&ts=8- */
+```
+
+- [ ] **Step 1b: 생성물을 Prettier에서 제외한다**
+
+`.prettierignore`에 한 줄을 더한다. 안 그러면 `pnpm format`이 이 파일을 재포맷해 "편집하지 않는다"는 규칙이 포매터에 의해 깨진다.
+
+```
+# 팔레트 생성물. 재생성하면 덮어쓰므로 포맷을 강제하지 않는다.
+src/styles/palette.theme.css
 ```
 
 - [ ] **Step 2: `global.css`에서 import하고 변수 6개를 지운다**
@@ -182,10 +191,11 @@ export const linkColor = 'text-accent-text hover:text-accent-text-strong';
 네 자리다.
 
 ```tsx
-// h2 점
+// h2 점 — 색만 바꾼다. `relative`/`before:absolute`를 넣지 마라.
+// ①에서 그렇게 해봤다가 제목이 48~60px 밀려서 의도적으로 뺐다.
 const h2 =
-  'relative mt-10 mb-4 -ml-[1.8rem] text-[30px] ' +
-  "before:absolute before:content-['˙'] before:text-[56px] " +
+  'mt-10 mb-4 -ml-[1.8rem] text-[30px] ' +
+  "before:content-['˙'] before:text-[56px] " +
   'before:leading-[28px] before:text-accent-text';
 ```
 
@@ -243,7 +253,7 @@ className =
 - [ ] **Step 9: 기준선 재생성과 대조**
 
 ```bash
-pnpm build && pnpm test -- --update-snapshots
+pnpm build && npx playwright test --update-snapshots=all
 ```
 
 그 다음 `git diff --stat`으로 PNG 두 장이 바뀐 것을 확인하고, **`pnpm dev`로 띄워 눈으로 본다.** Step 8의 목록과 실제가 일치하는가? 목록에 없는 변화가 있으면 그게 버그다.
@@ -254,6 +264,12 @@ pnpm build && pnpm test -- --update-snapshots
 getComputedStyle(document.querySelector('a[href^="mailto"]')).color;
 // → "rgb(174, 85, 0)"  (#ae5500)
 ```
+
+- [ ] **Step 9b: 랜딩 색을 단언하는 테스트를 고친다**
+
+`tests/tailwind-setup.spec.ts`의 첫 테스트가 랜딩 `ㅊ`의 색을 `rgb(173, 29, 29)`로 단언한다. Step 7이 그 글자를 `text-accent-solid`로 바꾸므로 `rgb(250, 134, 46)`이 된다. 기댓값을 고친다.
+
+**그 테스트가 무엇을 검사하는지는 바꾸지 마라** — 유틸리티가 `?url` 스타일시트를 통해 실제로 페이지에 닿는지를 본다. 같은 파일의 두 번째 테스트(`@layer base` 순서)는 손대지 않는다.
 
 - [ ] **Step 10: 손으로 확인**
 
@@ -420,7 +436,7 @@ test('about page renders in dark', async ({ page }) => {
 - [ ] **Step 6: 기준선 생성과 눈 확인**
 
 ```bash
-pnpm build && pnpm test -- --update-snapshots
+pnpm build && npx playwright test --update-snapshots=all
 ```
 
 PNG가 **4장**이 됐는지 확인한다. 그리고 `pnpm dev`로 띄워 OS를 다크로 바꿔가며 본다:
@@ -550,7 +566,7 @@ export function ThemeToggle() {
 토글은 `fixed`라 레이아웃을 밀지 않지만 **화면에 보이므로 4장 모두 바뀐다.** 정상이다.
 
 ```bash
-pnpm build && pnpm test -- --update-snapshots
+pnpm build && npx playwright test --update-snapshots=all
 ```
 
 diff 이미지로 **우상단에 토글만 추가됐는지** 확인한다. 다른 곳이 움직였으면 `fixed`가 안 먹었거나 `z-50`이 무언가를 가린 것이다.
@@ -655,7 +671,7 @@ export function ColorBar() {
 - [ ] **Step 4: 기준선 재생성과 커밋**
 
 ```bash
-pnpm build && pnpm test -- --update-snapshots
+pnpm build && npx playwright test --update-snapshots=all
 ```
 
 diff 이미지로 **우하단에 띠만 추가됐는지** 확인한다.
@@ -729,7 +745,7 @@ export function PortfolioItem({ item, id }: { item: Portfolio; id?: string }) {
 - [ ] **Step 5: 기준선 재생성과 커밋**
 
 ```bash
-pnpm build && pnpm test -- --update-snapshots
+pnpm build && npx playwright test --update-snapshots=all
 git add -A src tests
 git commit -m "feat: add the design-system entry the colour bar points at"
 ```
