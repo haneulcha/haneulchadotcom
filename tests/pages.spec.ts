@@ -8,6 +8,12 @@ async function waitForFonts(page: Page) {
   });
 }
 
+// colorScheme 에뮬레이션이 아니라 클래스를 직접 붙인다 — 팔레트가 .dark
+// 클래스로 동작하므로 실제 경로를 지나야 한다.
+async function forceDark(page: Page) {
+  await page.evaluate(() => document.documentElement.classList.add('dark'));
+}
+
 test('landing page renders', async ({ page }) => {
   await page.goto('/');
   await waitForFonts(page);
@@ -18,6 +24,20 @@ test('about page renders', async ({ page }) => {
   await page.goto('/about');
   await waitForFonts(page);
   await expect(page).toHaveScreenshot('about.png', { fullPage: true });
+});
+
+test('landing page renders in dark', async ({ page }) => {
+  await page.goto('/');
+  await waitForFonts(page);
+  await forceDark(page);
+  await expect(page).toHaveScreenshot('landing-dark.png', { fullPage: true });
+});
+
+test('about page renders in dark', async ({ page }) => {
+  await page.goto('/about');
+  await waitForFonts(page);
+  await forceDark(page);
+  await expect(page).toHaveScreenshot('about-dark.png', { fullPage: true });
 });
 
 test('minimize button toggles every details element', async ({ page }) => {

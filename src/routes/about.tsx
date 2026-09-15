@@ -35,7 +35,7 @@ function About() {
           exactly, so the layout still narrows at exactly 1024px instead of
           one pixel later. Same mechanism as src/components/about/classes.ts. */}
       <div
-        className="mx-auto my-[6vh] max-w-[1024px] rounded-md border border-[#acacac] bg-neutral-subtle-bg font-[HelveticaNeue,'Helvetica_Neue','Lucida_Grande',Arial,sans-serif] shadow-[0px_0px_20px_#acacac] max-[1025px]:mx-auto max-[1025px]:my-0"
+        className="mx-auto my-[6vh] max-w-[1024px] rounded-md border border-[#acacac] bg-neutral-subtle-bg font-[HelveticaNeue,'Helvetica_Neue','Lucida_Grande',Arial,sans-serif] shadow-[0px_0px_20px_#acacac] max-[1025px]:mx-auto max-[1025px]:my-0 dark:border-[#3a3a3c] dark:shadow-[0px_0px_20px_#000000]"
         style={{ viewTransitionName: 'window-about' }}
       >
         <TitleBar

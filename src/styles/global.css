@@ -17,6 +17,13 @@
    무조건적인 `&:hover`로 컴파일되게 한다. */
 @custom-variant hover (&:hover);
 
+/* 팔레트(palette.theme.css)가 .dark 클래스로 다크를 구동하므로 dark:
+   유틸리티도 같은 신호를 따라야 한다. Tailwind 기본값은
+   prefers-color-scheme이라, 그대로 두면 팔레트 색과 크롬 색이 서로 다른
+   신호를 따라 갈라진다 — 시스템 다크 + 사용자가 라이트를 고른 상황에서
+   타이틀바만 어두워진다. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* preflight를 일부러 뺐다. global.css가 이미 리셋을 갖고 있어 겹치면
    기존 렌더가 흔들린다. 리셋을 @layer base에 넣는 것도 같은 이유다 —
    비레이어 선언은 레이어 선언을 특정도와 무관하게 이기므로, 리셋이
@@ -42,6 +49,14 @@
     background-color: rgba(170, 183, 191, 0.2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 창 바깥의 바탕. 라이트에서는 창이 바탕보다 밝고, 다크에서는 창
+     (neutral-subtle-bg = #070908)이 바탕보다 어둡다 — 이 반전은 다크
+     테마에서 정상이다. macOS 다크 데스크톱에 인용할 대상이 없어 고른 값이라
+     눈으로 확인한 결과다. */
+  .dark body {
+    background-color: #1c1e1c;
   }
 
   * {
