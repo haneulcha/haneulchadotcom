@@ -51,9 +51,18 @@ export const bodyP =
 // through to global.css's `.aboutPage *::selection` and got
 // --point-color-selection (#3067ab) instead. Re-declare that colour here to
 // restore it — this is not redundant, it is overriding the parent's leak.
+//
+// It has to win with `!important`, not specificity. Both rules share the same
+// selector shape, variant, and property, so Tailwind's compiler falls back to
+// comparing the raw candidate strings — `selection:bg-[var(--point-color)]`
+// happens to sort before `selection:bg-[var(--point-color-selection)]` only
+// because `)` precedes `-`. That's an accident of the two token *names*, not
+// of intent, so a future rename (e.g. the palette migration) could flip the
+// sort order and silently revert this span to the wrong colour. `!` pins the
+// outcome regardless of how the names sort.
 export const techLabel =
   "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|'] " +
-  'selection:bg-[var(--point-color-selection)] selection:text-[var(--bg)]';
+  'selection:!bg-[var(--point-color-selection)] selection:!text-[var(--bg)]';
 
 /** .main a, .main a:hover — also reused for the color half of
  * .experienceSection details summary / details summary:hover, which shares
