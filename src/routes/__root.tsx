@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 
+import { ColorBar } from '@/components/ColorBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { THEME_INIT_SCRIPT } from '@/lib/theme';
 import globalCss from '@/styles/global.css?url';
@@ -51,6 +52,7 @@ function RootDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <ColorBar />
         <ThemeToggle />
         <Scripts />
       </body>
