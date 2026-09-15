@@ -27,13 +27,20 @@ export function ColorBar() {
   return (
     // 평범한 <a>가 아니라 <Link>다. 랜딩의 'ㅊ'과 닫기 버튼이 이미 라우터
     // 내비게이션을 쓰므로 띠만 전체 페이지를 리로드하면 동작이 갈린다.
-    // 라우터가 해시 스크롤까지 처리한다.
+    // 라우터가 해시 스크롤까지 처리한다 — 단, 그건 실제 내비게이션이 일어날
+    // 때뿐이다. 이미 /about에 있을 때 같은 경로·같은 해시로 다시 누르면
+    // 라우터는 이동으로 안 치고 아무것도 하지 않는다 — 스크롤을 벗어난
+    // 뒤 다시 누르면 화면이 그대로다. onClick으로 대상이 이미 문서에 있으면
+    // 직접 스크롤한다; 없으면(랜딩에서 누른 경우) <Link>의 라우팅에 맡긴다.
     <Link
       to="/about"
       hash="design-system"
       aria-label="이 페이지가 쓰는 색 토큰 — 이력서의 디자인 시스템 항목으로"
       title={read ?? '이 페이지가 쓰는 색 토큰'}
       onMouseLeave={() => setRead(null)}
+      onClick={() => {
+        document.getElementById('design-system')?.scrollIntoView();
+      }}
       className="fixed right-3 bottom-3 z-50 flex overflow-hidden rounded-sm shadow-[0_0_0_1px_rgba(128,128,128,0.35)]"
     >
       {CELLS.map((cell) => (
