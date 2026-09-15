@@ -231,7 +231,7 @@ className =
 
 - [ ] **Step 8: 바뀔 것을 먼저 적는다**
 
-재생성 **전에** 예상 변화를 `.superpowers/` 바깥의 작업 노트나 커밋 메시지 초안에 적어 둔다:
+재생성 **전에** 예상 변화를 **리포트 파일에 적는다.** 나중에 맞춰보기 위한 것이므로 재생성을 본 뒤에 쓰면 의미가 없다.
 
 - 링크·소제목 점: 파랑 `#0550ae` → 갈색 `#ae5500`
 - 버튼·선택 배경: 파랑 → 주황 `#fa862e`, 글자는 흰색 → **검정**
@@ -446,7 +446,7 @@ git commit -m "feat: follow the system colour scheme in dark mode"
 
 - Create: `src/components/ThemeToggle.tsx`
 - Modify: `src/routes/__root.tsx`
-- Baselines: 변화 없음 (토글은 다음 태스크의 컬러 바와 함께 찍힌다)
+- Baselines: 4장 재생성 (토글이 화면에 보인다)
 
 **Interfaces:**
 
@@ -545,16 +545,18 @@ export function ThemeToggle() {
 - 좁은 화면(≤1024px)에서 `/about`의 타이틀바 위에 얹혔을 때 읽히는가
 - 키보드 `Tab`으로 도달하고 포커스 링이 보이는가
 
-- [ ] **Step 4: 전체 게이트와 커밋**
+- [ ] **Step 4: 기준선 재생성과 커밋**
 
-기준선은 안 바뀌어야 한다 — 토글이 `fixed`라 레이아웃에 영향이 없고, 스크린샷에는 **찍힌다**. 바뀌면 Step 5로 간다.
-
-- [ ] **Step 5: 기준선이 바뀌었으면 재생성한다**
-
-토글이 화면에 보이므로 4장 모두 바뀌는 것이 정상이다. 재생성하고 **토글만 추가됐는지** diff 이미지로 확인한다.
+토글은 `fixed`라 레이아웃을 밀지 않지만 **화면에 보이므로 4장 모두 바뀐다.** 정상이다.
 
 ```bash
 pnpm build && pnpm test -- --update-snapshots
+```
+
+diff 이미지로 **우상단에 토글만 추가됐는지** 확인한다. 다른 곳이 움직였으면 `fixed`가 안 먹었거나 `z-50`이 무언가를 가린 것이다.
+
+```bash
+pnpm type-check && pnpm lint && pnpm format:check && pnpm build && pnpm test
 git add -A src tests
 git commit -m "feat: add the three-state theme toggle"
 ```
@@ -577,6 +579,7 @@ git commit -m "feat: add the three-state theme toggle"
 - [ ] **Step 1: 컴포넌트를 만든다**
 
 ```tsx
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
 // 인쇄 컨트롤 스트립은 그 인쇄물이 실제로 쓴 잉크를 찍는다. 여기도 같다 —
@@ -603,8 +606,12 @@ export function ColorBar() {
   };
 
   return (
-    <a
-      href="/about#design-system"
+    // 평범한 <a>가 아니라 <Link>다. 랜딩의 'ㅊ'과 닫기 버튼이 이미 라우터
+    // 내비게이션을 쓰므로 띠만 전체 페이지를 리로드하면 동작이 갈린다.
+    // 라우터가 해시 스크롤까지 처리한다.
+    <Link
+      to="/about"
+      hash="design-system"
       aria-label="이 페이지가 쓰는 색 토큰 — 이력서의 디자인 시스템 항목으로"
       title={read ?? '이 페이지가 쓰는 색 토큰'}
       onMouseLeave={() => setRead(null)}
@@ -618,7 +625,7 @@ export function ColorBar() {
           className="block h-[13px] w-[17px] transition-[height] duration-100 hover:h-[19px]"
         />
       ))}
-    </a>
+    </Link>
   );
 }
 ```
@@ -641,7 +648,8 @@ export function ColorBar() {
 - 띠의 여섯 칸이 실제 토큰 색인가 — DevTools로 계산값을 읽어 스펙 1절 표와 대조
 - **테마를 바꾸면 띠도 따라 바뀌는가** (JS 없이 CSS만으로 되어야 한다)
 - 칸에 마우스를 올리면 툴팁에 역할명과 hex가 뜨는가
-- 눌러서 `/about#design-system`으로 가는가 — **Task 5 전에는 앵커가 없으므로 `/about` 맨 위로 간다.** 정상이다
+- 눌러서 `/about`으로 가는가 — **Task 5 전에는 앵커가 없으므로 맨 위로 간다.** 정상이다
+- 랜딩에서 눌렀을 때 **전체 페이지 리로드가 아니라 클라이언트 내비게이션**인가 (DevTools Network에 문서 요청이 안 떠야 한다)
 - 랜딩과 `/about` 양쪽에 있는가
 
 - [ ] **Step 4: 기준선 재생성과 커밋**
