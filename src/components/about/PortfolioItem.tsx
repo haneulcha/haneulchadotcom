@@ -1,9 +1,9 @@
 import * as c from '@/components/about/classes';
 import type { Portfolio } from '@/contents/types';
 
-export function PortfolioItem({ item }: { item: Portfolio }) {
+export function PortfolioItem({ item, id }: { item: Portfolio; id?: string }) {
   return (
-    <section className={c.sectionWrap}>
+    <section id={id} className={c.sectionWrap}>
       <h4 className={c.sectionH4}>
         <a
           className={c.linkColor}

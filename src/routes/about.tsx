@@ -86,7 +86,11 @@ function About() {
 
           <h2 className={h2}>개인 프로젝트</h2>
           {content.portfolio.map((item, idx) => (
-            <PortfolioItem item={item} key={item.title + idx} />
+            <PortfolioItem
+              item={item}
+              id={idx === 0 ? 'design-system' : undefined}
+              key={item.title + idx}
+            />
           ))}
 
           <h2 className={h2}>언어</h2>
