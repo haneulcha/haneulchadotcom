@@ -4,18 +4,18 @@ test('tailwind utilities reach the page through the ?url stylesheet', async ({
   page,
 }) => {
   await page.goto('/');
-  // 랜딩의 'ㅊ'은 이제 text-[#ad1d1d] 유틸리티로만 칠해진다.
-  // 유틸리티가 안 오면 상속색이 나오므로 이 단언이 깨진다.
+  // 랜딩의 'ㅊ'은 이제 text-accent-solid 유틸리티(팔레트의 --color-accent-500,
+  // #fa862e)로만 칠해진다. 유틸리티가 안 오면 상속색이 나오므로 이 단언이 깨진다.
   const color = await page
     .locator('h1 a')
     .first()
     .evaluate((el) => getComputedStyle(el).color);
-  expect(color).toBe('rgb(173, 29, 29)');
+  expect(color).toBe('rgb(250, 134, 46)');
 });
 
 // 리셋이 @layer base 안에 있는지 스타일시트에서 직접 확인한다. 비레이어로
 // 남으면 button { all: unset }이 모든 유틸리티를 이겨 Task 3(신호등)이 죽고,
-// .aboutPage *::selection이 selection: 유틸리티를 이겨 선택 하이라이트가
+// @layer base의 전역 ::selection이 selection: 유틸리티를 이겨 선택 하이라이트가
 // 조용히 바뀐다 — 후자는 스크린샷에 안 잡히므로 여기서 잡아야 한다.
 //
 // 클래스를 심어 간접 확인하지 않는 이유: 소스에 없는 클래스는 Tailwind가

@@ -7,6 +7,7 @@
    유틸리티로 살려낸다 — 그러면 실제 코드의 오타가 문서 어딘가의 우연한 일치로
    조용히 통과할 수 있다. src만 스캔하도록 좁힌다. */
 @import 'tailwindcss/utilities.css' layer(utilities) source('..');
+@import './palette.theme.css';
 
 /* Tailwind v4는 `hover:`를 기본적으로 `@media (hover: hover) { &:hover { … } }`로
    컴파일한다 — 터치 기기에서 호버 스타일을 죽여 접근성을 높이려는 의도다. 하지만
@@ -20,15 +21,6 @@
    기존 렌더가 흔들린다. 리셋을 @layer base에 넣는 것도 같은 이유다 —
    비레이어 선언은 레이어 선언을 특정도와 무관하게 이기므로, 리셋이
    비레이어면 button { all: unset }이 모든 유틸리티를 지워 버린다. */
-
-:root {
-  --color: #24292f;
-  --bg: #fbfcff;
-  --point-color: #0550ae;
-  --point-color-hover: #1678ef;
-  --point-color-selection: #3067ab;
-  --border-color: #e6e8e6;
-}
 
 @layer base {
   html,
@@ -78,18 +70,18 @@
     cursor: pointer;
   }
 
-  .aboutPage *::selection {
-    background: var(--point-color-selection);
-    color: var(--bg);
+  ::selection {
+    background: var(--color-accent-solid);
+    color: var(--color-accent-on-solid);
   }
 
   /* resume.json의 HTML 문자열 안에 있는 <a>. dangerouslySetInnerHTML이 만든
      노드라 JSX에서 className을 못 붙인다 — Tailwind로 옮길 수 없는 유일한
      규칙이다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다. */
   .resumeHtml a {
-    color: var(--point-color);
+    color: var(--color-accent-text);
   }
   .resumeHtml a:hover {
-    color: var(--point-color-hover);
+    color: var(--color-accent-text-strong);
   }
 }
