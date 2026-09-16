@@ -10,3 +10,7 @@ src/routeTree.gen.ts
 # subagent-driven-development 작업 디렉터리 (git-ignored 스크래치).
 # 여기 파일이 pnpm format:check를 깨면 안 된다 — 저장소 코드가 아니다.
 .superpowers
+
+# 팔레트 생성물. 재생성하면 덮어쓰므로 포맷을 강제하지 않는다 —
+# prettier가 손대면 "편집하지 않는다"는 규칙이 포매터에 의해 깨진다.
+src/styles/palette.theme.css

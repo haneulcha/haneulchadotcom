@@ -14,7 +14,7 @@ export const infoTable =
 
 /** .infoTable tr */
 export const infoTableRow =
-  'border-t border-b border-[var(--border-color)] max-[321px]:block';
+  'border-t border-b border-neutral-border max-[321px]:block';
 
 /** .infoTable tr th[scope='row'] */
 export const infoTableTh =
@@ -37,35 +37,12 @@ export const sectionH4Span = 'ml-1 text-[16px]';
 /** .content p */
 export const contentP = 'my-[0.4rem] leading-[1.6]';
 
-/** .experienceSection > p, .content p, .main p::selection */
-export const bodyP =
-  'my-[0.4rem] text-[16px] leading-[1.6] ' +
-  'selection:bg-[var(--point-color)] selection:text-[var(--bg)]';
+/** .experienceSection > p, .content p */
+export const bodyP = 'my-[0.4rem] text-[16px] leading-[1.6]';
 
-/** .experienceSection > p:nth-of-type(2) > span, .experienceSection > p:nth-of-type(2) > span::after */
-// Tailwind's `selection:` variant compiles to *two* rules — `.foo::selection`
-// and a descendant `.foo ::selection`. The parent <p> carries `bodyP`'s
-// `selection:bg-[var(--point-color)]`, so its descendant rule leaks the link
-// blue (--point-color, #0550ae) onto this span too. The original CSS
-// (`.main p::selection`) only ever matched the <p> itself, so this span fell
-// through to global.css's `.aboutPage *::selection` and got
-// --point-color-selection (#3067ab) instead. Re-declare that colour here to
-// restore it — this is not redundant, it is overriding the parent's leak.
-//
-// It has to win with `!important`, not specificity. Both rules share the same
-// selector shape, variant, and property, so Tailwind's compiler falls back to
-// comparing the raw candidate strings — `selection:bg-[var(--point-color)]`
-// happens to sort before `selection:bg-[var(--point-color-selection)]` only
-// because `)` precedes `-`. That's an accident of the two token *names*, not
-// of intent, so a future rename (e.g. the palette migration) could flip the
-// sort order and silently revert this span to the wrong colour. `!` pins the
-// outcome regardless of how the names sort.
+/** .experienceSection > p:nth-of-type(2) > span, 그 ::after */
 export const techLabel =
-  "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|'] " +
-  'selection:!bg-[var(--point-color-selection)] selection:!text-[var(--bg)]';
+  "font-bold after:mx-[0.7rem] after:align-top after:text-[14px] after:content-['|']";
 
-/** .main a, .main a:hover — also reused for the color half of
- * .experienceSection details summary / details summary:hover, which shares
- * the same two tokens. */
-export const linkColor =
-  'text-[color:var(--point-color)] hover:text-[color:var(--point-color-hover)]';
+/** .main a, .main a:hover — details summary의 색 절반도 같은 토큰을 쓴다. */
+export const linkColor = 'text-accent-text hover:text-accent-text-strong';

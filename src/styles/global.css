@@ -7,6 +7,7 @@
    유틸리티로 살려낸다 — 그러면 실제 코드의 오타가 문서 어딘가의 우연한 일치로
    조용히 통과할 수 있다. src만 스캔하도록 좁힌다. */
 @import 'tailwindcss/utilities.css' layer(utilities) source('..');
+@import './palette.theme.css';
 
 /* Tailwind v4는 `hover:`를 기본적으로 `@media (hover: hover) { &:hover { … } }`로
    컴파일한다 — 터치 기기에서 호버 스타일을 죽여 접근성을 높이려는 의도다. 하지만
@@ -16,19 +17,17 @@
    무조건적인 `&:hover`로 컴파일되게 한다. */
 @custom-variant hover (&:hover);
 
+/* 팔레트(palette.theme.css)가 .dark 클래스로 다크를 구동하므로 dark:
+   유틸리티도 같은 신호를 따라야 한다. Tailwind 기본값은
+   prefers-color-scheme이라, 그대로 두면 팔레트 색과 크롬 색이 서로 다른
+   신호를 따라 갈라진다 — 시스템 다크 + 사용자가 라이트를 고른 상황에서
+   타이틀바만 어두워진다. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* preflight를 일부러 뺐다. global.css가 이미 리셋을 갖고 있어 겹치면
    기존 렌더가 흔들린다. 리셋을 @layer base에 넣는 것도 같은 이유다 —
    비레이어 선언은 레이어 선언을 특정도와 무관하게 이기므로, 리셋이
    비레이어면 button { all: unset }이 모든 유틸리티를 지워 버린다. */
-
-:root {
-  --color: #24292f;
-  --bg: #fbfcff;
-  --point-color: #0550ae;
-  --point-color-hover: #1678ef;
-  --point-color-selection: #3067ab;
-  --border-color: #e6e8e6;
-}
 
 @layer base {
   html,
@@ -50,6 +49,14 @@
     background-color: rgba(170, 183, 191, 0.2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 창 바깥의 바탕. 라이트에서는 창이 바탕보다 밝고, 다크에서는 창
+     (neutral-subtle-bg = #070908)이 바탕보다 어둡다 — 이 반전은 다크
+     테마에서 정상이다. macOS 다크 데스크톱에 인용할 대상이 없어 고른 값이라
+     눈으로 확인한 결과다. */
+  .dark body {
+    background-color: #1c1e1c;
   }
 
   * {
@@ -78,18 +85,18 @@
     cursor: pointer;
   }
 
-  .aboutPage *::selection {
-    background: var(--point-color-selection);
-    color: var(--bg);
+  ::selection {
+    background: var(--color-accent-solid);
+    color: var(--color-accent-on-solid);
   }
 
   /* resume.json의 HTML 문자열 안에 있는 <a>. dangerouslySetInnerHTML이 만든
      노드라 JSX에서 className을 못 붙인다 — Tailwind로 옮길 수 없는 유일한
      규칙이다. 이력서 링크를 JSON에 두는 편의를 지키기로 한 결정의 대가다. */
   .resumeHtml a {
-    color: var(--point-color);
+    color: var(--color-accent-text);
   }
   .resumeHtml a:hover {
-    color: var(--point-color-hover);
+    color: var(--color-accent-text-strong);
   }
 }

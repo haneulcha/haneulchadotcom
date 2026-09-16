@@ -31,7 +31,7 @@ export function JobSection({ item }: { item: ExperienceSection }) {
               <summary
                 className={`my-[0.35rem] cursor-pointer text-[18px] leading-[1.65] font-medium ${c.linkColor}`}
               >
-                <span className="ml-[0.35rem] text-[color:var(--color)]">
+                <span className="ml-[0.35rem] text-neutral-text-strong">
                   {job.summary}
                 </span>
               </summary>
