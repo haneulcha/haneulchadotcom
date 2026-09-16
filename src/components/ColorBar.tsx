@@ -28,6 +28,12 @@ export function ColorBar() {
   };
 
   return (
+    // 1989년 옵셋 인쇄 컨트롤 스트립을 본뜬다 — 재단선을 넘어가는 색 패치,
+    // 레지스터 마크, 패치마다 하나씩 붙는 틱, 인쇄소 크레딧. `fixed` 칩이
+    // 아니라 문서 흐름 안에 앉는 띠라서 __root.tsx의 body가 이 띠를 위한
+    // 자리를 flex 컬럼으로 마련해 둔다. 인쇄물은 움직이지 않으므로 호버도
+    // 트랜지션 없이 밑줄·아웃라인만 즉시 켠다 — 크기·위치는 그대로다.
+    //
     // 평범한 <a>가 아니라 <Link>다. 랜딩의 'ㅊ'과 닫기 버튼이 이미 라우터
     // 내비게이션을 쓰므로 띠만 전체 페이지를 리로드하면 동작이 갈린다.
     // 라우터가 해시 스크롤까지 처리한다 — 단, 그건 실제 내비게이션이 일어날
@@ -44,16 +50,51 @@ export function ColorBar() {
       onClick={() => {
         document.getElementById('design-system')?.scrollIntoView();
       }}
-      className="fixed right-3 bottom-3 z-50 flex overflow-hidden rounded-sm shadow-[0_0_0_1px_rgba(128,128,128,0.35)]"
+      // group: 패치·크레딧이 이 <Link> 하나의 :hover에 반응하게 한다 (개별
+      // 요소의 hover:가 아니라 띠 전체의 hover). w-full + items-end: 맨
+      // 오른쪽 패치가 "이 요소의 끝"이 아니라 "뷰포트의 끝"에 닿아야 하므로
+      // 띠 자체가 body 폭 전체를 차지하고 각 행을 그 오른쪽 끝으로 민다 —
+      // 패치 쪽에 margin을 주는 방식은 스크롤바 유무에 따라 어긋난다.
+      className="group flex w-full flex-col items-end pt-2 pb-1.5 text-neutral-text-strong"
     >
-      {CELLS.map((cell) => (
-        <span
-          key={cell.varName}
-          onMouseEnter={() => show(cell)}
-          style={{ background: `var(${cell.varName})` }}
-          className="block h-[13px] w-[17px] transition-[height] duration-100 hover:h-[19px]"
-        />
-      ))}
+      <div className="flex items-end gap-1.5">
+        {/* 레지스터 마크: 13×13 — 십자선(1px, 두 축 모두 13px 전체) + 그
+            교차점에 중심을 맞춘 7×7, 1px 테두리 원. 실제 색이 아니라 인쇄
+            정렬 기준을 나타내는 관례라 currentColor만 쓴다. */}
+        <span className="relative block h-[13px] w-[13px]" aria-hidden="true">
+          <span className="absolute top-[6px] left-0 h-px w-[13px] bg-current" />
+          <span className="absolute top-0 left-[6px] h-[13px] w-px bg-current" />
+          <span className="absolute top-[3px] left-[3px] h-[7px] w-[7px] rounded-full border border-current" />
+        </span>
+
+        {/* 패치 6칸, 19×12, 간격 없이 붙인다 — 재단선을 넘어가는 컨트롤
+            스트립처럼 맨 오른쪽 칸이 이 행의(=뷰포트의) 오른쪽 끝에 그대로
+            닿는다. */}
+        <div className="flex">
+          {CELLS.map((cell) => (
+            <span
+              key={cell.varName}
+              onMouseEnter={() => show(cell)}
+              style={{ background: `var(${cell.varName})` }}
+              className="block h-[12px] w-[19px] group-hover:outline group-hover:outline-1 group-hover:outline-[currentColor]"
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* 틱: 패치 6칸 폭(114px)에 맞춰 그 아래 정렬한다 — 레지스터 마크는
+          포함하지 않는다. 각 패치의 중심 아래 1×3 세로선 하나씩. */}
+      <div className="flex" aria-hidden="true">
+        {CELLS.map((cell) => (
+          <span key={cell.varName} className="flex w-[19px] justify-center">
+            <span className="h-[3px] w-px bg-current opacity-[.55]" />
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-1 font-mono text-[8px] text-right tracking-[.09em] uppercase opacity-[.62] group-hover:underline">
+        design-system-starter · a=fa862e n=green-soft
+      </div>
     </Link>
   );
 }

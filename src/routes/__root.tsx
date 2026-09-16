@@ -57,8 +57,14 @@ function RootDocument({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body>
-        {children}
+      {/* ColorBar가 fixed 칩에서 문서 흐름 안의 띠로 바뀌면서, 그 뒤에
+          붙는 형제 하나만큼 문서가 100vh를 넘어 랜딩에 없던 스크롤바가
+          생긴다. body를 min-h-screen flex 컬럼으로 두고 {children}을
+          flex-1 래퍼로 감싸 남는 공간을 그 래퍼가 먼저 차지하게 하면,
+          ColorBar는 항상 컬럼의 마지막 항목으로 깔끔하게 붙는다 — 랜딩
+          쪽의 나머지 절반(h-screen 제거)은 index.tsx에 있다. */}
+      <body className="flex min-h-screen flex-col">
+        <div className="flex-1">{children}</div>
         <ColorBar />
         <ThemeToggle />
         <Scripts />
