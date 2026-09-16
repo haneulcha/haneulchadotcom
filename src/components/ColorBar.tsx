@@ -51,11 +51,15 @@ export function ColorBar() {
         document.getElementById('design-system')?.scrollIntoView();
       }}
       // group: 패치·크레딧이 이 <Link> 하나의 :hover에 반응하게 한다 (개별
-      // 요소의 hover:가 아니라 띠 전체의 hover). w-full + items-end: 맨
-      // 오른쪽 패치가 "이 요소의 끝"이 아니라 "뷰포트의 끝"에 닿아야 하므로
-      // 띠 자체가 body 폭 전체를 차지하고 각 행을 그 오른쪽 끝으로 민다 —
-      // 패치 쪽에 margin을 주는 방식은 스크롤바 유무에 따라 어긋난다.
-      className="group flex w-full flex-col items-end pt-2 pb-1.5 text-neutral-text-strong"
+      // 요소의 hover:가 아니라 띠 전체의 hover). w-full + items-end: 각 행을
+      // 오른쪽으로 미는 기준이 "이 요소의 끝"이 아니라 "뷰포트의 끝"이어야
+      // 하므로 띠 자체가 body 폭 전체를 차지한다 — 패치 쪽에 margin을 주는
+      // 방식은 스크롤바 유무에 따라 어긋난다.
+      //
+      // pr/pb 32px: 교정지의 컨트롤 스트립도 종이 끝에 닿지는 않는다.
+      // 그리퍼 여백과 재단 여유가 남는다. 오른쪽과 아래를 같은 값으로 두어
+      // 모서리가 고르게 보이게 한다.
+      className="group flex w-full flex-col items-end pt-2 pr-8 pb-8 text-neutral-text-strong"
     >
       <div className="flex items-end gap-1.5">
         {/* 레지스터 마크: 13×13 — 십자선(1px, 두 축 모두 13px 전체) + 그
