@@ -61,10 +61,16 @@ function RootDocument({ children }: { children: ReactNode }) {
           붙는 형제 하나만큼 문서가 100vh를 넘어 랜딩에 없던 스크롤바가
           생긴다. body를 min-h-screen flex 컬럼으로 두고 {children}을
           flex-1 래퍼로 감싸 남는 공간을 그 래퍼가 먼저 차지하게 하면,
-          ColorBar는 항상 컬럼의 마지막 항목으로 깔끔하게 붙는다 — 랜딩
-          쪽의 나머지 절반(h-screen 제거)은 index.tsx에 있다. */}
+          ColorBar는 항상 컬럼의 마지막 항목으로 깔끔하게 붙는다.
+
+          래퍼 자신도 flex-col이다 — h-full(퍼센트 높이)은 flex-grow로
+          정해지는 부모 높이에 기대면 auto로 폴백해 안 먹는 경우가 있다
+          (실측: 랜딩이 세로 중앙 정렬을 잃고 위로 붙었다). 대신 래퍼를
+          flex-col로 두고 index.tsx의 랜딩 div가 flex-1로 그 안에서 자라게
+          하면, 퍼센트 높이 해석에 기대지 않고 flex-grow 체인만으로 채워진다
+          — 랜딩 쪽 나머지 절반은 index.tsx에 있다. */}
       <body className="flex min-h-screen flex-col">
-        <div className="flex-1">{children}</div>
+        <div className="flex flex-1 flex-col">{children}</div>
         <ColorBar />
         <ThemeToggle />
         <Scripts />
