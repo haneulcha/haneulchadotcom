@@ -97,6 +97,14 @@ font-bold` 셋을 나란히 쓰지 않는다.
 
 \* 브라우저 기본 `<h2>~<h4>`의 bold. `global.css` 리셋은 margin/padding만 지운다.
 
+### 굵기 유틸리티
+
+`--font-weight-*`는 죽이지 않는다. 다만 프로필이 weight를 싣게 되므로 **중복된
+`font-bold` · `font-normal` · `font-medium`은 제거한다** (랜딩 h1, `/about` article,
+`summary` 등). 남기는 것은 본문 타입 위에 얹는 **강조**뿐이다 — `infoTableTh`,
+`techLabel`, `LanguageList`의 라벨. 이 셋은 타입 역할이 아니라 같은 역할 안의
+강세라서 프로필로 올리지 않는다.
+
 starter의 나머지 프로필(`code` `button` `badge` `nav` `card` `link`, `body-lg`,
 `caption-md/xs`)은 **정의하지 않는다**. 소비자가 없다. 죽은 토큰은 시스템이 아니라
 목록이다.
@@ -111,6 +119,9 @@ starter의 나머지 프로필(`code` `button` `badge` `nav` `card` `link`, `bod
 --font-mono:
   ui-monospace, SFMono-Regular, Menlo, …; /* ColorBar · ThemeToggle */
 ```
+
+`global.css`의 `@layer base`에 있는 `html, body`의 폰트 스택도 `var(--font-system)`을
+가리키게 바꾼다 — 스택을 두 곳에 두면 갈라진다.
 
 **폰트 교체는 이번 범위가 아니다.** starter의 `--ds-font-sans`(Inter, Pretendard …)를
 채택하면 macOS에서 Apple SD Gothic Neo로 떨어져 본문 글꼴이 통째로 바뀐다 — 크기
@@ -134,8 +145,14 @@ mono 대문자 라벨이라 의도에 어긋나지 않는다.
 ### 표의 행 높이는 line-height를 그만둔다
 
 `infoTableTh`의 `leading-[2.5]`와 좁은 화면의 `leading-[2.3]`은 스케일 밖일 뿐 아니라
-**행간으로 행 높이를 만드는 편법**이다. `text-body-sm` + `py-xs`(8px)로 바꾼다.
-행 높이 35px → 37px.
+**행간으로 행 높이를 만드는 편법**이다. 행 높이는 padding이 만들게 한다.
+
+- 기본: th의 `leading-[2.5]` 제거 → `text-body-sm` + `py-xs`(8px). 행 높이 35px → 37px.
+  td에도 같은 `py-xs`를 준다 — 지금 td는 base leading이 없어 th가 혼자 행 높이를
+  만들고 있다. 둘을 같은 값으로 맞춰야 셀 사이 세로 정렬이 우연에 기대지 않는다.
+- ≤320px(`max-[321px]:`): th/td가 block이 되는 구간. `leading-[2.3]` 제거 →
+  `py-xxs`(4px). 줄 높이 32.2px → 29px(14×1.5 + 8). td의 기존 `py-0` override는
+  이 `py-xxs`로 대체한다 — 그대로 두면 치환이 무효가 된다.
 
 ## 간격 토큰
 
