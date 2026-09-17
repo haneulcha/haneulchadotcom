@@ -8,6 +8,7 @@
    조용히 통과할 수 있다. src만 스캔하도록 좁힌다. */
 @import 'tailwindcss/utilities.css' layer(utilities) source('..');
 @import './palette.theme.css';
+@import './tokens.theme.css';
 
 /* Tailwind v4는 `hover:`를 기본적으로 `@media (hover: hover) { &:hover { … } }`로
    컴파일한다 — 터치 기기에서 호버 스타일을 죽여 접근성을 높이려는 의도다. 하지만
@@ -34,18 +35,8 @@
   body {
     padding: 0;
     margin: 0;
-    font-family:
-      -apple-system,
-      BlinkMacSystemFont,
-      Segoe UI,
-      Roboto,
-      Oxygen,
-      Ubuntu,
-      Cantarell,
-      Fira Sans,
-      Droid Sans,
-      Helvetica Neue,
-      sans-serif;
+    /* 스택 자체는 tokens.theme.css의 --font-system에 있다. 두 곳에 두면 갈라진다. */
+    font-family: var(--font-system);
     background-color: rgba(170, 183, 191, 0.2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
