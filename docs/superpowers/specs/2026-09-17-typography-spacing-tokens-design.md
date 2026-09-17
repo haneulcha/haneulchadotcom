@@ -58,7 +58,17 @@ bold인 것은 이 사이트의 판단이다.
 ```
 
 `--spacing: initial`이 Tailwind의 동적 간격 스케일을 죽이므로 `mt-4`는 **존재하지
-않는 클래스**가 된다. 리뷰가 놓쳐도 화면에서 드러난다. `global.css`의 `@layer base`
+않는 클래스**가 된다. 계획 단계에서 Tailwind 4.3.3으로 전부 실측했다 — 살아남는
+것과 죽는 것의 경계는 이렇다:
+
+| 죽는다                                            | 산다                                                                                                |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `mt-4` `px-2` `gap-1.5` `top-3` `min-w-20` `pl-7` | 임의값 `pl-[12px]` `h-[13px]` `max-w-[1024px]` `opacity-[.55]`                                      |
+| `p-0` `m-0` `inset-0` `size-4`                    | 분수 `top-1/2` `-translate-y-1/2`, static `w-full` `h-px` `z-50` `flex-1` `mx-auto`                 |
+| `text-base` `text-2xl`                            | `text-accent-solid` — 색은 `--color-*`에서 오므로 `--text-*: initial`과 무관                        |
+| —                                                 | `font-bold` `font-medium` `font-normal` — `--font-weight-*`는 `--font-*: initial`이 건드리지 않는다 |
+
+변형·부정 유틸리티도 그대로 동작한다: `-ml-xl`, `after:mx-sm`, `max-[321px]:py-xxs`. 리뷰가 놓쳐도 화면에서 드러난다. `global.css`의 `@layer base`
 회귀를 테스트로 막아 둔 것과 같은 결이다 — 지킬 수 없는 관례는 안 쓴다.
 
 **대가:** `--spacing`은 margin/padding/gap뿐 아니라 치수(`min-w-40`)와 위치(`top-3`)도
@@ -99,11 +109,18 @@ font-bold` 셋을 나란히 쓰지 않는다.
 
 ### 굵기 유틸리티
 
-`--font-weight-*`는 죽이지 않는다. 다만 프로필이 weight를 싣게 되므로 **중복된
+`--font-weight-*`는 죽이지 않는다 (`--font-*: initial`이 이 네임스페이스를 건드리지
+않는다 — 실측). 다만 프로필이 weight를 싣게 되므로 **중복된
 `font-bold` · `font-normal` · `font-medium`은 제거한다** (랜딩 h1, `/about` article,
 `summary` 등). 남기는 것은 본문 타입 위에 얹는 **강조**뿐이다 — `infoTableTh`,
 `techLabel`, `LanguageList`의 라벨. 이 셋은 타입 역할이 아니라 같은 역할 안의
 강세라서 프로필로 올리지 않는다.
+
+**이건 정리가 아니라 정확성 문제다.** 프로필은
+`font-weight: var(--tw-font-weight, var(--text-heading-xl--font-weight))`로 컴파일된다
+— `font-bold`가 `--tw-font-weight`를 세우므로 **클래스 순서와 무관하게 프로필을
+이긴다**. 남겨 둔 `font-bold` 하나가 프로필의 weight를 조용히 덮는다. `line-height`도
+`var(--tw-leading, …)`로 같은 구조라 `leading-*`이 프로필을 이긴다.
 
 starter의 나머지 프로필(`code` `button` `badge` `nav` `card` `link`, `body-lg`,
 `caption-md/xs`)은 **정의하지 않는다**. 소비자가 없다. 죽은 토큰은 시스템이 아니라
@@ -156,10 +173,11 @@ mono 대문자 라벨이라 의도에 어긋나지 않는다.
 
 ## 간격 토큰
 
-필요한 값을 다 모으니 starter `BASE_ALIASES` + `section`과 정확히 일치한다. 새로 만들
-별칭이 없다.
+필요한 값을 다 모으니 starter `BASE_ALIASES` + `section`과 거의 일치한다. 새로 만들
+별칭은 `none` 하나뿐이다.
 
 ```css
+--spacing-none: 0px;
 --spacing-xxs: 4px;
 --spacing-xs: 8px;
 --spacing-sm: 12px;
@@ -169,6 +187,11 @@ mono 대문자 라벨이라 의도에 어긋나지 않는다.
 --spacing-xxl: 48px;
 --spacing-section: 96px;
 ```
+
+`none`은 starter `BASE_ALIASES`에 없다. 넣는 이유는 **`p-0`과 `m-0`도 `--spacing`에
+기대서 함께 죽기 때문**이다 (계획 단계에서 실측). 세 자리가 이걸 쓴다 — 랜딩 h1의
+`m-0`, `/about` 최종수정의 `m-0`, `LanguageList` ul의 `p-0`(브라우저 기본 들여쓰기를
+지운다). `p-[0px]`로 흩는 것보다 별칭 하나가 낫다.
 
 ### 전 구역 매핑
 
@@ -239,16 +262,28 @@ ColorBar의 **바깥 여백은 예외가 아니다** — `pt-2 pr-8 pb-8 mt-1`�
 
 ## 검증
 
-|               |                                                                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 스크린샷 4장  | **전부 재생성**한다. 의도된 변경이다 — diff를 눈으로 확인한 뒤에만 `--update-snapshots`                                                        |
-| 계약 테스트 ① | 랜딩 `ㅊ`의 computed `font-size`가 `64px` — 타입 프로필이 `?url` 스타일시트를 통해 실제로 페이지에 닿는지                                      |
-| 계약 테스트 ② | 숨긴 요소에 `mt-4`를 붙였을 때 `margin-top`이 `0px` — **숫자 유틸리티 금지의 유일한 방어선**. 누가 `--spacing: initial`을 지우면 여기서 걸린다 |
-| 기존 게이트   | `pnpm type-check` · `pnpm lint` · `pnpm format:check` · `pnpm build`                                                                           |
-| 문서          | CLAUDE.md 「알아둘 것」에 새 파일·강제 기제·예외 목록 추가                                                                                     |
+|               |                                                                                                           |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| 스크린샷 4장  | **전부 재생성**한다. 의도된 변경이다 — diff를 눈으로 확인한 뒤에만 `--update-snapshots`                   |
+| 계약 테스트 ① | 랜딩 `ㅊ`의 computed `font-size`가 `64px` — 타입 프로필이 `?url` 스타일시트를 통해 실제로 페이지에 닿는지 |
+| 계약 테스트 ② | 로드된 스타일시트 전체에 문자열 `var(--spacing)`이 **0회** — 숫자 유틸리티 금지의 방어선                  |
+| 기존 게이트   | `pnpm type-check` · `pnpm lint` · `pnpm format:check` · `pnpm build`                                      |
+| 문서          | CLAUDE.md 「알아둘 것」에 새 파일·강제 기제·예외 목록 추가                                                |
 
 계약 테스트 둘은 `tests/tailwind-setup.spec.ts`에 붙인다 — 스크린샷으로 못 잡는 것을
 모아 두는 파일이라는 그 파일의 목적에 맞는다.
+
+**테스트 ②의 형태가 바뀐 이유.** 처음에는 "`mt-4`를 붙인 요소의 `margin-top`이 0px"로
+잡았는데, 이건 **거짓 통과**한다. Tailwind는 소스에 없는 클래스를 아예 컴파일하지
+않으므로, 누가 `--spacing: initial`을 지워도 `mt-4`를 쓰는 코드가 없는 한 그 클래스는
+여전히 존재하지 않고 테스트는 통과한다. 같은 이유로 `--spacing` 변수의 존재를 보는
+것도 안 된다 — 미사용 테마 변수는 tree-shake돼 두 상태의 `:root`가 동일하다 (실측).
+
+대신 **컴파일 결과의 지문**을 본다. 숫자 간격 유틸리티는 전부
+`calc(var(--spacing) * N)`으로 컴파일된다. 실측: `initial` 없이
+`mt-4 px-2 gap-1.5 p-0 m-0 top-3 min-w-20`을 쓰면 `var(--spacing)`이 5회,
+`initial`을 넣으면 **0회**. `global.css`의 `@layer base` 검사가 이미 쓰는
+`document.styleSheets` 순회로 확인한다.
 
 ## 범위 밖
 
