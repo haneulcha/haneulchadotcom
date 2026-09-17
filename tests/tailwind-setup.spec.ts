@@ -50,3 +50,28 @@ test('the global reset lives inside @layer base', async ({ page }) => {
   });
   expect(found).toBe(true);
 });
+
+// 타입 프로필이 ?url 스타일시트를 통해 실제로 페이지에 닿는지 본다. 크기뿐 아니라
+// 굵기·행간까지 확인하는 이유: 프로필은 셋을 한 토큰에 싣는데, 호출부에 font-bold나
+// leading-*이 남아 있으면 --tw-font-weight/--tw-leading이 서서 클래스 순서와 무관하게
+// 프로필을 이긴다. 크기만 보면 그 덮어쓰기를 놓친다.
+test('the landing hero renders at the heading-xl profile', async ({ page }) => {
+  await page.goto('/');
+  const type = await page
+    .locator('h1')
+    .first()
+    .evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        fontSize: s.fontSize,
+        fontWeight: s.fontWeight,
+        lineHeight: s.lineHeight,
+      };
+    });
+  // 64px × 1.1 = 70.4px
+  expect(type).toEqual({
+    fontSize: '64px',
+    fontWeight: '700',
+    lineHeight: '70.4px',
+  });
+});
