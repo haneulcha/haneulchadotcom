@@ -759,18 +759,25 @@ grep -rnoE --include='*.tsx' --include='*.ts' \
 
 출력이 있으면 Task 2–6에서 빠뜨린 자리다. 단 **`top-1/2`는 거짓 양성**이다 — 분수라 봉인에도 살아남는다. TitleBar의 `nav`에 있는 그것 하나만 무시하고 나머지는 전부 고쳐라. 어느 별칭으로 갈지는 스펙의 「전 구역 매핑」 표를 봐라.
 
-- [ ] **Step 2: 계약 테스트 ②를 먼저 쓴다 (아직 실패해야 한다)**
+- [ ] **Step 2: 계약 테스트 ②를 쓴다**
+
+**이 테스트는 "먼저 실패시키기"가 안 된다.** 변경 전 빌드에는 `var(--spacing)`이 36회 나오지만, Task 2–6이 호출부를 전부 걷어냈으므로 **봉인 전에도 이미 0**이다. 그래서 순서를 뒤집는 대신 Step 3에서 테스트가 물 수 있는지를 직접 증명한다.
 
 `tests/tailwind-setup.spec.ts` 끝에 추가:
 
 ```ts
 // 숫자 간격 유틸리티가 봉인됐는지 컴파일 결과의 지문으로 확인한다. mt-4·p-0 같은
-// 유틸리티는 전부 calc(var(--spacing) * N)으로 컴파일되므로, --spacing: initial이
-// 살아 있으면 이 문자열이 스타일시트 어디에도 안 나온다.
+// 유틸리티는 전부 calc(var(--spacing) * N)으로 컴파일되므로, 봉인이 살아 있으면
+// 이 문자열이 스타일시트 어디에도 안 나온다. (이름 별칭은 var(--spacing-md)를
+// 쓰므로 여기 안 걸린다 — 봉인되는 것은 접미사 없는 --spacing 하나다.)
 //
 // 변수의 존재를 보거나 클래스를 심어 확인하지 않는 이유: Tailwind는 소스에 없는
 // 클래스를 컴파일하지 않고 미사용 테마 변수는 tree-shake한다. 그래서 두 방법 다
 // 봉인이 풀린 상태에서도 통과해 버린다 — 거짓 방어선이 된다.
+//
+// 이 테스트가 잡는 것은 "봉인이 풀렸고 누가 숫자 유틸리티를 다시 썼다"는 짝이다.
+// 봉인이 살아 있는 채로 누가 mt-4를 쓰면 클래스가 조용히 없을 뿐이라 여기 안
+// 걸린다 — 그건 스크린샷이 잡는다.
 test('the numeric spacing scale stays sealed', async ({ page }) => {
   await page.goto('/about');
   const hits = await page.evaluate(() => {
@@ -800,12 +807,25 @@ test('the numeric spacing scale stays sealed', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 3: 실패를 확인한다**
+- [ ] **Step 3: 테스트가 물 수 있는지 증명한다 (봉인 전)**
+
+아직 봉인이 없으므로 이 시점에는 숫자 유틸리티가 컴파일된다. 임시로 하나 심어 테스트가 실제로 깨지는지 본다.
+
+`src/routes/index.tsx`의 `<footer>` className 맨 앞에 `mt-4 `를 임시로 붙인다:
+
+```jsx
+      <footer className="mt-4 flex h-[50px] w-full items-center justify-center">
+```
 
 Run: `pnpm build && pnpm test tailwind-setup`
-Expected: FAIL — `hits`가 0보다 크다. 봉인이 아직 없으니 Tailwind가 기본 간격 스케일을 살려 두고 있고, `mx-auto`처럼 살아남는 유틸리티 몇 개가 여전히 `var(--spacing)`을 참조한다. Step 4에서 봉인하면 0이 된다.
+Expected: **FAIL** — `hits`가 1 이상이다.
 
-여기서 `hits`가 이미 0이라면 봉인 없이도 0이라는 뜻이라 테스트가 방어선 구실을 못 한다 — 멈추고 왜 그런지 확인하라.
+깨지지 않으면 테스트가 무력한 것이다. 멈추고 왜 그런지 확인하라 — 대개 `page.evaluate` 안의 순회가 `@layer` 중첩을 못 들어간 경우다.
+
+방금 붙인 `mt-4 `를 **되돌린다.**
+
+Run: `pnpm build && pnpm test tailwind-setup`
+Expected: PASS (`hits`가 0)
 
 - [ ] **Step 4: 봉인 블록을 넣는다**
 
@@ -831,19 +851,31 @@ Expected: FAIL — `hits`가 0보다 크다. 봉인이 아직 없으니 Tailwind
 --font-*: initial;
 ```
 
-- [ ] **Step 5: 계약 테스트 ②가 통과하는지 확인한다**
+- [ ] **Step 5: 봉인이 실제로 무는지 증명한다**
+
+Step 3에서 심었던 것과 똑같이 `src/routes/index.tsx`의 `<footer>`에 `mt-4 `를 다시 임시로 붙인다.
+
+Run: `pnpm build && pnpm test tailwind-setup`
+Expected: **PASS** — `hits`는 여전히 0이다. 봉인 때문에 `mt-4`가 아예 컴파일되지 않아서다.
+
+Run: `cat $(find .output -name '*.css') | grep -c 'mt-4'`
+Expected: `0` — 클래스 자체가 없다. 이게 봉인의 증거이자, 동시에 이 테스트가 "새로 쓴 `mt-4`"는 못 잡는다는 증거다.
+
+`mt-4 `를 **되돌린다.**
+
+- [ ] **Step 6: 계약 테스트 전체가 통과하는지 확인한다**
 
 Run: `pnpm build && pnpm test tailwind-setup`
 Expected: PASS (이 파일의 네 테스트 전부)
 
-- [ ] **Step 6: 봉인이 무엇도 깨지 않았는지 확인한다**
+- [ ] **Step 7: 봉인이 무엇도 깨지 않았는지 확인한다**
 
 Run: `pnpm test`
 Expected: **PASS 전부, 스크린샷 포함.** Task 6까지 호출부를 다 옮겼으므로 봉인은 렌더를 바꾸지 않아야 한다.
 
 깨졌다면 그 자리가 아직 죽은 유틸리티를 쓰고 있다는 뜻이다. **기준선을 새로 뜨지 마라** — diff 이미지에서 무엇이 사라졌는지 찾아 해당 자리를 토큰이나 임의값으로 고친 뒤 다시 돌려라. 여기서 `--update-snapshots`를 치면 스타일이 빠진 상태를 정상으로 굳힌다.
 
-- [ ] **Step 7: `CLAUDE.md`를 갱신한다**
+- [ ] **Step 8: `CLAUDE.md`를 갱신한다**
 
 「구조」의 `src/styles/` 트리에 한 줄 추가:
 
@@ -889,12 +921,12 @@ design-system-starter 스키마 v1의 스케일 안에 있어야 한다. 새 프
   스키마를 이미 갖고 있으므로 타이포·간격과 같은 방식으로 닫을 수 있다.
 ```
 
-- [ ] **Step 8: 전체 게이트**
+- [ ] **Step 9: 전체 게이트**
 
 Run: `pnpm build && pnpm test && pnpm type-check && pnpm lint && pnpm format:check`
 Expected: PASS 전부
 
-- [ ] **Step 9: 커밋**
+- [ ] **Step 10: 커밋**
 
 ```bash
 git add src/styles/tokens.theme.css tests/tailwind-setup.spec.ts CLAUDE.md
