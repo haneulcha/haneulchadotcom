@@ -708,22 +708,21 @@ className =
 fixed top-sm right-sm z-50 rounded border border-neutral-border bg-neutral-subtle-bg px-xs py-xxs font-mono text-caption-xxs tracking-wide text-neutral-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-solid
 ```
 
-`top-3 right-3`→`top-sm right-sm`(값 동일), `px-2 py-1`→`px-xs py-xxs`(값 동일), `text-[10px]`→`text-caption-xxs`(값 동일). `tracking-wide`는 이름이 같지만 값이 0.025em → **0.05em으로 바뀐다** — 의도된 변화다 (스펙). `outline-2` `outline-offset-2` `z-50` `rounded`는 봉인에도 살아남으므로 그대로 둔다. 91–95행의 `all: unset` 포커스 링 주석도 그대로 둔다.
+`top-3 right-3`→`top-sm right-sm`(값 동일), `px-2 py-1`→`px-xs py-xxs`(값 동일), `text-[10px]`→`text-caption-xxs`(값 동일). `tracking-wide`는 이름과 값 모두 그대로다 — `--tracking-wide: 0.05em`은 Task 1에서 이미 Tailwind 기본값 0.025em을 덮어썼으므로(`maxDiffPixelRatio: 0.001` 아래로 통과할 만큼 작은 폭이라 그때 기준선이 이미 그 값을 반영해 찍혔다), 이 태스크에서 자간은 바뀌지 않는다. `outline-2` `outline-offset-2` `z-50` `rounded`는 봉인에도 살아남으므로 그대로 둔다. 91–95행의 `all: unset` 포커스 링 주석도 그대로 둔다.
 
 - [ ] **Step 4: 스크린샷 차이를 눈으로 확인한다**
 
 Run: `pnpm build && pnpm test pages`
-Expected: **4장 전부 FAIL** — ThemeToggle의 자간이 두 라우트 모두에서 벌어진다.
+Expected: **9/9 PASS, 스크린샷 실패 없음.** Task 6의 모든 치환이 값 동일이므로(자간 변화는 이미 Task 1에서 끝났다) 렌더가 전혀 바뀌지 않는다.
 
-diff에서 확인할 것:
+확인할 것:
 
-- ThemeToggle 라벨의 자간만 아주 조금 넓어졌다
-- **TitleBar와 ColorBar는 픽셀 하나 안 바뀌어야 한다.** 바뀌었다면 임의값 치환에서 값을 잘못 옮긴 것이다 — 기준선을 뜨지 말고 되돌려 대조하라
+- **TitleBar와 ColorBar는 픽셀 하나 안 바뀌어야 한다.** 스크린샷이 실패했다면 임의값 치환에서 값을 잘못 옮긴 것이다 — 기준선을 뜨지 말고 되돌려 대조하라
+- ThemeToggle도 마찬가지로 픽셀 하나 안 바뀌어야 한다. 실패한다면 기준선을 다시 뜨는 게 아니라 전치(transposition) 오류를 찾아 고친다
 
-- [ ] **Step 5: 기준선을 다시 뜨고 전체 통과를 확인한다**
+- [ ] **Step 5: 게이트 확인**
 
-Run: `pnpm test pages --update-snapshots && pnpm test`
-Expected: PASS 전부
+Step 4의 `pnpm test`가 이미 전체 스위트다 — 기준선을 다시 뜰 필요가 없다. `--update-snapshots`는 이 태스크에서 쓰지 않는다.
 
 - [ ] **Step 6: 타입·린트 게이트와 커밋**
 

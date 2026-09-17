@@ -15,12 +15,12 @@ interface TitleBarProps {
 // 버튼의 가로세로 비율이 달라지면 `rounded-full`과 `border-radius: 50%`는 서로
 // 다른 모양을 만든다.
 const light = 'w-[10px] leading-[10px] rounded-full';
-const glyph = 'inline-block align-top min-w-2 text-[10px] leading-[14px]';
+const glyph = 'inline-block align-top min-w-[8px] text-[10px] leading-[14px]';
 
 export function TitleBar({ onClose, onToggleAll }: TitleBarProps) {
   return (
     <div className="relative cursor-default rounded-t-md border-t border-b border-t-[#f3f1f3] border-b-[#b1aeb1] bg-linear-to-r/srgb from-[#ebebeb] to-[#d5d5d5] py-[5px] text-center text-[11pt] text-[#4d494d] select-none dark:border-t-[#48484a] dark:border-b-[#1c1c1e] dark:from-[#3a3a3c] dark:to-[#2c2c2e] dark:text-[#a1a1a6]">
-      <nav className="absolute top-1/2 flex -translate-y-1/2 gap-x-[7px] pl-3">
+      <nav className="absolute top-1/2 flex -translate-y-1/2 gap-x-[7px] pl-[12px]">
         <button
           className={`${light} border border-[#e14640] bg-[#ff6057] hover:border-[#b03537] hover:bg-[#c14645]`}
           onClick={onClose}
