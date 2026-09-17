@@ -468,9 +468,11 @@ export const infoTableRow =
   'border-t border-b border-neutral-border max-[321px]:block';
 
 // 행 높이를 line-height로 만들던 편법을 걷는다. 원본은 th에 leading-[2.5]를 줘
-// 35px 행을 만들었는데, 그 값은 스케일 밖일 뿐 아니라 td에는 base leading이 없어
-// th 혼자 행 높이를 떠받치고 있었다. 이제 th·td가 같은 py를 갖는다 — 행 높이
-// 35px → 37px, 셀 세로 정렬이 우연에 기대지 않는다.
+// 행을 띄웠는데, 그 값은 스케일 밖일 뿐 아니라 td에는 base leading이 없어 th
+// 혼자 행 높이를 떠받치고 있었다. 이제 th·td가 같은 py를 갖는다 — 행 높이는
+// 38px로 그대로이고(옛 35px 라인박스 + UA 기본 패딩 1px×2 = 새 21px 라인박스 +
+// py-xs 8px×2), 바뀐 것은 그 높이를 무엇이 만드느냐다. 셀 세로 정렬이 우연에
+// 기대지 않는다.
 /** .infoTable tr th[scope='row'] */
 export const infoTableTh =
   'min-w-[124px] py-xs pl-xs text-left font-bold ' +
@@ -515,7 +517,7 @@ Expected: about 2장 FAIL, 랜딩 2장 PASS.
 
 diff에서 확인할 것:
 
-- 표의 행 높이가 35px → 37px (행마다 2px씩 커진다)
+- 표의 행 높이는 38px 그대로다 — th·td가 같은 py를 갖게 되는 것이 변화이고, 높이 자체는 안 변한다.
 - h4 제목이 20px → 18px, 옆의 `(기간)`이 16px → 14px
 - 기술 스택의 `|` 구분자가 여전히 **굵다** — 안 굵으면 `after:font-bold`를 빠뜨린 것이다
 - 단락 사이가 6.4px → 8px
