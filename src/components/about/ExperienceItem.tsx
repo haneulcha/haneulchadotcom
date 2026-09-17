@@ -5,7 +5,7 @@ import type { Experience } from '@/contents/types';
 export function ExperienceItem({ item }: { item: Experience }) {
   return (
     <div>
-      <h3 className="mt-2 text-[24px]">{item.company}</h3>
+      <h3 className="mt-xs text-heading-sm">{item.company}</h3>
       <table className={c.infoTable}>
         <tbody>
           <tr className={c.infoTableRow}>
