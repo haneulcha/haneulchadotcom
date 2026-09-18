@@ -708,21 +708,22 @@ className =
 fixed top-sm right-sm z-50 rounded border border-neutral-border bg-neutral-subtle-bg px-xs py-xxs font-mono text-caption-xxs tracking-wide text-neutral-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-solid
 ```
 
-`top-3 right-3`→`top-sm right-sm`(값 동일), `px-2 py-1`→`px-xs py-xxs`(값 동일), `text-[10px]`→`text-caption-xxs`(값 동일). `tracking-wide`는 이름과 값 모두 그대로다 — `--tracking-wide: 0.05em`은 Task 1에서 이미 Tailwind 기본값 0.025em을 덮어썼으므로(`maxDiffPixelRatio: 0.001` 아래로 통과할 만큼 작은 폭이라 그때 기준선이 이미 그 값을 반영해 찍혔다), 이 태스크에서 자간은 바뀌지 않는다. `outline-2` `outline-offset-2` `z-50` `rounded`는 봉인에도 살아남으므로 그대로 둔다. 91–95행의 `all: unset` 포커스 링 주석도 그대로 둔다.
+`top-3 right-3`→`top-sm right-sm`(값 동일), `px-2 py-1`→`px-xs py-xxs`(값 동일). 이 두 자리와 `tracking-wide`는 값 동일이다 — `tracking-wide`의 자간 변화는 Task 1에서 이미 끝났다(`--tracking-wide: 0.05em`이 그때 Tailwind 기본값 0.025em을 덮어썼고, `maxDiffPixelRatio: 0.001` 아래로 통과할 만큼 작은 폭이라 그 태스크의 기준선이 이미 그 값을 반영해 찍혔다). 하지만 `text-[10px]`→`text-caption-xxs`는 값 동일이 아니다 — `text-caption-xxs` 프로필은 `line-height: 1.3`을 함께 지정하는데, 이 값이 `global.css`의 `button { all: unset; line-height: 1 }`(`@layer base`)를 레이어 순서로 이긴다(프로필은 `@layer utilities`). 그 결과 버튼의 line-height가 10px→13px, 버튼 높이가 20px→23px로 자란다 — 지금까지의 10px는 `all: unset` 리셋의 부산물이었을 뿐 고른 값이 아니었으므로 이 성장은 의도된 결과다. `outline-2` `outline-offset-2` `z-50` `rounded`는 봉인에도 살아남으므로 그대로 둔다. 91–95행의 `all: unset` 포커스 링 주석도 그대로 둔다.
 
 - [ ] **Step 4: 스크린샷 차이를 눈으로 확인한다**
 
 Run: `pnpm build && pnpm test pages`
-Expected: **9/9 PASS, 스크린샷 실패 없음.** Task 6의 모든 치환이 값 동일이므로(자간 변화는 이미 Task 1에서 끝났다) 렌더가 전혀 바뀌지 않는다.
+Expected: **4장 전부 기준선 갱신 대상.** ThemeToggle이 두 라우트 모두에 뜨므로 버튼 높이 3px 성장이 랜딩·이력서, 라이트·다크 네 장 모두에 반영된다. 다만 그 폭이 작은 모서리 배지 크기라 `maxDiffPixelRatio: 0.001` 문턱 안에 들어 스크린샷 비교 자체는 **통과**할 수 있다 — 통과했다고 해서 computed style이 같다는 뜻은 아니다. 값의 동일성을 주장하려면 `getComputedStyle`로 직접 재야 한다.
 
 확인할 것:
 
-- **TitleBar와 ColorBar는 픽셀 하나 안 바뀌어야 한다.** 스크린샷이 실패했다면 임의값 치환에서 값을 잘못 옮긴 것이다 — 기준선을 뜨지 말고 되돌려 대조하라
-- ThemeToggle도 마찬가지로 픽셀 하나 안 바뀌어야 한다. 실패한다면 기준선을 다시 뜨는 게 아니라 전치(transposition) 오류를 찾아 고친다
+- **TitleBar와 ColorBar 스트립 내부는 픽셀 하나 안 바뀌어야 한다.** 바뀌었다면 임의값 치환에서 값을 잘못 옮긴 것이다 — 기준선을 뜨지 말고 되돌려 대조하라
+- ThemeToggle의 버튼 높이만 20px→23px로 자란다. 이 변화만 기대한 것이고 다른 자리에 번진 흔적이 있으면 전치(transposition) 오류다
 
-- [ ] **Step 5: 게이트 확인**
+- [ ] **Step 5: 기준선을 다시 뜨고 전체 통과를 확인한다**
 
-Step 4의 `pnpm test`가 이미 전체 스위트다 — 기준선을 다시 뜰 필요가 없다. `--update-snapshots`는 이 태스크에서 쓰지 않는다.
+Run: `pnpm test pages --update-snapshots=all && pnpm test`
+Expected: PASS 전부. **주의:** 바레 플래그 `--update-snapshots`(값 없이)는 Playwright 1.62에서 프리셋 `changed`로 동작해 임계값 안의 차이는 기존 파일을 건드리지 않는다 — ThemeToggle의 3px 성장이 정확히 그 임계값 안에 들어오므로 `--update-snapshots=all`을 명시해야 실제로 다시 찍힌다. 갱신 후 `git status tests/pages.spec.ts-snapshots/`로 네 장이 실제로 바뀌었는지 반드시 확인한다.
 
 - [ ] **Step 6: 타입·린트 게이트와 커밋**
 

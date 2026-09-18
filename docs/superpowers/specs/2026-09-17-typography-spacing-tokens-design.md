@@ -107,6 +107,23 @@ font-bold` 셋을 나란히 쓰지 않는다.
 
 \* 브라우저 기본 `<h2>~<h4>`의 bold. `global.css` 리셋은 margin/padding만 지운다.
 
+### 프로필은 리셋을 이긴다
+
+`global.css`의 `button { all: unset; line-height: 1 }`은 `@layer base`에 있고, 타입
+프로필은 `@layer utilities`에서 `line-height`를 명시한다. 레이어 순서상 프로필이 이긴다.
+
+그래서 ThemeToggle이 `text-caption-xxs`를 받으면 line-height가 10px에서 13px로, 버튼
+높이가 20px에서 23px로 자란다. **의도된 결과다** — 지금까지의 10px는 `all: unset`
+리셋의 부산물이지 고른 값이 아니었다.
+
+이 자리가 유일한 사례다: TitleBar의 신호등 버튼들은 `leading-[10px]`·`leading-[14px]`를
+명시해 `--tw-leading`을 세우므로 프로필이 있어도 자기 값을 지킨다. 리셋이 `line-height`를
+주는 요소는 `button`뿐이다.
+
+덧붙일 것: 이 변화가 스크린샷을 깨지 않고 통과했다 — `maxDiffPixelRatio: 0.001`이 작은
+모서리 배지의 3px을 삼킨다. 기준선 통과는 computed style이 같다는 증거가 아니다. 값의
+동일성을 주장하려면 `getComputedStyle`로 재야 한다.
+
 ### 굵기 유틸리티
 
 `--font-weight-*`는 죽이지 않는다 (`--font-*: initial`이 이 네임스페이스를 건드리지
