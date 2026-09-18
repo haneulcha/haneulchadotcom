@@ -75,3 +75,43 @@ test('the landing hero renders at the heading-xl profile', async ({ page }) => {
     lineHeight: '70.4px',
   });
 });
+
+// 숫자 간격 유틸리티가 봉인됐는지 컴파일 결과의 지문으로 확인한다. mt-4·p-0 같은
+// 유틸리티는 전부 calc(var(--spacing) * N)으로 컴파일되므로, 봉인이 살아 있으면
+// 이 문자열이 스타일시트 어디에도 안 나온다. (이름 별칭은 var(--spacing-md)를
+// 쓰므로 여기 안 걸린다 — 봉인되는 것은 접미사 없는 --spacing 하나다.)
+//
+// 변수의 존재를 보거나 클래스를 심어 확인하지 않는 이유: Tailwind는 소스에 없는
+// 클래스를 컴파일하지 않고 미사용 테마 변수는 tree-shake한다. 그래서 두 방법 다
+// 봉인이 풀린 상태에서도 통과해 버린다 — 거짓 방어선이 된다.
+//
+// 이 테스트가 잡는 것은 "봉인이 풀렸고 누가 숫자 유틸리티를 다시 썼다"는 짝이다.
+// 봉인이 살아 있는 채로 누가 mt-4를 쓰면 클래스가 조용히 없을 뿐이라 여기 안
+// 걸린다 — 그건 스크린샷이 잡는다.
+test('the numeric spacing scale stays sealed', async ({ page }) => {
+  await page.goto('/about');
+  const hits = await page.evaluate(() => {
+    const count = (rules: CSSRuleList): number => {
+      let n = 0;
+      for (const rule of Array.from(rules)) {
+        const nested = (rule as CSSGroupingRule).cssRules;
+        if (nested) n += count(nested);
+        if (
+          rule instanceof CSSStyleRule &&
+          rule.cssText.includes('var(--spacing)')
+        ) {
+          n += 1;
+        }
+      }
+      return n;
+    };
+    return Array.from(document.styleSheets).reduce((n, sheet) => {
+      try {
+        return n + count(sheet.cssRules);
+      } catch {
+        return n; // 교차 출처 시트는 cssRules 접근에서 던진다
+      }
+    }, 0);
+  });
+  expect(hits).toBe(0);
+});
