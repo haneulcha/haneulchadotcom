@@ -54,6 +54,8 @@ bold인 것은 이 사이트의 판단이다.
   --text-*: initial; /* text-base · text-2xl 제거 */
   --tracking-*: initial;
   --font-*: initial;
+  --leading-*: initial; /* leading-relaxed 등 이름 있는 값이 프로필의
+                            line-height를 --tw-leading으로 덮는 것을 막는다 */
 }
 ```
 
@@ -66,6 +68,7 @@ bold인 것은 이 사이트의 판단이다.
 | `mt-4` `px-2` `gap-1.5` `top-3` `min-w-20` `pl-7` | 임의값 `pl-[12px]` `h-[13px]` `max-w-[1024px]` `opacity-[.55]`                                      |
 | `p-0` `m-0` `inset-0` `size-4`                    | 분수 `top-1/2` `-translate-y-1/2`, static `w-full` `h-px` `z-50` `flex-1` `mx-auto`                 |
 | `text-base` `text-2xl`                            | `text-accent-solid` — 색은 `--color-*`에서 오므로 `--text-*: initial`과 무관                        |
+| `leading-relaxed` `leading-tight`                 | 임의값 `leading-[10px]` `leading-[14px]` `leading-[28px]`                                           |
 | —                                                 | `font-bold` `font-medium` `font-normal` — `--font-weight-*`는 `--font-*: initial`이 건드리지 않는다 |
 
 변형·부정 유틸리티도 그대로 동작한다: `-ml-xl`, `after:mx-sm`, `max-[321px]:py-xxs`. 리뷰가 놓쳐도 화면에서 드러난다. `global.css`의 `@layer base`
@@ -92,20 +95,26 @@ font-bold` 셋을 나란히 쓰지 않는다.
 
 ### 프로필 10개 — 소비자 있는 것만
 
-| 토큰          | 자리                       | 현재            | → 토큰                     |
-| ------------- | -------------------------- | --------------- | -------------------------- |
-| `heading-xl`  | 랜딩 `ㅊㅎㄴ`              | 96 / 700 / 1.15 | **64** / 700 / **1.1** / 0 |
-| `heading-lg`  | `/about` h1 이름           | 42 / 700        | **48** / 700 / 1.1 / 0     |
-| `heading-md`  | h2 섹션                    | 30 / 700\*      | **32** / 700 / 1.2 / 0     |
-| `heading-sm`  | h3 회사명                  | 24 / 700\*      | 24 / 700 / 1.3 / 0         |
-| `heading-xs`  | h4 섹션 제목               | 20 / 700\*      | **18** / 700 / 1.4 / 0     |
-| `heading-xxs` | 직무명 `<summary>`         | 18 / 500 / 1.65 | **16** / 500 / **1.4** / 0 |
-| `body-md`     | 본문                       | 16 / 400 / 1.5  | 16 / 400 / 1.5 / 0         |
-| `body-sm`     | 표 · 기술라벨 · h4 기간    | 14 / 400        | 14 / 400 / 1.5 / 0         |
-| `caption-sm`  | 최종 수정 · 랜딩 copyright | 12 / 1.6 · 12.8 | **12** / 400 / **1.4** / 0 |
-| `caption-xxs` | ThemeToggle                | 10 / 400        | 10 / 400 / 1.3 / 0         |
+| 토큰          | 자리                       | 현재            | → 토큰                         |
+| ------------- | -------------------------- | --------------- | ------------------------------ |
+| `heading-xl`  | 랜딩 `ㅊㅎㄴ`              | 96 / 700 / 1.15 | **64** / 700 / **1.1** / 0     |
+| `heading-lg`  | `/about` h1 이름           | 42 / 700        | **48** / 700 / 1.1 / 0         |
+| `heading-md`  | h2 섹션                    | 30 / 700\*      | **32** / 700 / 1.2 / 0         |
+| `heading-sm`  | h3 회사명                  | 24 / 700\*      | 24 / 700 / 1.3 / 0             |
+| `heading-xs`  | h4 섹션 제목               | 20 / 700\*      | **18** / 700 / 1.4 / 0         |
+| `heading-xxs` | 직무명 `<summary>`         | 18 / 500 / 1.65 | **16** / 500 / **1.4** / 0     |
+| `body-md`     | 본문                       | 16 / 400 / 1.6  | 16 / 400 / **1.5** / 0         |
+| `body-sm`     | 표 · 기술라벨              | 14 / 400        | 14 / 400 / 1.5 / 0             |
+| `body-sm`     | h4 기간 span               | **16 / 700**    | **14** / **700**\*\* / 1.5 / 0 |
+| `caption-sm`  | 최종 수정 · 랜딩 copyright | 12 / 1.6 · 12.8 | **12** / 400 / **1.4** / 0     |
+| `caption-xxs` | ThemeToggle                | 10 / 400        | 10 / 400 / 1.3 / 0             |
 
 \* 브라우저 기본 `<h2>~<h4>`의 bold. `global.css` 리셋은 margin/padding만 지운다.
+
+\*\* h4 기간 span은 `<h4>`에서 상속하던 700을 프로필이 끊으므로 `font-bold`로
+다시 세운다 — 강조가 아니라 상속 복원이다. 굵기는 700에서 안 움직이고 크기만
+16→14로 줄어든다. `classes.ts`의 `sectionH4Span`, 아래 「굵기 유틸리티」의
+`techLabel`과 같은 메커니즘이다.
 
 ### 프로필은 리셋을 이긴다
 
@@ -129,15 +138,26 @@ font-bold` 셋을 나란히 쓰지 않는다.
 `--font-weight-*`는 죽이지 않는다 (`--font-*: initial`이 이 네임스페이스를 건드리지
 않는다 — 실측). 다만 프로필이 weight를 싣게 되므로 **중복된
 `font-bold` · `font-normal` · `font-medium`은 제거한다** (랜딩 h1, `/about` article,
-`summary` 등). 남기는 것은 본문 타입 위에 얹는 **강조**뿐이다 — `infoTableTh`,
-`techLabel`, `LanguageList`의 라벨. 이 셋은 타입 역할이 아니라 같은 역할 안의
-강세라서 프로필로 올리지 않는다.
+`summary` 등). 남기는 것은 네 자리다 — `infoTableTh` · `techLabel` ·
+`LanguageList`의 라벨은 본문 타입 위에 얹는 **강조**고(타입 역할이 아니라 같은
+역할 안의 강세라서 프로필로 올리지 않는다), `sectionH4Span`은 강조가 아니라
+**상속 복원**이다(`<h4>`에서 받던 700이 프로필의 400에 끊겨서 다시 세운다 —
+위 프로필 표의 각주 참조). 넷 다 결과는 같은 `font-bold`지만 이유는 다르다.
 
 **이건 정리가 아니라 정확성 문제다.** 프로필은
 `font-weight: var(--tw-font-weight, var(--text-heading-xl--font-weight))`로 컴파일된다
 — `font-bold`가 `--tw-font-weight`를 세우므로 **클래스 순서와 무관하게 프로필을
 이긴다**. 남겨 둔 `font-bold` 하나가 프로필의 weight를 조용히 덮는다. `line-height`도
-`var(--tw-leading, …)`로 같은 구조라 `leading-*`이 프로필을 이긴다.
+`var(--tw-leading, …)`로 같은 구조라 `leading-*`이 프로필을 이긴다 — 이 구멍은
+`--leading-*: initial`로 닫는다(「기본값 봉인」 참조).
+
+`--font-weight-*`는 대칭적으로 열어 둔다. 위 넷이 같은 역할 안에서 굵기만 다른
+`font-bold`를 필요로 하므로, 이 네임스페이스를 잠그면 그 자리들이 깨진다.
+`font-light`(300)·`font-black`(900)이 `WEIGHT_SCALE` 밖인 채로 계속 컴파일되는
+것은 그 대가다 — 쓰는 자리가 없으니 지금은 해가 없지만, 굵기 스케일 자체는
+잠기지 않았다는 뜻이다. `--leading-*`처럼 닫을 수도 있었지만, 그러면 `font-bold`도
+함께 죽어 위 넷이 깨진다 — 굵기는 자간·행간과 달리 네 곳이 프로필 위에
+얹어 쓰는 살아있는 탈출구라 열어 둔 채로 둔다.
 
 starter의 나머지 프로필(`code` `button` `badge` `nav` `card` `link`, `body-lg`,
 `caption-md/xs`)은 **정의하지 않는다**. 소비자가 없다. 죽은 토큰은 시스템이 아니라

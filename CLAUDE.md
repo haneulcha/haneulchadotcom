@@ -165,7 +165,11 @@ design-system-starter 스키마 v1의 스케일 안에 있어야 한다. 새 프
 아니라 측정값이므로 `min-w-[160px]`처럼 임의값으로 쓴다.
 `tests/tailwind-setup.spec.ts`가 컴파일된 CSS에 `var(--spacing)`이 0회인지
 확인해 봉인을 지킨다. 다만 이 테스트는 **봉인이 풀린 것만** 잡는다 — 누가 새로
-`mt-4`를 쓰면 클래스가 조용히 없을 뿐이고, 그건 스크린샷이 잡는다.
+`mt-4`를 쓰면 클래스가 조용히 없을 뿐이고, 빌드도 lint도 에러를 내지 않는다.
+스크린샷이 이걸 잡는 것은 **레이아웃을 밀어내는** 유틸리티에 한해서다 — 16px
+마진이 사라지면 그 아래 전부가 밀려 `maxDiffPixelRatio: 0.001`을 가뿐히 넘는다.
+일반적으로 잡는다는 보장은 아니다 — 아래 기술 부채에 이 임계값이 이번 사이클에
+실제 변화 두 건을 삼킨 기록이 있다.
 
 **토큰화하지 않는 자리가 넷 있다.** `TitleBar` 전체(`text-[11pt]` ·
 `leading-[10px]` · `py-[5px]` · `gap-x-[7px]` · `pl-[12px]` …)는 macOS 크롬
@@ -187,19 +191,26 @@ design-system-starter 스키마 v1의 스케일 안에 있어야 한다. 새 프
 `tests/pages.spec.ts`가 Playwright로 두 라우트의 스크린샷과 상호작용(`<details>` 전체 토글,
 닫기 버튼 내비게이션)을 검사한다. 기준선은 **네 장**이다 — 라이트/다크 × 랜딩/이력서
 (`landing.png`, `landing-dark.png`, `about.png`, `about-dark.png`). 다크는
-`page.emulateMedia({ colorScheme: 'dark' })` 같은 에뮬레이션이 아니라
-`document.documentElement.classList.add('dark')`로 직접 클래스를 붙여 찍는다 —
-팔레트가 `.dark` 클래스로 동작하므로 실제 경로를 지나야 한다. 기준선 PNG는
+저장된 선택을 강제로 심는 대신 `test.use({ colorScheme: 'dark' })`로 **다크 OS를
+에뮬레이션**한다 — `colorScheme`은 브라우저 컨텍스트 생성 시점에 적용돼 페이지의 어떤
+스크립트보다도 먼저이므로 하이드레이션과 경쟁하지 않는다. `localStorage`는 비워 두므로
+`__root.tsx`의 인라인 스크립트가 `matchMedia('(prefers-color-scheme: dark)')`를 읽어
+`.dark`를 붙이는, 팔레트가 실제로 의존하는 그 경로를 그대로 탄다 (테스트는
+`page.locator('html')`에 `dark` 클래스가 붙었는지도 함께 단언한다). 기준선 PNG는
 `tests/pages.spec.ts-snapshots/`에 커밋돼 있다.
 
-`tests/tailwind-setup.spec.ts`는 스크린샷으로 못 잡는 것 두 가지를 따로 검사한다. 하나는
-랜딩 'ㅊ'의 computed color가 `text-accent-solid` 유틸리티 값(`rgb(250, 134, 46)`,
+`tests/tailwind-setup.spec.ts`는 스크린샷으로 못 잡는 것 네 가지를 따로 검사한다.
+① 랜딩 'ㅊ'의 computed color가 `text-accent-solid` 유틸리티 값(`rgb(250, 134, 46)`,
 팔레트의 `--color-accent-500`)과 같은지 확인해 Tailwind 유틸리티가 `?url` 스타일시트를
-통해 실제로 페이지에 닿는지를 본다. 다른 하나는 `document.styleSheets`를 직접 순회해
+통해 실제로 페이지에 닿는지를 본다. ② `document.styleSheets`를 직접 순회해
 리셋이 `@layer base` 안에 있는지 확인한다 — 위 "`@layer base` 밖으로 꺼내지 마라" 경고가
 가리키는 바로 그 회귀를 잡는 테스트다. 전역 `::selection`이 비레이어 리셋에 밀려나는
 사고는 텍스트를 드래그해 선택하는 테스트가 없는 한 스크린샷에 안 잡히므로, 이 테스트가
-그 회귀의 유일한 방어선이다.
+그 회귀의 유일한 방어선이다. ③ 랜딩 h1이 `text-heading-xl` 프로필대로 렌더되는지
+(`font-size` · `font-weight` · `line-height` 셋 다) `getComputedStyle`로 잰다 — 크기만
+보면 남은 `font-bold`나 `leading-*`이 `--tw-font-weight`/`--tw-leading`으로 프로필을
+조용히 덮는 것을 놓친다. ④ 컴파일된 스타일시트에 문자열 `var(--spacing)`이 0회인지
+확인해 숫자 간격 유틸리티 봉인을 지킨다.
 
 - **`pnpm test` 전에 `pnpm build`가 필요하다.** 빌드 결과물을 서빙해서 검사한다.
 - 기준선은 **darwin 전용**이다. 다른 OS에서는 스크린샷이 어긋나므로 CI에 붙어 있지 않다.
@@ -254,3 +265,9 @@ ESLint는 더 이상 고정 대상이 아니다. 핀의 원인이던 `eslint-con
   변화를 두 번 삼켰다 (Task 1의 자간 0.025em→0.05em, Task 6의 버튼 높이 20→23px).
   둘 다 다른 경로로 잡았지만, 기준선 통과는 computed style이 같다는 증거가 아니다.
   임계값을 낮출지는 폰트 렌더링 흔들림과 맞바꿔야 해서 별건으로 다룬다.
+- `tokens.theme.css`의 봉인이 뚫리는 방식은 **조용하다** — 누가 `mt-4`를 쓰면
+  빌드도 lint도 에러 없이 그 클래스가 그냥 존재하지 않을 뿐이다. 유일한 탐지기는
+  스크린샷이고, 그 임계값이 손실이 있다는 것은 위 항목이 기록한 그대로다. `className`
+  문자열 안의 숫자 간격 유틸리티(`\bm[trblxy]?-\d`류)를 잡는 작은 ESLint 규칙을 붙이면
+  이 실패를 저작 시점 에러로 옮길 수 있다 — 봉인 구조 자체는 옳고, 이건 그 구조가
+  아직 못 잡는 틈을 메우는 기회다.
