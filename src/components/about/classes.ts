@@ -38,8 +38,12 @@ export const sectionWrap = 'mt-md';
 /** .experienceSection h4 */
 export const sectionH4 = 'mt-lg mb-md text-heading-xs';
 
+// font-bold는 강조가 아니라 복원이다. 이 span은 원래 <h4>에서 굵기 700을
+// 상속받았을 뿐 스스로 font-bold를 가진 적이 없다 — text-body-sm 프로필이
+// weight 400을 실어 오면서 그 상속이 끊긴다. 바로 아래 techLabel이 문서화한
+// 것과 같은 메커니즘이다.
 /** .experienceSection h4 span */
-export const sectionH4Span = 'ml-xxs text-body-sm';
+export const sectionH4Span = 'ml-xxs font-bold text-body-sm';
 
 /** .content p */
 export const contentP = 'my-xs';

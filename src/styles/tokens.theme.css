@@ -34,11 +34,21 @@
      영향 없는 것(실측): 임의값 pl-[12px], 분수 top-1/2 · -translate-y-1/2,
      static w-full · h-px · z-50 · rounded-md · outline-2, 색 text-accent-solid
      (--color-*에서 온다), 굵기 font-bold (--font-weight-*는 별개 네임스페이스라
-     --font-*: initial이 건드리지 않는다). */
+     --font-*: initial이 건드리지 않는다).
+
+     --leading-*도 별도로 닫는다. 타입 프로필은
+     `line-height: var(--tw-leading, var(--text-X--line-height))`로 컴파일되므로
+     leading-relaxed 같은 이름 있는 유틸리티가 --tw-leading을 세우면 클래스
+     순서와 무관하게 프로필의 line-height를 이긴다 — --text-*: initial은 이
+     구멍을 막지 않는다(실측: Tailwind 4.3.3, leading-relaxed → --tw-leading:
+     var(--leading-relaxed) = 1.625). 무료다 — src/ 안에서 이름 있는 leading을
+     쓰는 곳이 없고, 남은 leading-[10px] · leading-[14px] · leading-[28px]는
+     전부 임의값이라 네임스페이스 초기화가 건드리지 않는다. */
   --spacing: initial;
   --text-*: initial;
   --tracking-*: initial;
   --font-*: initial;
+  --leading-*: initial;
 
   /* ── 폰트 ──────────────────────────────────────────────────────────────
      교체가 아니라 이름 붙이기다. 지금 쓰던 스택을 그대로 옮겼을 뿐이라

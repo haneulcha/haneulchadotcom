@@ -66,8 +66,8 @@ export function ColorBar() {
             교차점에 중심을 맞춘 7×7, 1px 테두리 원. 실제 색이 아니라 인쇄
             정렬 기준을 나타내는 관례라 currentColor만 쓴다. */}
         <span className="relative block h-[13px] w-[13px]" aria-hidden="true">
-          <span className="absolute top-[6px] left-none h-px w-[13px] bg-current" />
-          <span className="absolute top-none left-[6px] h-[13px] w-px bg-current" />
+          <span className="absolute top-[6px] left-[0px] h-px w-[13px] bg-current" />
+          <span className="absolute top-[0px] left-[6px] h-[13px] w-px bg-current" />
           <span className="absolute top-[3px] left-[3px] h-[7px] w-[7px] rounded-full border border-current" />
         </span>
 
