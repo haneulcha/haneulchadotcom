@@ -95,7 +95,7 @@ export function ThemeToggle() {
       // 그라디언트 위에 얹혔을 때도 읽혀야 하므로 투명 배경은 안 된다.
       // global.css의 `button { all: unset }` 리셋이 기본 포커스 링까지
       // 지우므로, 키보드 포커스에서 outline을 명시적으로 되살린다.
-      className="fixed top-3 right-3 z-50 rounded border border-neutral-border bg-neutral-subtle-bg px-2 py-1 font-mono text-[10px] tracking-wide text-neutral-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-solid"
+      className="fixed top-sm right-sm z-50 rounded border border-neutral-border bg-neutral-subtle-bg px-xs py-xxs font-mono text-caption-xxs tracking-wide text-neutral-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-solid"
     >
       <span suppressHydrationWarning>{LABEL[choice]}</span>
     </button>

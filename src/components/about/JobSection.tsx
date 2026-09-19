@@ -24,22 +24,22 @@ export function JobSection({ item }: { item: ExperienceSection }) {
         )}
       </p>
 
-      <ul aria-label="상세 업무" className="my-4 list-none pl-[0.85rem]">
+      <ul aria-label="상세 업무" className="my-md list-none pl-sm">
         {item.jobs.map((job, idx) => (
           <li key={idx}>
             <details className="overflow-visible" open>
               <summary
-                className={`my-[0.35rem] cursor-pointer text-[18px] leading-[1.65] font-medium ${c.linkColor}`}
+                className={`my-xxs cursor-pointer text-heading-xxs ${c.linkColor}`}
               >
-                <span className="ml-[0.35rem] text-neutral-text-strong">
+                <span className="ml-xxs text-neutral-text-strong">
                   {job.summary}
                 </span>
               </summary>
-              <ul className="my-2 mb-4 list-['•'] pl-7">
+              <ul className="my-xs mb-md list-['•'] pl-lg">
                 {job.detail.map((detail, i) => (
-                  <li className="mb-[0.4rem] text-[16px]" key={detail[0] + i}>
+                  <li className="mb-xs text-body-md" key={detail[0] + i}>
                     <div
-                      className="resumeHtml ml-2"
+                      className="resumeHtml ml-xs"
                       dangerouslySetInnerHTML={{ __html: detail }}
                     />
                   </li>

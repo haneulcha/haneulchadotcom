@@ -1,0 +1,152 @@
+/* 타이포·간격 토큰.
+ *
+ * **생성물이 아니다 — 손으로 쓰는 파일이다.** 옆의 palette.theme.css와 혼동하지
+ * 마라. 그쪽은 design-system-starter의 산출물이라 직접 고치면 다음 추출 때
+ * 날아간다. 이 파일은 고쳐도 된다.
+ *
+ * 값의 출처는 starter의 스키마 v1이다 (src/schema/typography.ts,
+ * src/schema/spacing.ts). 크기·굵기·행간·자간·간격은 전부 그쪽 스케일 안의
+ * 값이어야 한다:
+ *
+ *   SIZE_SCALE        10 11 12 14 16 18 20 24 28 32 36 48 64
+ *   WEIGHT_SCALE      400 500 600 700
+ *   LINE_HEIGHT_SCALE 1.0 1.1 1.2 1.3 1.4 1.5
+ *   LETTER_SPACING    -0.02em  0  0.05em
+ *   SPACING_SCALE     2 4 8 12 16 20 24 32 48 64 80 96
+ *
+ * 스케일은 제약으로 따르되 **프로필은 이 사이트가 정한다** — 어느 역할이 어느
+ * 조합인지는 starter 기본값을 베끼지 않는다. starter의 heading-xl은 weight
+ * 500이지만 랜딩 'ㅊㅎㄴ'이 bold인 것은 이 사이트의 판단이다.
+ *
+ * 설계: docs/superpowers/specs/2026-09-17-typography-spacing-tokens-design.md
+ */
+
+@theme {
+  /* ── 기본값 봉인 ────────────────────────────────────────────────────────
+     Tailwind의 동적 간격 스케일과 기본 타입 스케일을 지운다. mt-4 · text-base
+     같은 클래스가 **존재하지 않게** 되므로, 토큰을 안 쓰면 스타일이 아예 안 붙어
+     화면에서 바로 드러난다. 규칙으로 지키는 대신 구조로 막는다.
+
+     함께 죽는 것: p-0 · m-0 · my-0 · py-0 · pr-0 · left-0 · top-0 · right-0.
+     전부 --spacing에 기대기 때문이다 → --spacing-none으로 받는다.
+     숫자 치수(min-w-20)와 숫자 위치(top-3)도 죽는다.
+
+     영향 없는 것(실측): 임의값 pl-[12px], 분수 top-1/2 · -translate-y-1/2,
+     static w-full · h-px · z-50 · rounded-md · outline-2, 색 text-accent-solid
+     (--color-*에서 온다), 굵기 font-bold (--font-weight-*는 별개 네임스페이스라
+     --font-*: initial이 건드리지 않는다).
+
+     --leading-*도 별도로 닫는다. 타입 프로필은
+     `line-height: var(--tw-leading, var(--text-X--line-height))`로 컴파일되므로
+     leading-relaxed 같은 이름 있는 유틸리티가 --tw-leading을 세우면 클래스
+     순서와 무관하게 프로필의 line-height를 이긴다 — --text-*: initial은 이
+     구멍을 막지 않는다(실측: Tailwind 4.3.3, leading-relaxed → --tw-leading:
+     var(--leading-relaxed) = 1.625). 무료다 — src/ 안에서 이름 있는 leading을
+     쓰는 곳이 없고, 남은 leading-[10px] · leading-[14px] · leading-[28px]는
+     전부 임의값이라 네임스페이스 초기화가 건드리지 않는다. */
+  --spacing: initial;
+  --text-*: initial;
+  --tracking-*: initial;
+  --font-*: initial;
+  --leading-*: initial;
+
+  /* ── 폰트 ──────────────────────────────────────────────────────────────
+     교체가 아니라 이름 붙이기다. 지금 쓰던 스택을 그대로 옮겼을 뿐이라
+     렌더는 바뀌지 않는다. 폰트 교체는 별건으로 다룬다. */
+  --font-sans: 'Noto Sans KR', sans-serif;
+  --font-system:
+    -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  --font-chrome:
+    HelveticaNeue, 'Helvetica Neue', 'Lucida Grande', Arial, sans-serif;
+  /* Tailwind 기본값을 복사해 고정한다. Task 7의 `--font-*: initial`이 기본값을
+     지우므로, 여기 명시하지 않으면 ColorBar·ThemeToggle의 font-mono가 사라진다. */
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+
+  /* ── 자간 ── starter LETTER_SPACING_VALUES 세 값이 전부다. */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+
+  /* ── 타입 프로필 ────────────────────────────────────────────────────────
+     토큰 하나가 크기·굵기·행간·자간 넷을 싣는다 — `text-heading-xl` 하나면
+     `text-[6rem] leading-[1.15] font-bold` 셋을 대신한다.
+
+     소비자가 있는 10개만 정의한다. starter의 code/button/badge/nav/card/link와
+     body-lg·caption-md/xs는 쓰는 자리가 없다. 죽은 토큰은 시스템이 아니라 목록이다. */
+
+  /* 랜딩 'ㅊㅎㄴ' */
+  --text-heading-xl: 64px;
+  --text-heading-xl--font-weight: 700;
+  --text-heading-xl--line-height: 1.1;
+  --text-heading-xl--letter-spacing: 0;
+
+  /* /about h1 — 이름 */
+  --text-heading-lg: 48px;
+  --text-heading-lg--font-weight: 700;
+  --text-heading-lg--line-height: 1.1;
+  --text-heading-lg--letter-spacing: 0;
+
+  /* h2 — 섹션 */
+  --text-heading-md: 32px;
+  --text-heading-md--font-weight: 700;
+  --text-heading-md--line-height: 1.2;
+  --text-heading-md--letter-spacing: 0;
+
+  /* h3 — 회사명 */
+  --text-heading-sm: 24px;
+  --text-heading-sm--font-weight: 700;
+  --text-heading-sm--line-height: 1.3;
+  --text-heading-sm--letter-spacing: 0;
+
+  /* h4 — 섹션 제목 */
+  --text-heading-xs: 18px;
+  --text-heading-xs--font-weight: 700;
+  --text-heading-xs--line-height: 1.4;
+  --text-heading-xs--letter-spacing: 0;
+
+  /* 직무명 <summary> — 제목 계열이지만 굵기가 한 단 낮다 */
+  --text-heading-xxs: 16px;
+  --text-heading-xxs--font-weight: 500;
+  --text-heading-xxs--line-height: 1.4;
+  --text-heading-xxs--letter-spacing: 0;
+
+  /* 본문 */
+  --text-body-md: 16px;
+  --text-body-md--font-weight: 400;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--letter-spacing: 0;
+
+  /* 표 · 기술라벨 · h4 옆 기간 */
+  --text-body-sm: 14px;
+  --text-body-sm--font-weight: 400;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0;
+
+  /* 최종 수정 · 랜딩 copyright */
+  --text-caption-sm: 12px;
+  --text-caption-sm--font-weight: 400;
+  --text-caption-sm--line-height: 1.4;
+  --text-caption-sm--letter-spacing: 0;
+
+  /* ThemeToggle */
+  --text-caption-xxs: 10px;
+  --text-caption-xxs--font-weight: 400;
+  --text-caption-xxs--line-height: 1.3;
+  --text-caption-xxs--letter-spacing: 0;
+
+  /* ── 간격 ──────────────────────────────────────────────────────────────
+     starter BASE_ALIASES + section 그대로. 추가한 것은 `none` 하나뿐이다 —
+     Task 7의 `--spacing: initial`이 p-0·m-0까지 죽이기 때문이다. */
+  --spacing-none: 0px;
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 96px;
+}

@@ -59,15 +59,15 @@ export function ColorBar() {
       // pr/pb 32px: 교정지의 컨트롤 스트립도 종이 끝에 닿지는 않는다.
       // 그리퍼 여백과 재단 여유가 남는다. 오른쪽과 아래를 같은 값으로 두어
       // 모서리가 고르게 보이게 한다.
-      className="group flex w-full flex-col items-end pt-2 pr-8 pb-8 text-neutral-text-strong"
+      className="group flex w-full flex-col items-end pt-xs pr-xl pb-xl text-neutral-text-strong"
     >
-      <div className="flex items-end gap-1.5">
+      <div className="flex items-end gap-[6px]">
         {/* 레지스터 마크: 13×13 — 십자선(1px, 두 축 모두 13px 전체) + 그
             교차점에 중심을 맞춘 7×7, 1px 테두리 원. 실제 색이 아니라 인쇄
             정렬 기준을 나타내는 관례라 currentColor만 쓴다. */}
         <span className="relative block h-[13px] w-[13px]" aria-hidden="true">
-          <span className="absolute top-[6px] left-0 h-px w-[13px] bg-current" />
-          <span className="absolute top-0 left-[6px] h-[13px] w-px bg-current" />
+          <span className="absolute top-[6px] left-[0px] h-px w-[13px] bg-current" />
+          <span className="absolute top-[0px] left-[6px] h-[13px] w-px bg-current" />
           <span className="absolute top-[3px] left-[3px] h-[7px] w-[7px] rounded-full border border-current" />
         </span>
 
@@ -96,7 +96,7 @@ export function ColorBar() {
         ))}
       </div>
 
-      <div className="mt-1 font-mono text-[8px] text-right tracking-[.09em] uppercase opacity-[.62] group-hover:underline">
+      <div className="mt-xxs font-mono text-[8px] text-right tracking-[.09em] uppercase opacity-[.62] group-hover:underline">
         design-system-starter · a=fa862e n=green-soft
       </div>
     </Link>
